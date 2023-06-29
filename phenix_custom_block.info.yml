@@ -1,0 +1,5 @@
+name: 'Custom block culture viande'
+description: 'Provide a custom block for culture viande'
+core_version_requirement: ^8 || ^9
+package: Custom
+type: module

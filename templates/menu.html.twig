@@ -1,0 +1,9 @@
+{# Check if the menu_items variable exists and has items #}
+{% if menu_items is not empty %}
+  <ul class="dropdown-menu">
+    {# Loop through the menu items and output the dropdown links #}
+    {% for item in menu_items %}
+      <li><a href="#">{{ item }}</a></li>
+    {% endfor %}
+  </ul>
+{% endif %}

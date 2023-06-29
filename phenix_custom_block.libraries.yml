@@ -1,0 +1,7 @@
+phenix_custom_block.form_display:
+  path: '/'
+  defaults:
+    _form: '\Drupal\phenix_custom_block\FormBuilder::formDisplay'
+    _title: 'My Form Display'
+  requirements:
+    _permission: 'access content'

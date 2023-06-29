@@ -1,0 +1,158 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function phenix_custom_block_theme($existing, $type, $theme, $path)
+{
+    return [
+        'my_account_block' => [
+            'variables' => [
+            'content' => Null,
+            ],
+            'render element' => 'children',
+            'path' => $path . '/templates',
+            'template' => 'my-account-block'
+        ]
+    ];
+}
+
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements the form builder.
+ */
+function phenix_custom_block_form_builder(array &$form, FormStateInterface $form_state) {
+  $form['dropdown'] = [
+    '#type' => 'select',
+    '#title' => 'Select an option',
+    '#options' => [
+      'option1' => 'Option 1',
+      'option2' => 'Option 2',
+      'option3' => 'Option 3',
+    ],
+  ];
+
+  return $form;
+}
+
+/**
+ * Implements the form display.
+ */
+function phenix_custom_block_form_display(array &$form, FormStateInterface $form_state) {
+    $output = [];
+  
+    $output['form'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['my-form-container'],
+      ],
+    ];
+  
+    $output['form']['dropdown'] = $form['dropdown'];
+  
+    return $output;
+}
+
+
+
+/**
+ * Implements hook_preprocess_views_view_field
+ * Modifie l'affichage d'un champ dans une vue
+ */
+function phenix_custom_block_preprocess_views_view_field(&$variables) {
+  $view = $variables['view'];
+	$field = $variables['field'];
+	$requests = \Drupal::request();
+	$row = $variables['row'];
+	
+	if ($view->storage->id() == 'civievents_base_sur_le_contact_' &&  $view->current_display == 'block_2') {
+		if ($field->field == 'title') {
+
+			$title = $field->getValue($row);
+			$start_date = $row->civicrm_event_civicrm_participant_start_date;
+     // dump($row);
+			// Create a DateTime object from the date string
+			 $dateTime = new DateTime($start_date);
+			
+			// Get the day
+			$day = $dateTime->format('d');
+
+			// Get the month
+ 			$month = $dateTime->format('m');
+			// Obtient le mois en français
+			setlocale(LC_TIME, 'fr_FR.utf8');
+			$month = strftime('%B', $dateTime->getTimestamp());
+
+			// Get the year
+			$year = $dateTime->format('Y');
+			
+			// Get the hour
+			$hour = $dateTime->format('H');
+
+      // Get the minute value.
+      $minute = $dateTime->format('i');
+
+			// $formatted = implode(' ',str_split($value, 2));
+			$html = '<div class="my-meeting">
+					<div class="start-date-meet">
+						<span class="meet-day">' . $day . '</span>
+						<span class="meet-month">' . $month . ' ' . $year . '</span>
+						<span class="meet-hour">' . $hour . ':' . $minute . '</span>
+				</div>
+				<div class="title-meeting"><p class="title-meet">' . $title .  ' </p></div>
+			</div>';
+			$html = ['#markup' =>  $html]; 
+			$variables['output'] = $html;
+		}
+	}
+}
+
+
+use Drupal\Core\Menu\MenuLinkTreeInterface;
+use Drupal\Core\Menu\MenuTreeParameters;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
+/**
+ * Implements hook_preprocess_HOOK() for menu.html.twig.
+ */
+function phenix_custom_block_preprocess_menu(&$variables) {
+  $menu_name = 'account';
+  $depth = 3;
+
+  /** @var \Drupal\Core\Menu\MenuLinkTreeInterface $menuLinkTree */
+  $menuLinkTree = \Drupal::service('menu.link_tree');
+  $parameters = new MenuTreeParameters();
+  $parameters->setMaxDepth($depth);
+  $tree = $menuLinkTree->load($menu_name, $parameters);
+  $manipulators = [
+    ['callable' => 'menu.default_tree_manipulators:checkAccess'],
+    ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
+  ];
+  $tree = $menuLinkTree->transform($tree, $manipulators);
+  $menu_tree = $menuLinkTree->build($tree);
+
+  $menu_items = [];
+
+  // Get the current path.
+$currentPath = \Drupal::service('path.current')->getPath();
+
+if ($currentPath == '/node/96') {
+  
+  foreach ($menu_tree as $item) {
+    if (isset($item['user.page'])) {
+      // dump($item);
+
+    }
+    // $menu_items[] = $item->link->getTitle();
+  }
+  $menu_items[] = 'Communication';
+  $menu_items[] = 'Demande d\'accès';
+  $menu_items[] = 'Deconnecter test';
+  
+}
+  $variables['menu_items'] = $menu_items;
+}
+
+  
