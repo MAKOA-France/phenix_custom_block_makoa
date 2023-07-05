@@ -9,7 +9,7 @@ use Drupal\Core\Session\AccountInterface;
  * Class PubliciteService
  * @package Drupal\phenix_custom_block\Services
  */
-class MenuBurgerService {
+class CustomBlockServices {
 
 
 

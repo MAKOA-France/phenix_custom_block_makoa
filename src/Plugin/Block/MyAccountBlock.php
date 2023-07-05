@@ -55,27 +55,30 @@ class MyAccountBlock  extends BlockBase  {
     // Get the current path.
     $currentPath = \Drupal::service('path.current')->getPath();
     
-    // if ($currentPath == '/node/96') {
-      
-      foreach ($menu_tree as $item) {
-        if (isset($item['user.page'])) {
-          // dump($item);
-    
+    $all_menu = [];
+    foreach ($menu_tree as $key => $item) {
+      if (isset($item['user.page'])) {
+        $keys = array_keys($item);
+        for ($i=0; $i<count($keys); $i++) {
+          $title = is_string($item[$keys[$i]]['title']) ? $item[$keys[$i]]['title'] :  $item[$keys[$i]]['title']->__toString();
+          $all_menu[] = ['url' => $item[$keys[$i]]['url']->toString(), 'title' => $title];
         }
-        // $menu_items[] = $item->link->getTitle();
       }
-      $menu_items[] = 'Communication';
-      $menu_items[] = 'Demande d\'accès';
-      $menu_items[] = 'Deconnecter test';
-      
-    // }
+    }
+
+    $all_menu[0]['icon'] = "fas fa-comment";
+    $all_menu[1]['icon'] = "fas fa-home";
+    $all_menu[2]['icon'] = 'fas fa-user';
+    $all_menu[3]['icon'] = "fas fa-sign-out-alt";
+    $all_menu[4]['icon'] = 'fas fa-sync-alt';
+ 
 
     return [
       '#theme' => 'my_account_block',
       '#cache' => ['max-age' => 0],
       '#content' => [
         'username' => $current_user_name,
-        'menu_item' => $menu_items,
+        'menu_item' => $all_menu,
       ],
     ];
   }

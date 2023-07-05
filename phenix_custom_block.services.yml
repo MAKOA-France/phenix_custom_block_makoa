@@ -1,0 +1,3 @@
+services:
+  phenix_custom_block.view_services:
+    class: Drupal\phenix_custom_block\CustomBlockServices

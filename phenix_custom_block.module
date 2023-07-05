@@ -13,6 +13,13 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
             'render element' => 'children',
             'path' => $path . '/templates',
             'template' => 'my-account-block'
+          ], 'phenix_custom_block_custom_last_doc' => [
+            'variables' => [
+            'content' => Null,
+            ],
+            'render element' => 'children',
+            'path' => $path . '/templates',
+            'template' => 'phenix-custom-block-custom-last-doc'
         ]
     ];
 }
@@ -155,4 +162,90 @@ if ($currentPath == '/node/96') {
   $variables['menu_items'] = $menu_items;
 }
 
-  
+
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+use Drupal\file\Entity\File;
+
+
+  /**
+ * Implements hook_preprocess_HOOK() for taxonomy term templates.
+ */
+function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
+  // Alter the term page variables here.
+  if( $variables['theme_hook_original'] == 'taxonomy_term' && $variables['elements']['#view_mode'] == 'full') {
+
+    $field_dosssier = $variables['elements']['field_dossier'];
+    $date_changed = $variables['elements']['#taxonomy_term']->get('changed')->getValue();
+    $formatted_date = '';
+    if ($date_changed) {
+      if( $date_changed[0]['value']) {
+
+        $date_format = 'Y-m-d';
+        $formatted_date = date($date_format, $date_changed[0]['value']);
+        
+        $variables['content']['field_dossier'][0]['#suffix'] = '<div class="date-doc">' . $formatted_date . '</p>';
+        $documents = $variables['content']['field_dossier'];
+
+        $all_documents = [];
+        foreach ($documents as $index => $value) {
+          if (is_numeric($index)) {
+
+             $title_doc = $value['#paragraph'] ? $value['#paragraph']->get('field_titre')->getValue()[0]['value'] : '';  //maybe need a condition if existe
+             $id_document = $value['#paragraph'] ? $value['#paragraph']->get('field_document')->getValue() : '';  //maybe need a condition if existe
+             $id_document = array_column($id_document, 'target_id');
+             if(!$id_document) continue;
+             //load file 
+             $files = File::loadMultiple($id_document);
+             $all_info = [];
+             foreach ($files as $file) {
+                $media = Drupal\media\Entity\Media::load($file->id());
+                $media_extrait = getNodeFieldValue ($media, 'field_extrait');
+                $fileId = $file->id();
+                $get_description_by_id = \Drupal::database()->query('select * from  media__field_media_document where entity_id = ' . $fileId)->fetch()->field_media_document_description;
+                $all_documents[$title_doc][] = [
+                  'fileType' => $file->getMimeType(),
+                  'fileurl' => $file->createFileUrl(),
+                  'size' => $file->getSize(),
+                  'fileId' => $file->id(),
+                  'extrait' => $media_extrait,
+                  'description' => $get_description_by_id,
+                ];
+             }
+              
+
+            // $all_documents[$title_doc] = array_column($id_document, 'target_id');
+          }
+        } 
+        $variables['content'] = [
+          '#theme' => 'phenix_custom_block_custom_last_doc',
+          '#cache' => ['max-age' => 0],
+          '#content' => [
+            'data' => $all_documents
+          ]
+        ]; 
+
+        
+      }
+    }
+
+  }
+
+}
+
+function getNodeFieldValue ($node, $field) {
+  $value = '';
+  $getValue = $node->get($field)->getValue();
+  if (!empty($getValue)) {
+    if (isset($getValue[0]['target_id'])) { //For entity reference (img / taxonomy ...)
+      $value = $getValue[0]['target_id'];
+    }elseif (isset($getValue[0]['value']))  { //For simple text / date
+      $value = $getValue[0]['value'];
+    }else if(isset($getValue[0]['uri'])) {
+      $value = $getValue[0]['uri'];
+    }else { //other type of field
+
+    }
+  }
+  return $value;
+}

@@ -1,0 +1,12 @@
+<div class="max-w-xl mx-auto px-8 py-6 custom-my-account">
+  {% set temp_title = '' %}
+  {% for title, elm in content.data %}
+    {% if (temp_title != title)%}
+      <h2 class="main-title"> {{ title }} </h2>
+    {% endif %}
+    {% for each_data in elm %}
+      <p class="description">{{ each_data['description'] }}</p>
+    {% endfor %}
+    {% set temp_title = title %}
+  {% endfor %}
+</div>

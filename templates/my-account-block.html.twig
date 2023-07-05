@@ -1,12 +1,11 @@
-
 <div class="max-w-xl mx-auto px-8 py-6 custom-my-account">
 
   <div class="dropdown-my-profil">
     <button class="btn-my-account" data-toggle="dropdown" data-target="#submenu-my-profil"><img src="https://w7.pngwing.com/pngs/741/68/png-transparent-user-computer-icons-user-miscellaneous-cdr-rectangle-thumbnail.png" alt="Profil utilisateur" class="profil-my-account">{{ content.username }}</button>
 
     <div id="submenu-my-profil" class="dropdown-menu-my-profil">    
-      {% for item_menu in content.menu_item %}
-          <a class="dropdown-item"><i class="fa fa-home"></i> {{item_menu}}</a>
+      {% for key, item_menu in content.menu_item %}
+          <a href="{{item_menu.url}}" class="dropdown-item"><i class="{{ item_menu.icon }}"></i> {{item_menu.title}}</a>
       {% endfor %}
     </div>
   </div>
