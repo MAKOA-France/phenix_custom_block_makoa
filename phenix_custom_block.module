@@ -74,6 +74,13 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
 	$requests = \Drupal::request();
 	$row = $variables['row'];
 	
+	if ($view->storage->id() == 'home_caroussel' &&  $view->current_display == 'block_1') {
+    if ($field->field == 'field_slide') {
+      $field_slide = $field->getValue($row);
+      
+    }
+
+  }
 	if ($view->storage->id() == 'civievents_base_sur_le_contact_' &&  $view->current_display == 'block_2') {
 		if ($field->field == 'title') {
 
@@ -177,6 +184,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
 
     $field_dosssier = $variables['elements']['field_dossier'];
     $date_changed = $variables['elements']['#taxonomy_term']->get('changed')->getValue();
+
     $formatted_date = '';
     if ($date_changed) {
       if( $date_changed[0]['value']) {
@@ -190,26 +198,33 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
         $all_documents = [];
         foreach ($documents as $index => $value) {
           if (is_numeric($index)) {
-
-             $title_doc = $value['#paragraph'] ? $value['#paragraph']->get('field_titre')->getValue()[0]['value'] : '';  //maybe need a condition if existe
-             $id_document = $value['#paragraph'] ? $value['#paragraph']->get('field_document')->getValue() : '';  //maybe need a condition if existe
-             $id_document = array_column($id_document, 'target_id');
-             if(!$id_document) continue;
-             //load file 
+            $title_doc = $value['#paragraph'] ? $value['#paragraph']->get('field_titre')->getValue()[0]['value'] : '';  //maybe need a condition if existe
+            $id_document = $value['#paragraph'] ? $value['#paragraph']->get('field_document')->getValue() : '';  //maybe need a condition if existe
+            $id_document = array_column($id_document, 'target_id');
+            if(!$id_document) continue;
+            //load file 
+             $paragraph_id = $value['#paragraph']->id();
              $files = File::loadMultiple($id_document);
              $all_info = [];
              foreach ($files as $file) {
                 $media = Drupal\media\Entity\Media::load($file->id());
-                $media_extrait = getNodeFieldValue ($media, 'field_extrait');
+                // $media_extrait = getNodeFieldValue ($media, 'field_extrait');  //TODO ce champ n'existe plus à remplacer par RESUME
                 $fileId = $file->id();
+                if ($file) {
+                  $file_created_at = getNodeFieldValue ($file, 'created');
+                  $created_at = date('d m Y', $file_created_at);
+                }
+
                 $get_description_by_id = \Drupal::database()->query('select * from  media__field_media_document where entity_id = ' . $fileId)->fetch()->field_media_document_description;
                 $all_documents[$title_doc][] = [
                   'fileType' => $file->getMimeType(),
                   'fileurl' => $file->createFileUrl(),
                   'size' => $file->getSize(),
                   'fileId' => $file->id(),
-                  'extrait' => $media_extrait,
+                  // 'extrait' => $media_extrait,//TODO ce champ n'existe plus à remplacer par RESUME
                   'description' => $get_description_by_id,
+                  'created_at' => $created_at,
+                  'paragraph_id' => $paragraph_id,
                 ];
              }
               
@@ -217,21 +232,50 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             // $all_documents[$title_doc] = array_column($id_document, 'target_id');
           }
         } 
+
+        $get_first_element = reset($all_documents);
+        $first_title = array_keys($all_documents)[0];
+        $first_element_id = $get_first_element[0]['fileId'];
+        $media = Drupal\media\Entity\Media::load($first_element_id);
+        if ($media) {
+          $media_extrait = getNodeFieldValue ($media, 'field_resume');
+          $title = getNodeFieldValue ($media, 'name');
+        }
+        $file_type = $get_first_element[0]['fileType'] == 'application/pdf' ? 'pdf-3.png' : 'pdf-2.png';//todo mettre switch et ajouter tous les types de fichiers
+        $file_size = $get_first_element[0]['size'];
+        $date_doc = $get_first_element[0]['created_at'];
+        $date_doc = str_replace(' ', '.', $date_doc);
+        $html = ['#markup' => $media_extrait];
+        $html = \Drupal::service('renderer')->render($html);
+
+        unset($all_documents[$first_title][0]);
+
         $variables['content'] = [
           '#theme' => 'phenix_custom_block_custom_last_doc',
           '#cache' => ['max-age' => 0],
           '#content' => [
-            'data' => $all_documents
+            'data' => $all_documents,
+            'first_element' => $get_first_element,
+            'first_title' => $first_title,
+            'resume' => $media_extrait,
+            'file_type' => $file_type,
+            'file_size' => $file_size,
+            'date_doc' => $date_doc,
+            'first_element_id' => $first_element_id,
+            'first_element_title' => $title,
           ]
         ]; 
+
+
 
         
       }
     }
 
   }
-
+  
 }
+
 
 function getNodeFieldValue ($node, $field) {
   $value = '';

@@ -1,12 +1,71 @@
-<div class="max-w-xl mx-auto px-8 py-6 custom-my-account">
+
+<div class="medium-12">
+  <h2>{{ content.first_title }}</h2>
+    <div class="first-element-doc">
+      <img class="custom-icon-first-element" src="/files/assets/{{ content.file_type }}">
+      <div class="content-frist-doc">
+        <div class="detail-title-resume-first-doc">
+          <h2 class="title-first-doc">{{ content.first_element_title }}</h2>
+          {% if (content.resume) %}
+            <div class="extrait-resume">{{ content.resume|raw }}</div>
+          {% endif %}
+        </div>
+
+        <div class="detail-date-button-first-doc">
+          <span class="date-size-first-doc">{{ content.date_doc }} | {{ content.file_size }} Ko</span>
+          <a href="/media/{{ content.first_element_id }}/download" class="media-download-file-first"><img class="icon-first-doc" src="/files/assets/Icon-awesome-file-download.svg">Télécharger le document</a>
+        </div>
+
+      </div>
+  </div>
+
+  <div class="line-container-plus">
+    <hr class="hr-line-accoredon"> 
+    <a class="btn-see-other-doc"><i class="fa fa-angle-double-down" aria-hidden="true"></i> Voir les autres documents <i class="fa fa-angle-double-down" aria-hidden="true"></i></a>
+    <hr class="hr-line-accoredon">
+  </div>
+</div>
+
+<div class="max-w-xl mx-auto px-8 py-6 custom-my-account section-others-documents">
   {% set temp_title = '' %}
+  {% set i = 0 %}
   {% for title, elm in content.data %}
     {% if (temp_title != title)%}
-      <h2 class="main-title"> {{ title }} </h2>
+    <div class="title-and-chevron">
+      {% if (i>0) %}
+        <h2 class="main-title"> {{ title }} </h2>{# <i class="fas fa-chevron-up custom-chevron"></i> #}</div>
+      {% endif %}  
     {% endif %}
+    {% set id_para = '' %}
+    {% set tmp = '' %}
     {% for each_data in elm %}
-      <p class="description">{{ each_data['description'] }}</p>
+        {% set id_para = each_data['paragraph_id'] %}
+      <div class="section-document custom-section-doc">
+        <img class="custom-icon-document" src="/files/assets/pdf-3.png">
+        <div class="description-with-date-size">
+          <span class="description">{{ each_data['description'] }}</span>
+          <div class="date-and-size">
+            <span class="date-creation">{{ each_data['created_at'] }} | <span>
+            <span class="file-size">{{ each_data['size'] }} Ko<span>
+            {# <span class="file-size">{{ each_data['paragraph_id'] }}<span> #}
+          </div>
+        </div>
+      </div>
     {% endfor %}
+    {% if (tmp != id_para)%}
+      <div class="btn-download-files">
+        <a href="/media_download_all/paragraph/{{ id_para }}/field_document" class="media-download-all">Télécharger les fichiers <i class="fa fa-file-archive" aria-hidden="true"></i></a>
+      </div>
+    {% endif %} 
+    {% set tmp = id_para %}
     {% set temp_title = title %}
+    {% set i = i + 1 %}
   {% endfor %}
+
+  <div class="line-container-moins">
+    <hr class="hr-line-accoredon"> 
+    <a class="btn-dismiss-other-doc"><i class="fa fa-angle-double-up" aria-hidden="true"></i> Voir moins de document <i class="fa fa-angle-double-up" aria-hidden="true"></i></a>
+    <hr class="hr-line-accoredon">
+  </div>
+
 </div>
