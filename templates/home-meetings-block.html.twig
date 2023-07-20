@@ -1,0 +1,33 @@
+<h2 class="title-meetings-home"><i class="far fa-calendar"></i> Mes réunions</h2>
+<div class="my-meeting row">
+  <div class="all-meet-who-s-mine col-md-6">
+    
+     {% for key, elm in content.data %}
+     <a href="/civicrm-event/{{ elm.event_id }}" class="lists-meeting">
+        <h2 class="meeting-date">{{ elm.formated_start_date.day }} {{ elm.formated_start_date.month }} {{ elm.formated_start_date.year }}</h2>
+        
+        <div class="meeting-hour">
+          <span>Début : </span>
+          <p class="m-hour">{{ elm.formated_start_date.hour }}:{{ elm.formated_start_date.minute }}</p>
+        </div>
+   
+        <div class="meeting-object">
+         <span>Objet :</span>
+          <p class="meeting-title">{{ elm.event_title }}</p>
+        </div>
+
+        <div class="meeting-linked-group">
+          <hr>
+          {% for id, group in elm.linked_group %}
+            {% set parts = group|split('-') %}
+            {% set last_part = parts|last|trim %}
+            {% set output_string = parts|slice(0, -1)|join('-') ~ last_part %}
+            <span>{{ output_string }}</span>
+
+          {% endfor %} 
+        </div>
+      </a>
+    {% endfor %} 
+  </div>
+  <a href="/toutes-mes-reunions" class="btn-each-meetings"><i class="far fa-calendar"></i> Toutes mes réunions</a>
+</div>

@@ -1,0 +1,22 @@
+<h2 class="title-commission-home"><i class="fa fa-users"></i> Mes commissions</h2>
+<div class="my-group row">
+  <div class="my-group-image col-md-6">
+    <img src="/files/assets/social_formation.jpg" class="my-group-img"/>
+  </div>
+  <div class="all-group-who-s-mine  col-md-6">
+    
+     {% for key, elm in content.data %}
+      <a href="#" class="content-group">  
+          <div class="icon-each-group" >   
+            <i class="fas fa-user-friends"></i>
+          </div> 
+          <div class="each-group">
+            <h3>{{ elm.title }}</h3>
+            <p>Membres : {{ elm.total ~ ' ' ~ elm.total_multiple }} </p>
+          </div>          
+      </a>
+    {% endfor %} 
+
+    <a href="/tous-mes-groupes" class="btn-each-group">Toutes mes commissions</a>
+  </div>
+</div>
