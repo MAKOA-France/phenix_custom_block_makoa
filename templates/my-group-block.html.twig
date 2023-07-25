@@ -16,6 +16,11 @@
           </div>          
       </a>
     {% endfor %} 
+    {% if not content.data %}
+      <div class="not-group-member">
+        <p>Vous n'êtes pas membre d'aucun groupe pour l'instant</p>
+      </div>
+    {% endif %}
 
     <a href="/tous-mes-groupes" class="btn-each-group">Toutes mes commissions</a>
   </div>

@@ -29,5 +29,10 @@
       </a>
     {% endfor %} 
   </div>
+    {% if not content.data %}
+      <div class="no-meeting-planned">
+        <p>il n'y a pas de réunion à venir</p>
+      </div>
+    {% endif %}
   <a href="/toutes-mes-reunions" class="btn-each-meetings"><i class="far fa-calendar"></i> Toutes mes réunions</a>
 </div>
