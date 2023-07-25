@@ -318,3 +318,20 @@ function getNodeFieldValue ($node, $field) {
   }
   return $value;
 }
+
+
+// Implements hook_form_alter().
+function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  
+  if ($form['#form_id'] == 'user_login_form') {
+    $form['pass']['#title_display'] = 'invisible';
+    $form['pass']['#placeholder'] = t('Mot de passe');
+    $form['name']['#title_display'] = 'invisible';
+    $form['name']['#placeholder'] = 'Identifiant';
+    $form['name']['#attributes']['placeholder'] = 'Identifiant';
+  }
+}
+
+/* function phenix_custom_block_custom_validate_function(&$form, \Drupal\Core\Form\FormStateInterface $form_state){
+  dump($form_state);die; 
+} */

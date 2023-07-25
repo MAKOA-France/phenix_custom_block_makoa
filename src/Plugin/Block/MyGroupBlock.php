@@ -44,6 +44,7 @@ class MyGroupBlock  extends BlockBase  {
       $total_membre = $total_membre[0]['count'];
       $data[] = [
         'title' => $res->civicrm_group_civicrm_group_contact_title,
+        'group_id' => $res->civicrm_group_civicrm_group_contact_id,
         'total' => $total_membre,
         'total_multiple' => $total_membre > 1 ? 'Personnes' : 'Personne',
       ];
