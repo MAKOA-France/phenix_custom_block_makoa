@@ -83,7 +83,7 @@ class CustomBlockServices {
       INNER JOIN civicrm_event AS Event ON civicrm_contact.id = Event.created_id
       WHERE
         (DATE_FORMAT((Event.start_date + INTERVAL 7200 SECOND), '%Y-%m-%dT%H:%i:%s') >= DATE_FORMAT(('2023-07-18T22:00:00' + INTERVAL 7200 SECOND), '%Y-%m-%dT%H:%i:%s'))
-        AND (Event.is_active = '1') limit 3
+        AND (Event.is_active = '1') order by start_date limit 3
       ";
       $results =  \Drupal::database()->query($query)->fetchAll();
 

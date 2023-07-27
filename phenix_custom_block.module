@@ -87,6 +87,14 @@ function phenix_custom_block_form_display(array &$form, FormStateInterface $form
     return $output;
 }
 
+/**
+ * Implements hook_preprocess_page().
+ */
+function phenix_custom_block_preprocess_page(&$variables)
+{
+  $variables['#attached']['library'][] = 'phenix_custom_block/phenix_custom_block';
+}
+
 
 
 /**
@@ -244,7 +252,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                 $all_documents[$title_doc][] = [
                   'fileType' => $file->getMimeType(),
                   'fileurl' => $file->createFileUrl(),
-                  'size' => $file->getSize(),
+                  'size' => $file->getSize() / 1000,
                   'fileId' => $file->id(),
                   // 'extrait' => $media_extrait,//TODO ce champ n'existe plus à remplacer par RESUME
                   'description' => $get_description_by_id,
@@ -274,6 +282,9 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
         $html = \Drupal::service('renderer')->render($html);
 
         unset($all_documents[$first_title][0]);
+        $counted_doc = count(reset($all_documents));
+        $display_see_other_doc = ($counted_doc > 1);
+        $file_size_kiloOctets = $file_size / 1000;
 
         $variables['content'] = [
           '#theme' => 'phenix_custom_block_custom_last_doc',
@@ -284,10 +295,11 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             'first_title' => $first_title,
             'resume' => $media_extrait,
             'file_type' => $file_type,
-            'file_size' => $file_size,
+            'file_size' => $file_size_kiloOctets,
             'date_doc' => $date_doc,
             'first_element_id' => $first_element_id,
             'first_element_title' => $title,
+            'display_see_other_doc' => $display_see_other_doc,
           ]
         ]; 
 
@@ -322,7 +334,7 @@ function getNodeFieldValue ($node, $field) {
 
 // Implements hook_form_alter().
 function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
-  
+  //Page d'authentification
   if ($form['#form_id'] == 'user_login_form') {
     $form['pass']['#title_display'] = 'invisible';
     $form['pass']['#placeholder'] = t('Mot de passe');
@@ -332,6 +344,3 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
   }
 }
 
-/* function phenix_custom_block_custom_validate_function(&$form, \Drupal\Core\Form\FormStateInterface $form_state){
-  dump($form_state);die; 
-} */

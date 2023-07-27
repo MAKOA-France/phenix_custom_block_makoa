@@ -1,11 +1,17 @@
-
+{# '#theme' => 'phenix_custom_block_custom_last_doc' est dans le fichier .module #}
 <div class="medium-12">
-  <h2>{{ content.first_title }}</h2>
+  <h2 class="main-title-last-doc">{{ content.first_title }}</h2>
     <div class="first-element-doc">
-      <img class="custom-icon-first-element" src="/files/assets/{{ content.file_type }}">
+      <a href="/media/{{ content.first_element_id }}/download" class="custom-icon-first-element">
+        <img src="/files/assets/{{ content.file_type }}">
+      </a>  
       <div class="content-frist-doc">
         <div class="detail-title-resume-first-doc">
-          <h2 class="title-first-doc">{{ content.first_element_title }}</h2>
+          <h2 class="title-first-doc">
+            <a href="/media/{{ content.first_element_id }}/download">
+              {{ content.first_element_title }}
+            </a>
+          </h2>
           {% if (content.resume) %}
             <div class="extrait-resume">{{ content.resume|raw }}</div>
           {% endif %}
@@ -13,17 +19,19 @@
 
         <div class="detail-date-button-first-doc">
           <span class="date-size-first-doc">{{ content.date_doc }} | {{ content.file_size }} Ko</span>
-          <a href="/media/{{ content.first_element_id }}/download" class="media-download-file-first"><img class="icon-first-doc" src="/files/assets/Icon-awesome-file-download.svg">Télécharger le document</a>
+          <a href="/media/{{ content.first_element_id }}/download" class="media-download-file-first"><i class='icon-custom-download-file'></i>Télécharger le document</a>
         </div>
 
       </div>
   </div>
 
-  <div class="line-container-plus">
-    <hr class="hr-line-accoredon"> 
-    <a class="btn-see-other-doc"><i class="fa fa-angle-double-down" aria-hidden="true"></i> Voir les autres documents <i class="fa fa-angle-double-down" aria-hidden="true"></i></a>
-    <hr class="hr-line-accoredon">
-  </div>
+  {% if content.display_see_other_doc %}
+    <div class="line-container-plus">
+      <hr class="hr-line-accoredon"> 
+      <a class="btn-see-other-doc"><i class="fa fa-angle-double-down" aria-hidden="true"></i> Voir les autres documents <i class="fa fa-angle-double-down" aria-hidden="true"></i></a>
+      <hr class="hr-line-accoredon">
+    </div>
+  {% endif %}  
 </div>
 
 <div class="max-w-xl mx-auto px-8 py-6 custom-my-account section-others-documents">
@@ -33,7 +41,7 @@
     {% if (temp_title != title)%}
     <div class="title-and-chevron">
       {% if (i>0) %}
-        <h2 class="main-title"> {{ title }} </h2>{# <i class="fas fa-chevron-up custom-chevron"></i> #}</div>
+        <h2 class="main-title"> {{ title }} </h2></div>
       {% endif %}  
     {% endif %}
     {% set id_para = '' %}
