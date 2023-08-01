@@ -18,7 +18,7 @@
         </div>
 
         <div class="detail-date-button-first-doc">
-          <span class="date-size-first-doc">{{ content.date_doc }} | {{ content.file_size }} Ko</span>
+          <span class="date-size-first-doc chek">{{ content.date_doc }}  | {{ content.file_size }} Ko </span>
           <a href="/media/{{ content.first_element_id }}/download" class="media-download-file-first"><i class='icon-custom-download-file'></i>Télécharger le document</a>
         </div>
 
@@ -41,6 +41,7 @@
     {% if (temp_title != title)%}
     <div class="title-and-chevron">
       {% if (i>0) %}
+        <hr class="hr-other-doc">
         <h2 class="main-title"> {{ title }} </h2></div>
       {% endif %}  
     {% endif %}
@@ -53,8 +54,8 @@
         <div class="description-with-date-size">
           <span class="description">{{ each_data['description'] }}</span>
           <div class="date-and-size">
-            <span class="date-creation">{{ each_data['created_at'] }} | <span>
-            <span class="file-size">{{ each_data['size'] }} Ko<span>
+            <span class="date-creation">{{ each_data['created_at'] }} {# | #} <span>
+            {# <span class="file-size">{{ each_data['size'] }} Ko<span> #}
             {# <span class="file-size">{{ each_data['paragraph_id'] }}<span> #}
           </div>
         </div>

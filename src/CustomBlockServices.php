@@ -73,7 +73,7 @@ class CustomBlockServices {
      * Recupère tous les reunions à venir
      * 
      */
-    public function getAllMeetings () {
+    public function getAllMeetings ($cid) {
         $query = "SELECT
         Event.start_date AS event_start_date,
         civicrm_contact.id AS id,
@@ -83,13 +83,21 @@ class CustomBlockServices {
       INNER JOIN civicrm_event AS Event ON civicrm_contact.id = Event.created_id
       WHERE
         (DATE_FORMAT((Event.start_date + INTERVAL 7200 SECOND), '%Y-%m-%dT%H:%i:%s') >= DATE_FORMAT(('2023-07-18T22:00:00' + INTERVAL 7200 SECOND), '%Y-%m-%dT%H:%i:%s'))
-        AND (Event.is_active = '1') order by start_date limit 3
+        AND (Event.is_active = '1')  AND civicrm_contact.id = $cid  order by start_date limit 3
       ";
       $results =  \Drupal::database()->query($query)->fetchAll();
 
       return $results;
     }
 
+    
+  public function getContactIdByEmail ($email) {
+    $db = \Drupal::database();
+    if ($email) {
+      return $db->query("select contact_id from civicrm_email where email = '" . $email . "'")->fetch()->contact_id;
+    }
+    return false;
+  }
     /**
      * Permet de récupérer le jour/mois/année heure:minute
      * @return array()

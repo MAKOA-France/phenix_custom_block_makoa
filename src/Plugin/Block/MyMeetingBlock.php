@@ -39,8 +39,11 @@ class MyMeetingBlock  extends BlockBase  {
      \Drupal::service('civicrm')->initialize();
 
 
-
-    $all_meetings = $service_block->getAllMeetings();
+     $account = \Drupal\user\Entity\User::load($current_user->id());
+     // Get the user's email address.
+     $email = $account->getEmail();
+     $cid = $service_block->getContactIdByEmail($email);
+    $all_meetings = $service_block->getAllMeetings($cid);
     foreach ($all_meetings as $meet) {
       $formated_date = $service_block->formatDateWithMonthInLetterAndHours ($meet->event_start_date);
       $meet->formated_start_date = $formated_date;

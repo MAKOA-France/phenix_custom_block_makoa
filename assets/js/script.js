@@ -17,7 +17,34 @@
         $('[name="civicrm_1_activity_1_cg30_custom_166"]').val(localStorage.getItem("category"))
 
         setDefaultQuestion ();
-        
+
+        //Ajout document -> tags -> simulation click sur le dropdown ul li
+        $('.fancytree-checkbox, .fancytree-title').on('click', function () {
+            let curr_val = $(this).closest('li').attr('data-current-id');
+
+            // Get the checkbox element using its ID
+            var checkbox = $('[name="field_tags[' + curr_val + ']"]');
+
+            // Toggle the checked state of the checkbox using prop()
+            checkbox.prop('checked', !checkbox.prop('checked'));
+        });
+
+        $('body').on('click', 'ul.custom-tag-dropdown li', function (event) {
+        event.stopPropagation();
+        var $submenu = $(this).find('> ul');
+            if ($submenu.length > 0) {
+                // Masquer tous les sous-menus sauf celui sur lequel vous avez cliqué
+                $submenu.slideToggle();
+                $submenu.find('ul').slideUp();
+                // Ajouter ou supprimer la classe 'fancytree-expanded' au span 'fancytree-expander'
+                $(this).find('.fancytree-expander').toggleClass('fancytree-expanded');
+                $(this).find('.fancytree-checkbox').toggleClass('checked');
+    
+            }
+        });
+        Add = $('#edit-field-media-document-0--description').text().split('.').join(' | ');
+        $('#edit-field-media-document-0--description').html(formattedText);
+
     });    
 })(jQuery);
 

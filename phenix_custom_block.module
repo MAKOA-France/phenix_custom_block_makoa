@@ -119,7 +119,6 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
 
 			$title = $field->getValue($row);
 			$start_date = $row->civicrm_event_civicrm_participant_start_date;
-     // dump($row);
 			// Create a DateTime object from the date string
 			 $dateTime = new DateTime($start_date);
 			
@@ -189,7 +188,6 @@ if ($currentPath == '/node/96') {
   
   foreach ($menu_tree as $item) {
     if (isset($item['user.page'])) {
-      // dump($item);
 
     }
     // $menu_items[] = $item->link->getTitle();
@@ -233,8 +231,28 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
           if (is_numeric($index)) {
             $title_doc = $value['#paragraph'] ? $value['#paragraph']->get('field_titre')->getValue()[0]['value'] : '';  //maybe need a condition if existe
             $id_document = $value['#paragraph'] ? $value['#paragraph']->get('field_document')->getValue() : '';  //maybe need a condition if existe
+
+
+            if (!$id_document) {
+
+              $taxonomyTerm = \Drupal::routeMatch()->getParameter('taxonomy_term');
+              $curr_term_id = $taxonomyTerm->id();
+              $taxonomy_term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+
+              // Load your term.
+              // $term_id = 123; // Replace with the actual term ID.
+              $term = $taxonomy_term_storage->load($curr_term_id);
+
+              // Now you can get the children using $this->taxonomyTermStorage->getChildren($term).
+              $child_terms = $taxonomy_term_storage->getChildren($term);
+
+            }
+
+
+
+            //s'il n'y a pas de documents on redirige vers le 1er enfant 
             $id_document = array_column($id_document, 'target_id');
-            if(!$id_document) continue;
+           if(!$id_document) continue;
             //load file 
              $paragraph_id = $value['#paragraph']->id();
              $files = File::loadMultiple($id_document);
@@ -249,10 +267,12 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                 }
 
                 $get_description_by_id = \Drupal::database()->query('select * from  media__field_media_document where entity_id = ' . $fileId)->fetch()->field_media_document_description;
+                $size_of_file = filesize('/var/aegir/platforms/civicrm-d9/' . $file->createFileUrl());
+                
                 $all_documents[$title_doc][] = [
                   'fileType' => $file->getMimeType(),
                   'fileurl' => $file->createFileUrl(),
-                  'size' => $file->getSize() / 1000,
+                  'size' => round($size_of_file / 1024, 2),
                   'fileId' => $file->id(),
                   // 'extrait' => $media_extrait,//TODO ce champ n'existe plus à remplacer par RESUME
                   'description' => $get_description_by_id,
@@ -276,16 +296,20 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
         }
         $file_type = $get_first_element[0]['fileType'] == 'application/pdf' ? 'pdf-3.png' : 'pdf-2.png';//todo mettre switch et ajouter tous les types de fichiers
         $file_size = $get_first_element[0]['size'];
+
+        // // Get the file size in bytes
+        $file_size_bytes = filesize('/var/aegir/platforms/civicrm-d9/' . $get_first_element[0]['fileurl']);
+
+        // // Convert the size to a human-readable format
+         $file_size_readable = round($file_size_bytes / 1024, 2);
         $date_doc = $get_first_element[0]['created_at'];
         $date_doc = str_replace(' ', '.', $date_doc);
         $html = ['#markup' => $media_extrait];
         $html = \Drupal::service('renderer')->render($html);
-
         unset($all_documents[$first_title][0]);
         $counted_doc = count(reset($all_documents));
         $display_see_other_doc = ($counted_doc > 1);
-        $file_size_kiloOctets = $file_size / 1000;
-
+        
         $variables['content'] = [
           '#theme' => 'phenix_custom_block_custom_last_doc',
           '#cache' => ['max-age' => 0],
@@ -295,7 +319,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             'first_title' => $first_title,
             'resume' => $media_extrait,
             'file_type' => $file_type,
-            'file_size' => $file_size_kiloOctets,
+            'file_size' => $file_size_readable/* $file_size */,
             'date_doc' => $date_doc,
             'first_element_id' => $first_element_id,
             'first_element_title' => $title,
@@ -311,6 +335,22 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
 
   }
   
+}
+
+// Function to format bytes into a human-readable size (KB, MB, GB, etc.)
+function formatBytes($bytes, $precision = 2) {
+  $units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+  $bytes = max($bytes, 0);
+  $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+  $pow = min($pow, count($units) - 1);
+
+  // Uncomment the line below if you want to display the size in whole numbers
+  // $precision = ($pow == 0) ? 0 : $precision;
+
+  $bytes /= (1 << (10 * $pow));
+
+  return round($bytes, $precision) . ' ' . $units[$pow];
 }
 
 
@@ -342,5 +382,135 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
     $form['name']['#placeholder'] = 'Identifiant';
     $form['name']['#attributes']['placeholder'] = 'Identifiant';
   }
+  
+  if (in_array($form['#id'], ['media-document-add-form', 'media-document-edit-form'])) {
+    $form['status']['#prefix'] = '<div class="wrapper-status-and-author">';
+    $form['author']['#suffix'] = '</div>';
+    $form['field_type_de_document']['#prefix'] = '<div class="wrapper-doc-type">';
+    $form['field_source']['#suffix'] = '</div>';
+    $form['field_source']['widget']['#description'] = '';
+    $form['field_filieres']['widget'][0]['value']['#group'] = 'first';
+
+
+    /** Debut config filière */
+    $menu_tree_service = \Drupal::service('menu.link_tree');
+		$menu_parameters = new \Drupal\Core\Menu\MenuTreeParameters();
+		$menu_parameters->setMaxDepth(1); // Profondeur du menu à afficher
+		$menu_name = 'guide'; // Nom machine du menu à afficher
+		$menuLoaded = $menu_tree_service->load($menu_name, $menu_parameters);
+
+		foreach($menuLoaded as $key => $eachMenu) {
+		  //Skip for menu 'Condition general and disabled menu
+		  if (!$eachMenu->link->isEnabled() || ($eachMenu->link->getPluginId() == 'menu_link_content:f2ea2bf5-f176-4a63-83ba-4904c0312619')) {
+			unset($menuLoaded[$key]);
+		  }
+		}
+
+    \Drupal::service('civicrm')->initialize();
+		$optionValues = \Civi\Api4\OptionValue::get(FALSE)
+			->addSelect('id', 'label')
+			->addWhere('option_group_id', '=', 163)
+			->execute();
+
+		$option = [];
+		foreach ($optionValues as $key => $filiere) {
+		  $option[$filiere['id']] = $filiere['label'];
+		}
+		asort($option);
+		$form['filiere'] = [
+      '#type' => 'container',
+      'widget' => [
+        '#type' => 'checkboxes',
+        '#options' => $option,
+        '#title' => 'Filières',
+        '#attributes' => ['class' => ['all-menu-checkboxes']]
+      ],
+      '#weight' => 6,
+      '#group' => 'first',
+	  ];
+	  $form['filieres']['#group'] = 'first';
+		$form['field_menu']['#attributes']['class'][] = 'hide hidden';  
+    /** fin config filiere */
+
+
+    $form['author']['#type'] = 'container';
+    $form['author']['#group'] = 'first';
+    $form['revision']['#group'] = 'second';
+    $form['revision_information']['#group'] = 'second';
+    $form['field_filieres']['widget']['#group'] = 'first';
+    $form['actions']['submit']['#group'] = 'first';
+    $form['revision_information']['#attributes']['class'][] = 'hidden';
+    $form['revision_log_message']['#attributes']['class'][] = 'hidden';
+    $form['field_extrait']['#attributes']['class'][] = 'hidden';
+
+    //get option form 
+    $all_option = $form['field_tags']['widget']['#options'];
+
+
+    // $current_description = $form['field_media_document']['widget'][0]['#description'];
+    // // Use regular expression to match the desired part and truncate the text
+    // if (preg_match('/^.*Limite à 80 Mo\./', $current_description, $matches)) {
+    //   $truncatedText = $matches[0];
+    //   // Output the truncated text
+      
+    // }
+    
+    $form['field_media_document']['widget'][0]['#description'] = '1 seul fichier.Limité à 80 Mo';
+    $form['field_groupes']['#prefix'] = convertToNestedULWithCheckboxes($all_option);
+    
+    $curr_description = $form['field_media_document']['widget'][0]['#description'];
+    $curr_description = str_replace('<br />', '', $curr_description);
+    $form['field_media_document']['widget'][0]['#description'] = $curr_description;
+    
+    $all_files_type_validator = $form['field_media_document']['widget'][0]['#upload_validators']['file_validate_extensions'][0];
+    $words = str_word_count($all_files_type_validator, 1);
+    // Take only the first 30 words
+    $truncatedText = implode(' ', array_slice($words, 0, 7)) . '...';
+    $form['field_groupes']['widget']['#description'] = '<a class="delete-all">Supprimer tout</a>';
+    // $form['field_media_document']['#suffix'] = '<div class="custom-placeholder-overlay">' . $truncatedText . '</div>';
+  }
 }
 
+
+/**
+ * Convert a flat array into a nested array with UL/LI structure based on levels.
+ *
+ * @param array $items
+ *   The flat array of items with levels indicated by '-'.
+ * @return string
+ *   The nested UL/LI structure.
+ */
+function convertToNestedULWithCheckboxes($items) {
+  $result = '<div class="all-tag-dropdown"><p class="p-tag-arborescence"><strong>Tags et arborescence</strong></p><ul class="custom-tag-dropdown">';
+  $indentations = [0];
+
+  foreach ($items as $id => $item) {
+    $indentation = 0;
+    while (substr($item, 0, 1) === '-') {
+      $indentation++;
+      $item = substr($item, 1);
+    }
+
+    while ($indentation < end($indentations)) {
+      $result .= "</li></ul>";
+      array_pop($indentations);
+    }
+
+    if ($indentation > end($indentations)) {
+      $result .= "<ul>";
+      array_push($indentations, $indentation);
+    } else {
+      $result .= "</li>";
+    }
+    $itemText = trim(str_replace('-', '', $item));
+    $result .= '<li data-current-id="' . $id . '">
+    <span class="fancytree-node fancytree-expanded fancytree-has-children fancytree-exp-e fancytree-ico-e">
+    <span class="fancytree-expander"></span>
+    <span class="fancytree-checkbox"></span>
+      <span class="fancytree-title">' . $itemText . '</span></span>';
+  }
+
+  $result .= str_repeat("</li></ul>", count($indentations) - 1) . "</li></ul></div>";
+
+  return $result;
+}
