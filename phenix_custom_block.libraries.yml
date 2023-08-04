@@ -3,8 +3,10 @@ phenix_custom_block:
   css:
     component:
       assets/css/style.css: {}
+      assets/css/all.min.css: {}
     theme:
       https://use.typekit.net/kty8aan.css: {}  
       https://cdn.jsdelivr.net/npm/jquery.fancytree@2.37.0/dist/skin-lion/ui.fancytree.min.css: {}
+      https://use.fontawesome.com/releases/v5.15.3/css/all.css: {}
   js:
     assets/js/script.js: {}

@@ -1,0 +1,25 @@
+<div class="txt-img-all-doc">
+    {% for each_data in content.data %}
+        {% set id_para = each_data['paragraph_id'] %}
+        <div class="section-document custom-section-doc">
+            <a href="/media/{{ each_data['media_id'] }}/download" class="custom-icon-document each-img-link">
+                <img class="" src="/files/assets/pdf-3.png">
+            </a>
+            <div class="description-with-date-size">
+                <a href="/media/{{ each_data['media_id'] }}/download" class="each-img-link">
+                    <span class="description">{{ each_data['title'] }}</span>
+                </a>
+                <div class="date-and-size">
+                    <span class="date-creation">{{ each_data['created_at'] }} {# | #} <span>
+                    {% if each_data['size'] %}
+                        {# <span class="file-size">{{ each_data['size'] }} Ko<span>  #}
+                    {% endif %}
+
+                    {% if each_data['type_de_document'] %}
+                    |   <span class="type-doc">{{ each_data['type_de_document'] }}<span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>

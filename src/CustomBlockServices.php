@@ -3,14 +3,44 @@
 
 namespace Drupal\phenix_custom_block;
 
+use Drupal\media\Entity\Media;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\file\Entity\File;
+use Drupal\Core\Datetime\DrupalDateTime;
 
 /**
  * Class PubliciteService
  * @package Drupal\phenix_custom_block\Services
  */
 class CustomBlockServices {
+    /**
+   * The entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
 
+  /**
+   * The config factory service.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * Constructor.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager service.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The config factory service.
+   */
+  public function __construct(EntityTypeManagerInterface $entityTypeManager, ConfigFactoryInterface $configFactory) {
+    $this->entityTypeManager = $entityTypeManager;
+    $this->configFactory = $configFactory;
+  }
     /**
      * Recupère la total de membre dans un groupe
      */
@@ -28,7 +58,7 @@ class CustomBlockServices {
     /**
      * Permet de recuperer tous mes groupes
      */
-    public function getAllMyGroup () {
+    public function getAllMyGroup ($cid) {
         $query = "SELECT
             civicrm_group_civicrm_group_contact.id AS civicrm_group_civicrm_group_contact_id,
             civicrm_group_civicrm_group_contact.title AS civicrm_group_civicrm_group_contact_title,
@@ -51,6 +81,7 @@ class CustomBlockServices {
         WHERE
             (civicrm_group_civicrm_group_contact.group_type LIKE '%3%')
             AND (civicrm_group_civicrm_group_contact.is_active = '1')
+            AND civicrm_contact.id = $cid
         GROUP BY
             civicrm_group_civicrm_group_contact_id,
             civicrm_group_civicrm_group_contact_title,
@@ -154,4 +185,213 @@ class CustomBlockServices {
 
         return $data_groups;
     }
+    
+    public function getNodeFieldValue ($node, $field) {
+        $value = '';
+        $getValue = $node->get($field)->getValue();
+        if (!empty($getValue)) {
+          if (isset($getValue[0]['target_id'])) { //For entity reference (img / taxonomy ...)
+            $value = $getValue[0]['target_id'];
+          }elseif (isset($getValue[0]['value']))  { //For simple text / date
+            $value = $getValue[0]['value'];
+          }else if(isset($getValue[0]['uri'])) {
+            $value = $getValue[0]['uri'];
+          }else { //other type of field
+            $value = $getValue['x-default'];
+          }
+        }
+        return $value;
+      }
+      
+      public function getTypeDocument ($media) {
+        if (!$media) {
+          return null;
+        }
+        $type_doc = '';
+        $type_doc_value = $this->getNodeFieldValue($media, 'field_type_de_document');
+        if ($type_doc_value != 18) {
+          $type_doc = $media->get('field_type_de_document')->getFieldDefinition()->getItemDefinition()->getSettings()['allowed_values'][$type_doc_value];
+        }
+        return $type_doc;
+      }
+
+      /**
+       * Gabarit text + image
+       */
+      public function allDataTxtImg (&$var) {
+        $data = '';
+        $storage = $this->entityTypeManager->getStorage('paragraph');
+        $term = $var['elements']['#taxonomy_term'];
+        $data .= $this->getNodeFieldValue($term, 'description');
+        $field_dossier = $term->get('field_dossier')->getValue();
+        if ($field_dossier) {
+          $all_dossier = array_column($field_dossier, 'target_id');
+          $paragraphs = $storage->loadMultiple($all_dossier);
+          $is_odd = 'odd';
+          $counter = 0;
+          foreach ($paragraphs as $paragraph) {
+            
+            if ($paragraph->hasField('field_video')) {//Si de type video
+              $this->getVideoHtml ($paragraph, $data);
+            }elseif ($paragraph->hasField('field_image_media')) {//Si de type image
+              $this->getImageHtml ($paragraph, $data);              
+            }elseif ($paragraph->hasField('field_document')) {//Si de type document
+              $this->getDocumentHtml($paragraph, $data, $var);
+            }elseif ($paragraph->hasField('field_texte_formate')) {//Si de type document
+              $this->getFormattedTexttHtml($paragraph, $data);
+            }elseif ($paragraph->hasField('field_lien')) {//Si de type document
+              $this->getLinkHtml($paragraph, $data, $counter);
+              
+              // dump($paragraph);
+            }
+           
+          }
+        }
+      
+        return $data;
+      }
+
+
+  /**
+   * Load a video by its ID.
+   *
+   * @param int $video_id
+   *   The ID of the video to load.
+   *
+   * @return \Drupal\media\Entity\Media|null
+   *   The loaded Media entity representing the video or NULL if not found.
+   */
+  public function load_video_by_id($video_id) {
+    // Load a single video by its ID.
+    return Media::load($video_id);
+  }
+
+  /**
+   * Permet de recuperer l'html qui doit être rendu pour les textes formattés
+   */
+  public function getFormattedTexttHtml ($paragraph, &$data) {
+    $formattedText = $paragraph->get('field_texte_formate')->getValue();
+    $contain_a_sibe_by_site_image_and_text = strpos($formattedText[0]['value'], '<td><img') !== false ? 'img-txt-side-by-side' : '';
+    $data .= '<div class="formatted-text ' . $contain_a_sibe_by_site_image_and_text . '">' . $formattedText[0]['value'] . '</div>';
+    return $data;
+  }
+
+  /**
+   * Permet de recuperer l'html qui doit être rendu pour les liste de liens
+   */
+  public function getLinkHtml ($paragraph, &$data, $counter) {
+    $isEven = ($counter % 2 === 0);
+    $class = $isEven ? 'even' : 'odd';
+    $data .= '<div class="link-custom " ' . $class . '>' . $this->getNodeFieldValue($paragraph, 'field_lien') . '</div><br>';
+    $counter++;
+    
+  }
+
+  /**
+   * Permet de recuperer l'html qui doit être rendu pour les documents
+   */
+  public function getDocumentHtml ($paragraph, &$data, &$var) {
+    $documents = $paragraph->get('field_document')->getValue();
+    $documents_ids = array_column($documents, 'target_id');
+    $all_doc_info = [];
+    foreach ($documents_ids as $document_id) {
+      $media = Media::load($document_id);
+      if ($media) {
+        $title = $this->getNodeFieldValue ($media, 'name') ?: $this->getNodeFieldValue($media, 'field_titre_public');
+        $file_id = $this->getNodeFieldValue($media, 'field_media_document');
+        $all_doc_info[$file_id]['title'] = $title;
+        $all_doc_info[$file_id]['media_id'] = $media->id();
+        $file_info = File::load($file_id);
+        
+        $file_type = $this->getNodeFieldValue($file_info, 'filemime');
+        $file_type = $file_type == 'application/pdf' ? 'pdf-3.png' : 'pdf-2.png';//todo mettre switch et ajouter tous les types de fichiers
+        $all_doc_info[$file_id]['file_type'] = $file_type;
+        
+        $type_de_document = $this->getTypeDocument ($media);
+        $all_doc_info[$file_id]['type_de_document'] = $type_de_document;
+        
+         // // Get the file size in bytes
+        $file_url = $this->getNodeFieldValue($file_info, 'uri');
+        // TODO "public://documents/2628.pdf"
+        $file_size_bytes = filesize('/var/aegir/platforms/civicrm-d9/' . $file_url);
+        
+        // // Convert the size to a human-readable format
+        $file_size_readable = round($file_size_bytes / 1024, 2); 
+        // dump($file_size_readable)
+        $date_doc_timestamp = $this->getNodeFieldValue($file_info, 'created');
+        $date_doc = $this->convertTimesptamToDate($date_doc_timestamp);
+        $all_doc_info[$file_id]['created_at'] = $date_doc;
+      }
+    }
+
+    $var['last_doc'] = [
+      '#theme' => 'phenix_custom_block_last_doc_txt_img',
+      '#cache' => ['max-age' => 0],
+      '#content' => [
+        'data' => $all_doc_info
+      ]
+    ]; 
+    $data .= render($var['last_doc']);
+    return $data;
+  }
+
+ /**
+  * Convert timestamp to date (d.m.Y)
+  * @param int $timestamp
+  *   The Unix timestamp.
+  *
+  * @return string
+  *   The formatted date string.
+  */
+  private function convertTimesptamToDate($timestamp) {
+    $format = 'd.m.y';
+    // Create a new DrupalDateTime object using the timestamp.
+    $date = DrupalDateTime::createFromTimestamp($timestamp);
+
+    // Format the date using the desired format.
+    $formatted_date = $date->format($format);
+    return $formatted_date;
+  }
+
+
+  /**
+   * Retourne le renderable html d'image
+   */
+  public function getImageHtml ($paragraph, &$data) {
+    $image_media = $this->getNodeFieldValue($paragraph, 'field_image_media');
+    $media_entity = Media::load($image_media);
+
+    $image_field = $media_entity->get('field_media_image');
+
+    // Get the first item from the field (assuming it's a single-value field).
+    $image_item = $image_field->first();
+
+    // Render the image using Drupal's render system.
+    $image_render_array = $image_item->view([
+      'type' => 'image', // Replace with the desired image style, if any.
+      'settings' => [
+        // 'image_style' => 'thumbnail', // Replace with the desired image style, if any.
+      ],
+    ]);
+    
+    $data  .= '<div class="img-html-bloc">' . render($image_render_array)->__toString() . '</div>';
+    return $data;
+  }
+
+  /**
+   * return $data contenant l'html de la video
+   */
+  private function getVideoHtml ($paragraph, &$data) {
+    $video_id = $this->getNodeFieldValue($paragraph, 'field_video');
+    $video = $this->load_video_by_id($video_id);
+
+    // Use the 'full' view mode to render the media entity.
+    $view_builder = $this->entityTypeManager->getViewBuilder('media');
+    $video_render_array = $view_builder->view($video, 'full');
+    $data .= '<div class="text-img-video"> ' . render($video_render_array)->__toString() . '</div>';
+    return $data;
+  }
+
+ 
+
 }

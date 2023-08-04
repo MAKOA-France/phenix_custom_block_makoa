@@ -18,7 +18,12 @@
         </div>
 
         <div class="detail-date-button-first-doc">
-          <span class="date-size-first-doc chek">{{ content.date_doc }}  | {{ content.file_size }} Ko </span>
+          <span class="date-size-first-doc ">{{ content.date_doc }}  | {{ content.file_size }} Ko 
+          {% if content.first_type_de_document %}
+            | {{ content.first_type_de_document }} 
+          {% endif %}
+          </span>
+          
           <a href="/media/{{ content.first_element_id }}/download" class="media-download-file-first"><i class='icon-custom-download-file'></i>Télécharger le document</a>
         </div>
 
@@ -50,13 +55,22 @@
     {% for each_data in elm %}
         {% set id_para = each_data['paragraph_id'] %}
       <div class="section-document custom-section-doc">
-        <img class="custom-icon-document" src="/files/assets/pdf-3.png">
+        <a href="/media/{{ each_data['fileId'] }}/download" class="custom-icon-document each-img-link">
+          <img class="" src="/files/assets/pdf-3.png">
+        </a>
         <div class="description-with-date-size">
-          <span class="description">{{ each_data['description'] }}</span>
+          <a href="/media/{{ each_data['fileId'] }}/download" class="each-img-link">
+            <span class="description">{{ each_data['description'] }}</span>
+          </a>
           <div class="date-and-size">
             <span class="date-creation">{{ each_data['created_at'] }} {# | #} <span>
-            {# <span class="file-size">{{ each_data['size'] }} Ko<span> #}
-            {# <span class="file-size">{{ each_data['paragraph_id'] }}<span> #}
+              {% if each_data['size'] %}
+                <span class="file-size">{{ each_data['size'] }} Ko<span> 
+              {% endif %}
+
+              {% if each_data['type_document'] %}
+                | <span class="type-doc">{{ each_data['type_document'] }}<span>
+              {% endif %}
           </div>
         </div>
       </div>

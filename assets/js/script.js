@@ -29,22 +29,49 @@
             checkbox.prop('checked', !checkbox.prop('checked'));
         });
 
+   
+        // Attacher un gestionnaire d'événement click à tous les éléments <li> qui sont enfants de 'ul.custom-tag-dropdown'
         $('body').on('click', 'ul.custom-tag-dropdown li', function (event) {
-        event.stopPropagation();
-        var $submenu = $(this).find('> ul');
+            event.stopPropagation();
+            const $submenu = $(this).find('> ul');
+
             if ($submenu.length > 0) {
                 // Masquer tous les sous-menus sauf celui sur lequel vous avez cliqué
                 $submenu.slideToggle();
                 $submenu.find('ul').slideUp();
+
                 // Ajouter ou supprimer la classe 'fancytree-expanded' au span 'fancytree-expander'
                 $(this).find('.fancytree-expander').toggleClass('fancytree-expanded');
-                $(this).find('.fancytree-checkbox').toggleClass('checked');
-    
             }
         });
-        Add = $('#edit-field-media-document-0--description').text().split('.').join(' | ');
-        $('#edit-field-media-document-0--description').html(formattedText);
 
+        // Parcourir chaque élément <li> qui sont enfants de 'ul.custom-tag-dropdown'
+        $('ul.custom-tag-dropdown li').each(function () {
+            // Vérifier s'il y a un élément <ul> à l'intérieur de l'élément <li>
+            if ($(this).find('ul').length === 0) {
+                // Si aucun élément <ul> n'est trouvé, supprimer la classe 'fancytree-expander'
+                $(this).find('.fancytree-expander').removeClass('fancytree-expander');
+
+                // Ajouter une marge gauche à l'élément avec la classe 'fancytree-checkbox'
+                $(this).find('.fancytree-checkbox').css('margin-left', '19px');
+            }
+        });
+      
+       // Utiliser la délégation d'événements pour améliorer les performances
+        $('ul.custom-tag-dropdown').on('click', 'li span.fancytree-checkbox', function (event) {
+            event.stopPropagation();
+            $(this).toggleClass('checked');
+        });
+
+        //Form ajout term taxonomie
+        $('.taxonomy-term-rubrique-form [name="tvi_enable_override"]').on('change', function () {
+            let value = $(this).prop('checked');
+            $('[name="field_taxonomy_views_integrator_[0][value]"]').val(value)
+        });
+
+        /* $('body').on('click', '[name="field_media_document_0_remove_button"]', function (){
+            console.log('trest')
+        }) */
     });    
 })(jQuery);
 

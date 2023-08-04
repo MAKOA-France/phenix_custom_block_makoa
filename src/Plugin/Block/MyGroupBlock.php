@@ -35,8 +35,12 @@ class MyGroupBlock  extends BlockBase  {
     // Get the current user's name.
     $current_user_name = $current_user->getAccountName();
     $service_block = \Drupal::service('phenix_custom_block.view_services');
-
-    $results = $service_block->getAllMyGroup();
+    // Load the user account entity to access the email field.
+    $account = \Drupal\user\Entity\User::load($current_user->id());
+    // Get the user's email address.
+    $email = $account->getEmail();
+    $cid = $service_block->getContactIdByEmail($email);
+    $results = $service_block->getAllMyGroup($cid);
      
     $data = [];
     foreach ($results as $res) {
