@@ -73,6 +73,14 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
           'render element' => 'children',
           'path' => $path . '/templates',
           'template' => 'phenix-custom-block-last-doc-txt-img'
+        ],
+        'list_participant' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'phenix-custom-block-list-participant'
         ]
     ];
 }
@@ -408,6 +416,14 @@ function getNodeFieldValue ($node, $field) {
 
 // Implements hook_form_alter().
 function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  
+  //Page mot de passe oublié
+  if ($form['#form_id'] == 'user_pass') {
+    $form['actions']['#prefix'] = '<div class="btn-custom-submit">';
+    $form['actions']['#suffix'] = '</div>';
+    $form['actions']['submit']['#value'] = '';
+  }
+  
   //Page d'authentification
   if ($form['#form_id'] == 'user_login_form') {
     $form['pass']['#title_display'] = 'invisible';
@@ -418,6 +434,7 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
   }
   
   if (in_array($form['#id'], ['media-document-add-form', 'media-document-edit-form'])) {
+    $form['#attributes']['class'][] = 'custom-add-and-edit-form';
     $form['status']['#prefix'] = '<div class="wrapper-status-and-author">';
     $form['author']['#suffix'] = '</div>';
     $form['field_type_de_document']['#prefix'] = '<div class="wrapper-doc-type">';
@@ -482,7 +499,8 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
 
     
     $form['field_media_document']['widget'][0]['#description'] = '<span class="only-one-file">1 seul fichier </span> | <span class="size-limit">Max 80 Mo</span>';
-    $form['field_groupes']['#prefix'] = convertToNestedULWithCheckboxes($all_option);
+    $default_value_tags = $form['field_tags']['widget']['#default_value'];
+    $form['field_groupes']['#prefix'] = convertToNestedULWithCheckboxes($all_option, $default_value_tags);
     
     $curr_description = $form['field_media_document']['widget'][0]['#description'];
     $curr_description = str_replace('<br />', '', $curr_description);
@@ -495,6 +513,9 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
       $form['actions']['delete']['#prefix'] = '<div class="div-parent-delete">';
       $form['actions']['delete']['#suffix'] = '<i class="fas fa-trash-alt"></i></div>';
     }
+
+
+    // dump($form, $form_state);
 
   }
  
@@ -520,7 +541,7 @@ function phenix_custom_block_taxonomy_term_presave(\Drupal\taxonomy\TermInterfac
  * @return string
  *   The nested UL/LI structure.
  */
-function convertToNestedULWithCheckboxes($items) {
+function convertToNestedULWithCheckboxes($items, $default_value) {
   $result = '<div class="all-tag-dropdown"><p class="p-tag-arborescence"><strong>Tags / Arborescence</strong></p><ul class="custom-tag-dropdown">';
   $indentations = [0];
 
@@ -543,10 +564,11 @@ function convertToNestedULWithCheckboxes($items) {
       $result .= "</li>";
     }
     $itemText = trim(str_replace('-', '', $item));
+    $checked = in_array($id, $default_value) ? ' checked' : '';
     $result .= '<li data-current-id="' . $id . '">
     <span class="fancytree-node fancytree-expanded fancytree-has-children fancytree-exp-e fancytree-ico-e">
     <span class="fancytree-expander"></span>
-    <span class="fancytree-checkbox"></span>
+    <span class="fancytree-checkbox ' . $checked . '"></span>
       <span class="fancytree-title">' . $itemText . '</span></span>';
   }
 

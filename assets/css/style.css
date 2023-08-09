@@ -6,14 +6,6 @@
     color: gray;
 }
 
-/* .role--permanent-lecture .breadcrumb ol li > ul {
-    top: 801px;
-}
-.role--adherent .breadcrumb ol li > ul {
-    top: 722px;
-} */
-/****end fil breadcrumb ***/
-
 /* ajout doc => tag & arborescence */ 
 .layout__region.layout__region--second .field--name-field-tags {
     display: none;
@@ -36,11 +28,17 @@ h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
 /*========================================= Fin Police "new order" from CDN ===========================================================*/
 
 /*========================================= Debut ajout document===========================================================*/
-#block-adminimal-theme-content .form-item-field-filieres-0-value,
-#block-adminimal-theme-content #edit-field-media-document-0  #edit-field-media-document-0-upload-button{
+.page-media-add-document.section-media.role--authenticated.role--permanent .layout-container,
+[class*="page-media-"].section-media.role--authenticated.role--permanent .layout-container,
+.page-media-add-document.section-media.role--authenticated.role--permanent-lecture .layout-container,
+[class*="page-media-"].section-media.role--authenticated.role--permanent-lecture .layout-container {
+    margin: initial;
+}
+.custom-add-and-edit-form .form-item-field-filieres-0-value,
+.custom-add-and-edit-form #edit-field-media-document-0  #edit-field-media-document-0-upload-button{
     display: none;
  }
- .field--name-field-social .fieldset-legend, .field--name-field-source .fieldset-legend{
+.field--name-field-social .fieldset-legend, .field--name-field-source .fieldset-legend{
     font-weight: bold !important;
 }
 #block-adminimal-theme-breadcrumbs .breadcrumb{
@@ -71,61 +69,70 @@ h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
     background-size: 2rem;
     background-position: 20px 25%;
 }
-#block-adminimal-theme-content .layout--twocol-section {
+.custom-add-and-edit-form .layout--twocol-section {
     flex-wrap: initial;
     width: 100%;
     gap: 5rem;
 }
-#block-adminimal-theme-content #edit-field-type-de-document,
-#block-adminimal-theme-content #edit-field-media-document-0-upload,
-#block-adminimal-theme-content #edit-field-titre-public-0-value,
-#block-adminimal-theme-content .form-item-created-0-value-date input,
-#block-adminimal-theme-content .form-item-created-0-value-time input{
+.custom-add-and-edit-form #edit-field-type-de-document,
+.custom-add-and-edit-form #edit-field-media-document-0-upload,
+.custom-add-and-edit-form #edit-field-titre-public-0-value,
+.custom-add-and-edit-form .form-item-created-0-value-date input,
+ .custom-add-and-edit-form .form-item-created-0-value-time input{
     width: 100%;
 }
-#block-adminimal-theme-content .form-item-created-0-value-date,
-#block-adminimal-theme-content .layout--twocol-section .layout__region--first{
+.custom-add-and-edit-form .form-item-created-0-value-date,
+.custom-add-and-edit-form .layout--twocol-section .layout__region--first{
     width: 60%;
+    flex: initial !important;
 }
-#block-adminimal-theme-content #edit-field-type-de-document-wrapper{
-    width: 50%;
+ .custom-add-and-edit-form #edit-field-type-de-document-wrapper{
+    width: 45%;
 }
-#block-adminimal-theme-content .form-item-created-0-value-time,
-#block-adminimal-theme-content .layout--twocol-section .layout__region--second {
+.custom-add-and-edit-form .form-item-created-0-value-time,
+.custom-add-and-edit-form .layout--twocol-section .layout__region--second {
     width: 40%;
+    flex: initial !important;
 }
-#block-adminimal-theme-content #edit-field-source-wrapper {
-    width: 30%;
+.custom-add-and-edit-form #edit-field-source-wrapper {
+    width: 35%;
 }
-#block-adminimal-theme-content #edit-field-social-wrapper {
+.custom-add-and-edit-form #edit-field-social-wrapper {
     width: 20%;
 }
-#block-adminimal-theme-content .media-form .field--name-status {
+ .custom-add-and-edit-form .media-form .field--name-status {
     width: 10%;
     margin-top: 2rem;
 }
-#block-adminimal-theme-content  .wrapper-doc-type,
-#block-adminimal-theme-content #edit-field-social,
-#block-adminimal-theme-content #edit-field-source,
-#block-adminimal-theme-content .wrapper-status-and-author  {
+.custom-add-and-edit-form .wrapper-doc-type,
+.custom-add-and-edit-form #edit-field-social,
+.custom-add-and-edit-form #edit-field-source,
+.custom-add-and-edit-form.wrapper-status-and-author{
     display: inline-flex;
     width: 100%;
-    gap: 30px;
+}
+.custom-add-and-edit-form .wrapper-doc-type{
+    gap: 20px;
+}
+.custom-add-and-edit-form #edit-field-social,
+.custom-add-and-edit-form #edit-field-source,
+.custom-add-and-edit-form.wrapper-status-and-author {
+    gap: 13px;
 }
 #edit-field-source-wrapper .fieldset-legend.js-form-required{
     position: relative;
 }
-#block-adminimal-theme-content #edit-field-social .form-item-field-social label{
+.custom-add-and-edit-form #edit-field-social .form-item-field-social label{
     text-transform: capitalize;
 }
-#block-adminimal-theme-content select#edit-field-type-de-document {
+.custom-add-and-edit-form select#edit-field-type-de-document {
     background-image: url('/files/arrows-chevron-down-select.png');
     background-size: 5%;
     background-repeat: no-repeat; 
     background-position: right center;
   }
   
-  #block-adminimal-theme-content select#edit-field-type-de-document:focus {
+.custom-add-and-edit-form select#edit-field-type-de-document:focus {
     background-image: url('/files/arrows-chevron-up-select.png');
   }
 #edit-field-source-wrapper .fieldset-legend.js-form-required:before{
@@ -142,60 +149,90 @@ h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
     color: #0f7cc0;
     font-weight: 400;
 }
-#block-adminimal-theme-content #edit-author,
-#block-adminimal-theme-content #edit-created-0-value {
+.custom-add-and-edit-form #edit-author,
+.custom-add-and-edit-form #edit-created-0-value,
+.custom-add-and-edit-form .wrapper-status-and-author {
     display: flex;
 }
-#block-adminimal-theme-content .wrapper-status-and-author,
-#block-adminimal-theme-content #edit-author {
+.custom-add-and-edit-form .wrapper-status-and-author,
+.custom-add-and-edit-form #edit-author {
     flex-direction: row-reverse;
 }
-
-#block-adminimal-theme-content #edit-author {    
+.custom-add-and-edit-form .wrapper-status-and-author{
+    justify-content: space-between;
+    align-items: center;
+}
+.media-form .wrapper-status-and-author .field--name-status {
+    margin-top: 0;
+    width: 15%;
+}
+.media-form .wrapper-status-and-author .field--name-status .form-item-status-value{
+    padding: 0;
+    margin: 0;
+    float: right;
+}
+.custom-add-and-edit-form #edit-author {    
     justify-content: flex-end;
-    width: 90%;
+    width: 85%;
     gap: 20px;
 }
-#block-adminimal-theme-content #edit-created-0-value {
+.custom-add-and-edit-form #edit-created-0-value {
     width: 100%;
     gap: 10px;
+    margin: 0.75em 0;
 }
-#edit-created-0-value--description.description,
+#edit-created-0-value--description,
 #edit-uid-0-target-id--description.description{
-    COLOR: #725f2f;
+    color: #725f2f;
     background-color: #fff5dd;
     padding: 5px 15px;
     border-radius: 10px 0;
-    width: fit-content;
+    width: max-content;
     font-size: 0.7rem;
 }
- #block-adminimal-theme-content #edit-created-wrapper,
- #block-adminimal-theme-content #edit-uid-wrapper #edit-uid-0-target-id {
+.custom-add-and-edit-form #edit-uid-wrapper #edit-uid-0-target-id {
     margin: 0.75em 0;
 }
-#block-adminimal-theme-content #edit-created-wrapper h4.label{
+.custom-add-and-edit-form #edit-created-wrapper{
+    width: 40%;
+}
+.custom-add-and-edit-form #edit-uid-wrapper{
+    width: 60%;
+}
+.custom-add-and-edit-form #edit-created-wrapper h4{
     font-family: "new-order", sans-serif !important;
-    font-style: normal;
-}
-#block-adminimal-theme-content #edit-uid-wrapper label {
+    font-weight: bold;
     margin: initial;
+    font-size: .875rem;
+    line-height: 1.8;
 }
-#block-adminimal-theme-content #edit-field-media-document-0-upload,
-#block-adminimal-theme-content #edit-field-media-document-wrapper span.file,
-#block-adminimal-theme-content  #edit-field-media-document-wrapper [name="files[field_media_document_0]"] {
+.custom-add-and-edit-form #edit-uid-wrapper label {
+    margin: initial;
+    font-weight: bold;    
+    font-size: .875rem;
+}
+#edit-widget [type='checkbox'] + label{
+    margin-right: initial;
+}
+.custom-add-and-edit-form #edit-field-media-document-0-upload,
+.custom-add-and-edit-form #edit-field-media-document-wrapper span.file,
+.custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"] {
     width: 80%;
+    font-size: 0.85rem;
+    padding: 5px;
 }
-#block-adminimal-theme-content input[type="file"],
-#block-adminimal-theme-content input[type="text"],
-#block-adminimal-theme-content input[type="date"],
-#block-adminimal-theme-content input[type="time"],
-#block-adminimal-theme-content select#edit-field-type-de-document {
+.custom-add-and-edit-form input[type="file"],
+.custom-add-and-edit-form input[type="text"],
+.custom-add-and-edit-form input[type="date"],
+.custom-add-and-edit-form input[type="time"],
+.custom-add-and-edit-form select#edit-field-type-de-document {
     height: 35px;
     border-radius: 5px;
     background-color: transparent;
     line-height: initial;
+    border: 1px solid #b8b8b8;
 }
-#block-adminimal-theme-content #edit-field-media-document-wrapper span.file{
+.custom-add-and-edit-form #edit-field-media-document-wrapper span.file{
     border: 1px solid #b8b8b8;
     display: flex;
     align-items: center;
@@ -203,20 +240,35 @@ h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
     padding-left: initial;
     background-position: 5px center;
 }
-#block-adminimal-theme-content #edit-field-media-document-wrapper span.file a{
+.custom-add-and-edit-form #edit-field-media-document-wrapper span.file a{
     padding-left: 30px; 
 }
-#block-adminimal-theme-content .js-form-managed-file.form-managed-file{
+.custom-add-and-edit-form .js-form-managed-file.form-managed-file{
     display: flex;
-    gap: 5px;
     position: relative;
     flex-wrap: wrap;
+    justify-content: space-between;
 }
-#block-adminimal-theme-content .js-form-managed-file.form-managed-file .messages.messages--error.file-upload-js-error{
+.custom-add-and-edit-form .form-managed-file span:nth-of-type(2){
+    display: none;
+}
+.custom-add-and-edit-form .file--application-pdf {
+    background-image: url(/core/themes/seven/images/classy/icons/application-pdf.png);
+    background-repeat: no-repeat;
+}
+.custom-add-and-edit-form .file--image {
+    background-image: url(/core/themes/seven/images/classy/icons/image-x-generic.png);
+    background-repeat: no-repeat;
+}
+.custom-add-and-edit-form .file--x-office-document {
+    background-image: url(/core/themes/seven/images/classy/icons/x-office-document.png);
+    background-repeat: no-repeat;
+}
+.custom-add-and-edit-form .js-form-managed-file.form-managed-file .messages.messages--error.file-upload-js-error{
     order: 2;
     width: 100%;
 }
-#block-adminimal-theme-content  #edit-field-media-document-wrapper [name="files[field_media_document_0]"]{
+.custom-add-and-edit-form  #edit-field-media-document-wrapper [name="files[field_media_document_0]"]{
     order: 1;
 }
 #edit-field-media-document-wrapper .messages.messages--error.file-upload-js-error {
@@ -230,14 +282,19 @@ h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
     background-position: 15px 25%;
     margin: 0 0 1rem 0;
 }
-#block-adminimal-theme-content  #edit-field-media-document-wrapper [name="field_media_document_0_remove_button"] {
+.form-item-field-media-document-0 .messages.messages--error{
+    background-image: url(/core/misc/icons/e32700/error.svg) !important;
+    background: no-repeat 10px 17px;
+}
+.custom-add-and-edit-form #edit-field-media-document-wrapper [name="field_media_document_0_remove_button"] {
     position: relative !important; 
     margin: initial ;
     padding: initial;
     font-weight: 400;
 }
-#block-adminimal-theme-content  #edit-field-media-document-wrapper [name="field_media_document_0_remove_button"],
-#block-adminimal-theme-content  #edit-field-media-document-wrapper [name="files[field_media_document_0]"]::-webkit-file-upload-button {
+.custom-add-and-edit-form #edit-field-media-document-wrapper [name="field_media_document_0_remove_button"],
+.custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"]::-webkit-file-upload-button,
+.custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"]::file-selector-button{
     background: #e52329;
     border: none;
     color: #fff;
@@ -250,56 +307,56 @@ h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
     width: 19%;
     height: 35px;
   }
-#block-adminimal-theme-content #edit-field-media-document-wrapper  [name="files[field_media_document_0]"]::before {
+.custom-add-and-edit-form #edit-field-media-document-wrapper  [name="files[field_media_document_0]"]::before {
     content: attr(placeholder);
     display: block;
     height: 30%;
 }
-#block-adminimal-theme-content #edit-field-media-document-0 {
+.custom-add-and-edit-form #edit-field-media-document-0 {
     position: relative;
 }
-#block-adminimal-theme-content ul.custom-tag-dropdown li {
+.custom-add-and-edit-form ul.custom-tag-dropdown {
     list-style: none;
 }
-#block-adminimal-theme-content ul.custom-tag-dropdown .fancytree-expander{
+.custom-add-and-edit-form ul.custom-tag-dropdown .fancytree-expander{
     background-position: 0 -80px;
 }
-#block-adminimal-theme-content ul.custom-tag-dropdown li span span.fancytree-expander.fancytree-expanded{
+.custom-add-and-edit-form ul.custom-tag-dropdown li span span.fancytree-expander.fancytree-expanded{
     background-position: -32px -80px;
 }
-#block-adminimal-theme-content ul.custom-tag-dropdown li span span.fancytree-checkbox.checked {
+.custom-add-and-edit-form ul.custom-tag-dropdown li span span.fancytree-checkbox.checked {
     background-position: 0px -2px !important;
 }
-#block-adminimal-theme-content ul.custom-tag-dropdown li ul li span span.fancytree-checkbox.checked {
+.custom-add-and-edit-form ul.custom-tag-dropdown li ul li span span.fancytree-checkbox.checked {
     background-position: -20px -2px !important;
 }
-#block-adminimal-theme-content ul.custom-tag-dropdown .fancytree-checkbox {
+.custom-add-and-edit-form ul.custom-tag-dropdown .fancytree-checkbox {
     width: 20px;
     height: 20px;
     background-position: -42px -2px;
     background-image: url('/files/check-image.png');
 }
-#block-adminimal-theme-content ul.custom-tag-dropdown .fancytree-node.fancytree-has-children {
+.custom-add-and-edit-form ul.custom-tag-dropdown .fancytree-node.fancytree-has-children {
     display: flex;
 }
-#block-adminimal-theme-content input[type=radio]{
+.custom-add-and-edit-form input[type=radio]{
     border: 1px solid #2a2b2c;
 }
-#block-adminimal-theme-content input[type=radio]:focus,
-#block-adminimal-theme-content input[type=checkbox]:hover {
+.custom-add-and-edit-form input[type=radio]:focus,
+.custom-add-and-edit-form input[type=checkbox]:hover {
     border-color: #2a2b2c;
   }
-#block-adminimal-theme-content input[type=radio]:checked{
+.custom-add-and-edit-form input[type=radio]:checked{
     background: #2a2b2c;
   }
 
-#block-adminimal-theme-content input[type=checkbox]{
+.custom-add-and-edit-form input[type=checkbox]{
     border: 2px solid #2a2b2c;
     border-radius: 3px;
     width: 20px !important;
     height: 20px !important;
 }
-#block-adminimal-theme-content input[type="checkbox"]:checked {
+.custom-add-and-edit-form input[type="checkbox"]:checked {
     box-shadow: initial;
     position: relative;
     background: #0074BD;
@@ -308,21 +365,41 @@ h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
     -moz-appearance: auto;
     -ms-appearance: auto;
   }
-  #block-adminimal-theme-content #edit-filiere input[type="checkbox"]:checked+label.option{
+.custom-add-and-edit-form #edit-filiere{
+    padding-top: 15px;
+} 
+.custom-add-and-edit-form #edit-filiere input[type="checkbox"]:checked+label.option{
     text-decoration: underline;
   }
-  #block-adminimal-theme-content #edit-filiere #edit-widget {
+.custom-add-and-edit-form #edit-filiere #edit-widget {
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
 }  
-#block-adminimal-theme-content #edit-filiere legend span.fieldset-legend {
+.custom-add-and-edit-form .form-required:after {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin: 0 0.3em;
+    content: "";
+    vertical-align: super;
+    background-image: url(/core/misc/icons/ee0000/required.svg);
+    background-repeat: no-repeat;
+    background-size: 6px 6px;
+}
+.custom-add-and-edit-form #edit-filiere legend span.fieldset-legend,
+.custom-add-and-edit-form .form-item-field-media-document-0 label,
+.custom-add-and-edit-form .form-item-name-0-value label,
+.custom-add-and-edit-form .form-item-field-titre-public-0-value label,
+.custom-add-and-edit-form .form-item-field-type-de-document label,
+.custom-add-and-edit-form .form-item-field-resume-0-value label,
+.custom-add-and-edit-form .form-item-field-groupes label {
     font-weight: bold;
 }  
-#block-adminimal-theme-content #edit-filiere .form-checkboxes label.option,
-#block-adminimal-theme-content #edit-created-wrapper input.form-date,
-#block-adminimal-theme-content #edit-created-wrapper input.form-time,
-#block-adminimal-theme-content #edit-uid-wrapper [name="uid[0][target_id]"]{
+.custom-add-and-edit-form #edit-filiere .form-checkboxes label.option,
+.custom-add-and-edit-form #edit-created-wrapper input.form-date,
+.custom-add-and-edit-form #edit-created-wrapper input.form-time,
+.custom-add-and-edit-form #edit-uid-wrapper [name="uid[0][target_id]"]{
     font-size: 1.1rem;
 }
 .layout__region--second .all-tag-dropdown,
@@ -343,18 +420,25 @@ h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
 }
 .layout__region--second ul.custom-tag-dropdown ul{
     display: none;
+    list-style: none;
 }
-#block-adminimal-theme-content .media-document-add-form.media-form #edit-actions,
-#block-adminimal-theme-content .media-document-edit-form.media-form #edit-actions {
-    position: fixed;
+.custom-add-and-edit-form.media-document-add-form.media-form #edit-actions,
+.custom-add-and-edit-form.media-document-edit-form.media-form #edit-actions {
+    position: relative;
     display: flex;
     justify-content: center;
     bottom: 0;
     width: 100%;
     gap: 20px;
+    padding-bottom: 10px;
+    left: 0;
 }
-#block-adminimal-theme-content .div-parent-save,
-#block-adminimal-theme-content .div-parent-delete {
+.custom-add-and-edit-form.media-document-add-form.media-form #edit-actions.fixed-button,
+.custom-add-and-edit-form.media-document-edit-form.media-form #edit-actions.fixed-button {
+    position: fixed;
+}
+.custom-add-and-edit-form .div-parent-save,
+.custom-add-and-edit-form .div-parent-delete {
     height: 2.8rem;
     width: 20%;
     border-radius: 20px 0;
@@ -362,14 +446,14 @@ h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
     justify-content: center;
     align-items: center;
 }
-#block-adminimal-theme-content .div-parent-save {
+.custom-add-and-edit-form .div-parent-save {
     background-color: #140d3d;
 }
-#block-adminimal-theme-content .div-parent-delete {
+.custom-add-and-edit-form .div-parent-delete {
     background-color: #e52329;
 }
-#block-adminimal-theme-content .div-parent-save #edit-submit,
-#block-adminimal-theme-content .div-parent-delete #edit-delete{    
+.custom-add-and-edit-form .div-parent-save #edit-submit,
+.custom-add-and-edit-form .div-parent-delete #edit-delete{    
     width: 100%;
     height: auto;
     outline: none;
@@ -382,15 +466,15 @@ h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
     text-decoration: initial;
     color: #fff;
 }
-#block-adminimal-theme-content .div-parent-save i,
-#block-adminimal-theme-content .div-parent-delete i{
+.custom-add-and-edit-form .div-parent-save i,
+.custom-add-and-edit-form .div-parent-delete i{
     position: relative;
     font-size: 1.3rem;
     right: 30%;
     top: -1px;
     color: #fff;
 }
-#block-adminimal-theme-content .layout__region--second #edit_field_groupes_chosen {
+.custom-add-and-edit-form .layout__region--second #edit_field_groupes_chosen {
     width: 100% !important;
 }
 .layout__region--second .chosen-container-multi .chosen-choices {
@@ -399,6 +483,19 @@ h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
     box-shadow: initial;
     border: 1px solid #e7e0d9;
     background-image: initial;
+    background-color: #fff;
+    margin: 0;
+}
+ul.chosen-results,
+.layout__region--second .chosen-container-multi .chosen-choices {
+    list-style-type: none;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin-left: 0;
+}
+ul.chosen-results li {
+    font-size: 0.85rem;
 }
 .layout__region--second .chosen-container-multi .chosen-choices  li.search-field input.chosen-search-input{
     display: none;
@@ -409,8 +506,18 @@ h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
     line-height: inherit;
     background-color: #e7e0d9;
     padding: 5px 10px 5px 30px;
+    margin: 3px 5px 3px 3px;
     display: flex;
-    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    font-size: 0.85rem;
+    width: fit-content;
+}
+.chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: url(/files/chosen-sprite.png) -42px 1px no-repeat;
 }
 .layout__region--second .chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
     top: 10px;
@@ -433,4 +540,51 @@ h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
 .layout__region--second #edit-field-groupes--description {
     text-align: end;
 }
+.custom-add-and-edit-form #edit-field-resume-0-format-help-about {
+    float: right;
+    position: relative;
+    margin: 0 20px 0 0;
+    color: #0074bd;
+    text-decoration: none;
+    font-size: 0.875rem;
+  }
+.custom-add-and-edit-form #edit-field-resume-0-format-help-about::after {
+    top: 0;
+    right: -20px;
+    display: block;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    content: "";
+    background: transparent url(/core/misc/help.png);
+}
+.custom-add-and-edit-form #edit-field-resume-0-format-help-about:hover{    
+    text-decoration: underline;
+    outline: 0;
+}
+.custom-add-and-edit-form #edit-field-resume-0-format {
+    background: #F7F7F7;
+    margin: 0;
+    padding: 0.5em 0.666em;
+    border: 1px solid #ccc;
+    border-top: 0;
+}
+.custom-add-and-edit-form .form-item-field-resume-0-format label {
+    display: inline;
+    padding: 0;
+    font-weight: bold;
+    margin: 0 0 0.2em;
+}
+.custom-add-and-edit-form #edit-field-resume-0-format--2 {
+    min-height: 28px;
+    padding: 1px 1.571em 1px 0.5em;
+    cursor: pointer;
+    text-shadow: none;
+    font-size: 0.875rem;
+    -webkit-appearance: none;
+    -webkit-font-smoothing: antialiased;
+    margin: initial;
+    width: initial;
+    height: initial;
+} 
 /*========================================= Fin ajout document===========================================================*/

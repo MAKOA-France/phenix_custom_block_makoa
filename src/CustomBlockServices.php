@@ -237,9 +237,9 @@ class CustomBlockServices {
               $this->getImageHtml ($paragraph, $data);              
             }elseif ($paragraph->hasField('field_document')) {//Si de type document
               $this->getDocumentHtml($paragraph, $data, $var);
-            }elseif ($paragraph->hasField('field_texte_formate')) {//Si de type document
+            }elseif ($paragraph->hasField('field_texte_formate')) {//Si de type texte formatté
               $this->getFormattedTexttHtml($paragraph, $data);
-            }elseif ($paragraph->hasField('field_lien')) {//Si de type document
+            }elseif ($paragraph->hasField('field_lien')) {//Si de type liste de liens
               $this->getLinkHtml($paragraph, $data, $counter);
               
               // dump($paragraph);
@@ -271,8 +271,19 @@ class CustomBlockServices {
    */
   public function getFormattedTexttHtml ($paragraph, &$data) {
     $formattedText = $paragraph->get('field_texte_formate')->getValue();
-    $contain_a_sibe_by_site_image_and_text = strpos($formattedText[0]['value'], '<td><img') !== false ? 'img-txt-side-by-side' : '';
-    $data .= '<div class="formatted-text ' . $contain_a_sibe_by_site_image_and_text . '">' . $formattedText[0]['value'] . '</div>';
+    $hasTable = strpos($formattedText[0]['value'], '<table>') !== false ? true : false;
+    $class_for_table = '';
+    if ($hasTable) {
+      $class_for_table = strpos($formattedText[0]['value'], '<th><img') !== false ? 'img-txt-side-by-side' : 'table-only';
+    }
+
+    //check if the formatted text is faq
+    $isFaq = $this->checkIfFaqAndEditHtml($formattedText[0]['value'], $data);
+    if ($isFaq) {
+      return $data .= '<div class="formatted-text ' . $class_for_table . '">' . $formattedText[0]['value'] . '</div>';
+    }
+
+    $data .= '<div class="formatted-text ' . $class_for_table . '">' . $formattedText[0]['value'] . '</div>';
     return $data;
   }
 
@@ -280,11 +291,7 @@ class CustomBlockServices {
    * Permet de recuperer l'html qui doit être rendu pour les liste de liens
    */
   public function getLinkHtml ($paragraph, &$data, $counter) {
-    $isEven = ($counter % 2 === 0);
-    $class = $isEven ? 'even' : 'odd';
-    $data .= '<div class="link-custom " ' . $class . '>' . $this->getNodeFieldValue($paragraph, 'field_lien') . '</div><br>';
-    $counter++;
-    
+    $data .= '<a href="'. $this->getNodeFieldValue($paragraph, 'field_lien') . '" class="link-custom" ><i class="fas fa-external-link-alt custom-link-font-awesome"></i>' . $this->getNodeFieldValue($paragraph, 'field_lien') . '</a>';
   }
 
   /**
@@ -392,6 +399,33 @@ class CustomBlockServices {
     return $data;
   }
 
+  private function checkIfFaqAndEditHtml(&$text, &$data) {
+    if (strpos($text, 'equently asked question') !== false ? true : (strpos($text, 'foire aux question') !== false)) {
+      preg_match_all('/<h4><strong>[0-9a-z\'?<> &;="-_éèùîô]+<\/h4>/', $text, $matches);
+      $last_element = count($matches[0]) - 1;
+      
+      foreach ($matches[0] as $key => $match) {
+
+        switch($key) {
+          case 0:
+            $text_match = str_replace('<h4><strong>', '<div class="middle faq-dropdown"><h4><strong>', $match);
+            $text = str_replace($match, $text_match, $text);
+            break;
+          case $last_element:
+            // dump($match, $text);
+            $text_match = str_replace('<h4><strong>', '</div><div class="ttt"><h4><strong>', $match);
+            $text = str_replace($match, $text_match, $text);
+            // $text .= '</div>';
+          default :
+            $text_match = str_replace('<h4><strong>', '</div><div class=" middle faq-dropdown"><h4><strong>', $match);
+            $text = str_replace($match, $text_match, $text);
+            break;
+        }
+      } 
+    }
+
+    return $text;
+  }
  
 
 }

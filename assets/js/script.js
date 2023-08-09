@@ -1,5 +1,6 @@
 (function($) {
     $(document).ready(function() {
+
         $('body .grid-container').on('click','.btn-ask-question-home', function () {
             let questions = $('#textarea-ask-question-some-word').val();
             let category = $('.category-ask-question select').val();
@@ -19,7 +20,7 @@
         setDefaultQuestion ();
 
         //Ajout document -> tags -> simulation click sur le dropdown ul li
-        $('.fancytree-checkbox, .fancytree-title').on('click', function () {
+        $('.fancytree-checkbox').on('click', function () {
             let curr_val = $(this).closest('li').attr('data-current-id');
 
             // Get the checkbox element using its ID
@@ -72,7 +73,21 @@
         /* $('body').on('click', '[name="field_media_document_0_remove_button"]', function (){
             console.log('trest')
         }) */
-    });    
+    }); 
+
+    // Fixer les boutton enregitrement et suppression de document quand il est en dehors du section parent'
+    var $buttonSelector = $('.custom-add-and-edit-form #edit-actions, #block-adminimal-theme-content');
+    var $sectionCible = $('section#main, #block-adminimal-theme-content');
+    var sectionOffsetTop = $sectionCible.offset().top;
+    var sectionHeight = $sectionCible.outerHeight();
+
+    $(window).scroll(function() {
+        var scrollTop = $(window).scrollTop();
+        var isInSection = (scrollTop >= sectionOffsetTop && scrollTop <= sectionOffsetTop + sectionHeight);
+
+        $buttonSelector.toggleClass('fixed-button', !isInSection);
+    });
+    
 })(jQuery);
 
 function setDefaultQuestion () {

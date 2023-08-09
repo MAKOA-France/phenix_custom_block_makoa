@@ -1,0 +1,19 @@
+<h3>Liste des participants</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Etablissement</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if (content.data) %}
+        {% for item in content.data %}
+            <tr>
+                <td>{{ item.full_name }}</td>
+                <td>{{ item.society }}</td>
+            </tr>
+        {% endfor %}
+    {% endif %}
+  </tbody>
+</table>
