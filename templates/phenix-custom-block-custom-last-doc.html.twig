@@ -1,6 +1,13 @@
 {# '#theme' => 'phenix_custom_block_custom_last_doc' est dans le fichier .module #}
 <div class="medium-12">
-  <h2 class="main-title-last-doc">{{ content.first_title }}</h2>
+    {% if not content.is_page_last_doc  %}
+      <div class="last-doc-title">
+        
+        <h2 class="main-title-last-doc"><i class="fas fa-file"></i>{{ content.first_title }}</h2>
+      </div>
+    {% else %}  
+        <h2 class="main-title-last-doc">{{ content.first_title }}</h2>
+    {% endif %}
     <div class="first-element-doc">
       <a href="/media/{{ content.first_element_id }}/download" class="custom-icon-first-element">
         <img src="/files/assets/{{ content.file_type }}">
@@ -45,7 +52,7 @@
   {% for title, elm in content.data %}
     {% if (temp_title != title)%}
     <div class="title-and-chevron">
-      {% if (i>0) %}
+      {% if (i>0) and content.is_page_last_doc %}
         <hr class="hr-other-doc">
         <h2 class="main-title"> {{ title }} </h2></div>
       {% endif %}  
@@ -63,9 +70,9 @@
             <span class="description">{{ each_data['description'] }}</span>
           </a>
           <div class="date-and-size">
-            <span class="date-creation">{{ each_data['created_at'] }} {# | #} <span>
+            <span class="date-creation">{{ each_data['created_at'] }}  <span>
               {% if each_data['size'] %}
-                <span class="file-size">{{ each_data['size'] }} Ko<span> 
+                <span class="file-size">| {{ each_data['size'] }} Ko<span> 
               {% endif %}
 
               {% if each_data['type_document'] %}

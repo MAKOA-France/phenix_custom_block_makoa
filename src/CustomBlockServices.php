@@ -164,6 +164,39 @@ class CustomBlockServices {
         ];
     }
 
+    /**
+     * Personnalisation de la page Commission --> bloc reunion
+     */
+    public function customizeViewReunionOfTheCommissionPage(&$var) {
+      $view = $var['view'];
+      $field = $var['field'];
+      $requests = \Drupal::request();
+      $row = $var['row'];
+
+      if ($field->field == 'title' ) {
+        $current_id = $var['row']->id;
+        $start_date = $row->civicrm_event_start_date;
+        $start_date = $this->formatDateWithMonthInLetterAndHours($start_date);
+        $value = $field->getValue($row);
+        $classOddAndEven = 'odd';
+        if ($view->current_display == 'block_1') {
+          $classOddAndEven = 'even';
+        }
+
+        $var['output'] = [
+          '#theme' => 'phenix_custom_block_alter_view_detail_commission_reunion',
+          '#cache' => ['max-age' => 0],
+          '#content' => [
+            'start_date' => $start_date,
+            'event_id' => $current_id,
+            'class_odd_even' => $classOddAndEven,
+            'title' => $value
+          ]
+        ];
+        // dump($start_date, $current_id, $value);
+      }
+    }
+
     public function getLinkedGroupWithEvent ($eventId) {
         $events = \Civi\Api4\Event::get(FALSE)
             ->addSelect('rsvpevent_cg_linked_groups.rsvpevent_cf_linked_groups')
@@ -412,10 +445,8 @@ class CustomBlockServices {
             $text = str_replace($match, $text_match, $text);
             break;
           case $last_element:
-            // dump($match, $text);
             $text_match = str_replace('<h4><strong>', '</div><div class="ttt"><h4><strong>', $match);
             $text = str_replace($match, $text_match, $text);
-            // $text .= '</div>';
           default :
             $text_match = str_replace('<h4><strong>', '</div><div class=" middle faq-dropdown"><h4><strong>', $match);
             $text = str_replace($match, $text_match, $text);

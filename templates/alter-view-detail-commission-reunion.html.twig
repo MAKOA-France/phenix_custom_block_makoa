@@ -1,0 +1,10 @@
+<div class="meeting-com {{ content.class_odd_even }}">
+    <div class="date-meet">
+        <span class="day">{{ content.start_date.day }}</span>
+        <span class="month-and-year">{{ content.start_date.month  ~ ' ' ~ content.start_date.year}} </span>
+    </div>    
+    <div class="title-meet">
+        <span class="title-meet-commission"><a href="/civicrm-event/{{ content.event_id }}">{{ content.title }}</a></span>
+        <span class="hour-begining-meet-commission">Début de la réunion {{ content.start_date.hour ~ 'h ' ~ content.start_date.minute}}</span>
+    </div>
+</div>

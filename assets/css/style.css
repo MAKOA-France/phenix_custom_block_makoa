@@ -5,7 +5,14 @@
 .custom-submenu-li .no-link-text {
     color: gray;
 }
-
+/***MENU***/
+.disabled-button-link {
+    color: gray;
+    text-decoration: none;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+/******/
 /* ajout doc => tag & arborescence */ 
 .layout__region.layout__region--second .field--name-field-tags {
     display: none;
@@ -400,7 +407,7 @@ h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
 .custom-add-and-edit-form #edit-created-wrapper input.form-date,
 .custom-add-and-edit-form #edit-created-wrapper input.form-time,
 .custom-add-and-edit-form #edit-uid-wrapper [name="uid[0][target_id]"]{
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 .layout__region--second .all-tag-dropdown,
 .layout__region--second  #edit-field-groupes-wrapper {

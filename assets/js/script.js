@@ -1,6 +1,8 @@
 (function($) {
     $(document).ready(function() {
 
+        jQuery('.section-civicrm-group  .layout__region.layout__region--content > .block-layout-builder > div').html('<p><i class="icon-custom-calendar"></i>Réunions</p>');//page detail commission
+
         $('body .grid-container').on('click','.btn-ask-question-home', function () {
             let questions = $('#textarea-ask-question-some-word').val();
             let category = $('.category-ask-question select').val();

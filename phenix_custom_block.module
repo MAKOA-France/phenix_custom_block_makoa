@@ -81,6 +81,30 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
           'render element' => 'children',
           'path' => $path . '/templates',
           'template' => 'phenix-custom-block-list-participant'
+        ],
+        'detail_group' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'phenix-custom-block-detail-group'
+        ],
+        'doc_detail_group' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'phenix-custom-block-document-group'
+        ],
+        'phenix_custom_block_alter_view_detail_commission_reunion' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'alter-view-detail-commission-reunion'
         ]
     ];
 }
@@ -186,6 +210,14 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
 			$variables['output'] = $html;
 		}
 	}
+
+  //Page detail commissions / groupe
+  if ($view->storage->id() == 'civi_groupe_evenements' /* && $view->current_display == 'block_1' */) {
+    $custom_service = \Drupal::service('phenix_custom_block.view_services');
+    // dump($view);
+    $custom_service->customizeViewReunionOfTheCommissionPage($variables);
+    
+  }
 }
 
 
@@ -369,6 +401,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
               'first_element_id' => $first_element_id,
               'first_element_title' => $title,
               'display_see_other_doc' => $display_see_other_doc,
+              'is_page_last_doc' => true
             ]
           ]; 
         }
