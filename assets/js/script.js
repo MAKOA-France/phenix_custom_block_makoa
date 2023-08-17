@@ -1,7 +1,20 @@
 (function($) {
     $(document).ready(function() {
 
-        jQuery('.section-civicrm-group  .layout__region.layout__region--content > .block-layout-builder > div').html('<p><i class="icon-custom-calendar"></i>Réunions</p>');//page detail commission
+        //Page ajout document 
+        if (jQuery('.field--name-field-tags').length) {
+
+            let allDefaultValue = jQuery('.field--name-field-tags').attr('data-default-value').split(',');
+            allDefaultValue.forEach(function (el, index) {
+                jQuery('[data-current-id="' + el + '"]').parents('ul').show();
+            })
+        }
+
+        jQuery('.taxo-image tr:has(a:contains("PDF"))').each(function() {
+            var $link = jQuery(this).find('a:contains("PDF")');
+            $link.html('<img class="txt-img-custom-pdf" src="/files/assets/pdf-3.png" alt="PDF">');
+        });
+
 
         $('body .grid-container').on('click','.btn-ask-question-home', function () {
             let questions = $('#textarea-ask-question-some-word').val();
@@ -22,7 +35,8 @@
         setDefaultQuestion ();
 
         //Ajout document -> tags -> simulation click sur le dropdown ul li
-        $('.fancytree-checkbox').on('click', function () {
+        $('.term-don-t-have-child .fancytree-checkbox').on('click', function () {
+            console.log()
             let curr_val = $(this).closest('li').attr('data-current-id');
 
             // Get the checkbox element using its ID

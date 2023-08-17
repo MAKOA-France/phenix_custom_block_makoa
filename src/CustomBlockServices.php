@@ -9,7 +9,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\file\Entity\File;
 use Drupal\Core\Datetime\DrupalDateTime;
-
+use Drupal\taxonomy\Entity\Term;
 /**
  * Class PubliciteService
  * @package Drupal\phenix_custom_block\Services
@@ -334,6 +334,8 @@ class CustomBlockServices {
     $documents = $paragraph->get('field_document')->getValue();
     $documents_ids = array_column($documents, 'target_id');
     $all_doc_info = [];
+    $paragraphId = $paragraph->id();
+    
     foreach ($documents_ids as $document_id) {
       $media = Media::load($document_id);
       if ($media) {
@@ -368,7 +370,8 @@ class CustomBlockServices {
       '#theme' => 'phenix_custom_block_last_doc_txt_img',
       '#cache' => ['max-age' => 0],
       '#content' => [
-        'data' => $all_doc_info
+        'data' => $all_doc_info,
+        'paragraph_id' => $paragraphId,
       ]
     ]; 
     $data .= render($var['last_doc']);
@@ -434,7 +437,7 @@ class CustomBlockServices {
 
   private function checkIfFaqAndEditHtml(&$text, &$data) {
     if (strpos($text, 'equently asked question') !== false ? true : (strpos($text, 'foire aux question') !== false)) {
-      preg_match_all('/<h4><strong>[0-9a-z\'?<> &;="-_éèùîô]+<\/h4>/', $text, $matches);
+      preg_match_all('/<h4><strong>[0-9a-z\'?<> &;="-_éèùîôÉÔ]+<\/h4>/', $text, $matches);
       $last_element = count($matches[0]) - 1;
       
       foreach ($matches[0] as $key => $match) {
@@ -457,6 +460,32 @@ class CustomBlockServices {
 
     return $text;
   }
+
+
+
+public function hasChildren ($term_id) {
+  // Replace 'taxonomy_vocabulary_machine_name' with the actual machine name of your vocabulary.
+  $vid = 'rubrique';
+
+  // Replace 'term_tid' with the actual term ID you want to check.
+  $tid = $term_id;
+
+  $term = Term::load($term_id);
+
+  if ($term) {
+    $vid = $term->bundle();
+    $children = \Drupal::entityTypeManager()
+        ->getStorage('taxonomy_term')
+        ->loadChildren($tid, $vid);
+      
+    if (!empty($children)) {
+        return true;
+    } else {
+        return false;
+    }
+  }
+
+}
  
 
 }

@@ -14,6 +14,12 @@
   }
 /******/
 /* ajout doc => tag & arborescence */ 
+.custom-add-and-edit-form ul.custom-tag-dropdown .term-who-had-child > .fancytree-has-children  > .fancytree-checkbox.checked {
+    background-position: -42px -2px !important;
+}
+.layout__region--second ul.custom-tag-dropdown > ul {
+    display: block !important;
+}
 .layout__region.layout__region--second .field--name-field-tags {
     display: none;
 }
@@ -25,12 +31,28 @@
     background-color: white;
     pointer-events: none;
 }
+.term-who-had-child > .fancytree-expanded > .fancytree-checkbox  {
+    background-color: #b8b8b8;
+}
 /*****/
 
 /*========================================= Police "new order" from CDN ===========================================================*/
 h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{
     font-family: "new-order", sans-serif !important;
     font-style: normal;
+}
+.txt-img-custom-pdf {
+    width: 5%;
+}
+
+/* Ne pas l'appliquer pour civicrm */
+body.page-civicrm h1, body.page-civicrmh3,  body.page-civicrm p,  body.page-civicrm span,  body.page-civicrm label,  body.page-civicrm li,  body.page-civicrm button,
+  body.page-civicrm a,   body.page-civicrm input,  body.page-civicrm select,  body.page-civicrm textarea,  body.page-civicrm td,  body.page-civicrm tr,  body.page-civicrm th,
+    body.page-civicrm table,  body.page-civicrm .extrait-resume,  body.page-civicrm h2,
+ body.page-civicrm .paragraph.paragraph--type--dossier.paragraph--view-mode--default > div:first-of-type > div:nth-child(2),
+ body.page-civicrm .title-last-doc{
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif !important;
+    font-style: normal !important;
 }
 /*========================================= Fin Police "new order" from CDN ===========================================================*/
 

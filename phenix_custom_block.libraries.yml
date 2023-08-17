@@ -8,5 +8,8 @@ phenix_custom_block:
       https://use.typekit.net/kty8aan.css: {}  
       https://cdn.jsdelivr.net/npm/jquery.fancytree@2.37.0/dist/skin-lion/ui.fancytree.min.css: {}
       https://use.fontawesome.com/releases/v5.15.3/css/all.css: {}
+      https://fonts.googleapis.com: {}
+      https://fonts.gstatic.com: {}
+      https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap: {}
   js:
     assets/js/script.js: {}

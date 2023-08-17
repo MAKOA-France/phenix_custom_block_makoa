@@ -548,7 +548,10 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
     }
 
 
-    // dump($form, $form_state);
+    $default_value_tags = $form['field_tags']['widget']['#default_value'];
+    $default_value_tags= implode(',', $default_value_tags);
+    $form['field_tags']['#attributes']['data-default-value'] = $default_value_tags;
+
 
   }
  
@@ -575,16 +578,17 @@ function phenix_custom_block_taxonomy_term_presave(\Drupal\taxonomy\TermInterfac
  *   The nested UL/LI structure.
  */
 function convertToNestedULWithCheckboxes($items, $default_value) {
+  $custom_service = \Drupal::service('phenix_custom_block.view_services');
   $result = '<div class="all-tag-dropdown"><p class="p-tag-arborescence"><strong>Tags / Arborescence</strong></p><ul class="custom-tag-dropdown">';
   $indentations = [0];
-
+  unset($items['4966']);//ne pas afficher le checkbox pour accueil
+  // unset($items['6273']);//ne pas afficher le checkbox pour "les filières"
   foreach ($items as $id => $item) {
     $indentation = 0;
     while (substr($item, 0, 1) === '-') {
       $indentation++;
       $item = substr($item, 1);
     }
-
     while ($indentation < end($indentations)) {
       $result .= "</li></ul>";
       array_pop($indentations);
@@ -598,7 +602,9 @@ function convertToNestedULWithCheckboxes($items, $default_value) {
     }
     $itemText = trim(str_replace('-', '', $item));
     $checked = in_array($id, $default_value) ? ' checked' : '';
-    $result .= '<li data-current-id="' . $id . '">
+    //check if term has children
+    $class_has_child = $custom_service->hasChildren($id) ? ' term-who-had-child' : ' term-don-t-have-child';
+    $result .= '<li class="ifhas ' . $class_has_child . '" data-current-id="' . $id . '">
     <span class="fancytree-node fancytree-expanded fancytree-has-children fancytree-exp-e fancytree-ico-e">
     <span class="fancytree-expander"></span>
     <span class="fancytree-checkbox ' . $checked . '"></span>
@@ -608,4 +614,22 @@ function convertToNestedULWithCheckboxes($items, $default_value) {
   $result .= str_repeat("</li></ul>", count($indentations) - 1) . "</li></ul></div>";
 
   return $result;
+}
+
+
+use Drupal\views\Plugin\views\area\Text;
+
+/**
+ * Implements hook_views_pre_render().
+ * Permet d'ajouter du lien  en bas de la vue s'il y a plus de 3 réunions 
+ */
+function phenix_custom_block_views_pre_render(\Drupal\views\ViewExecutable $view) {
+  // Check if the view is the one you want to target.
+  if ($view->id() == 'civi_groupe_evenements') {
+    if ($view->footer['area']) {
+      if (count($view->result) > 2) {
+        $view->footer['area']->options['content']['value'] = "<a href='/toutes-mes-reunions' class='link-to-meeting-page'>Voir les autres réunions </a>";
+      }
+    }
+  } 
 }
