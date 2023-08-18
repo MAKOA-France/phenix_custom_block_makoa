@@ -58,6 +58,14 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
           'path' => $path . '/templates',
           'template' => 'phenix-custom-block-custom-last-doc'
         ],
+        'phenix_custom_block_last_doc_automatique' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'phenix-custom-block-custom-last-doc-lie'
+        ],
         'phenix_custom_block_custom_texte_image' => [
           'variables' => [
           'content' => Null,
@@ -214,7 +222,6 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
   //Page detail commissions / groupe
   if ($view->storage->id() == 'civi_groupe_evenements' /* && $view->current_display == 'block_1' */) {
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
-    // dump($view);
     $custom_service->customizeViewReunionOfTheCommissionPage($variables);
     
   }
@@ -267,9 +274,15 @@ if ($currentPath == '/node/96') {
  */
 function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
+  // Load the current node or entity.
+  $db = \Drupal::database();
+
+  $term_object = $variables['elements']['#taxonomy_term'];
+  $term_object_id = $custom_service->getNodeFieldValue($term_object, 'tid');
+
   // Alter the term page variables here.
+  $term = $variables['elements']['#taxonomy_term'];
   if( $variables['theme_hook_original'] == 'taxonomy_term' && $variables['elements']['#view_mode'] == 'full') {
-    $term = $variables['elements']['#taxonomy_term'];
     
     //check si la page de term en question est lié a une vue ou pas (en se servant du champ field_taxonomy_views_integrator_)
     //Donc ça va être les gabarits textes + images
@@ -284,7 +297,13 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
       ];  
       
     }else {
-
+      /**** Affichage dans la page dernier doc les doc lié au terme TODO Comment differencier les terme lié a un doc ET terme qui a des doc****/
+      if ($term->id() == '4992') {
+        return $custom_service->getAllDataForDocumentLieAuxTermeFirstElement($variables);
+      }
+      /***** end *****/
+      
+      /**** Affichage dans la page dernier doc ****/
       $field_dosssier = $variables['elements']['field_dossier'];
       $date_changed = $variables['elements']['#taxonomy_term']->get('changed')->getValue();
 
@@ -319,7 +338,6 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                 $child_terms = $taxonomy_term_storage->getChildren($term);
 
               }
-
 
 
               //s'il n'y a pas de documents on redirige vers le 1er enfant 
@@ -370,7 +388,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             $media_extrait = getNodeFieldValue ($media, 'field_resume');
             $title = getNodeFieldValue ($media, 'name');
           }
-          $file_type = $get_first_element[0]['fileType'] == 'application/pdf' ? 'pdf-3.png' : 'pdf-2.png';//todo mettre switch et ajouter tous les types de fichiers
+          $file_type = $custom_service->getFileTypeExtension($get_first_element[0]['fileType']);//todo mettre switch et ajouter tous les types de fichiers
           $file_size = $get_first_element[0]['size'];
 
           // // Get the file size in bytes
@@ -467,6 +485,8 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
   }
   
   if (in_array($form['#id'], ['media-document-add-form', 'media-document-edit-form'])) {
+
+    $form['name']['widget']['#title'] = 'Nom (titre interne)';
     $form['#attributes']['class'][] = 'custom-add-and-edit-form';
     $form['status']['#prefix'] = '<div class="wrapper-status-and-author">';
     $form['author']['#suffix'] = '</div>';
@@ -628,8 +648,25 @@ function phenix_custom_block_views_pre_render(\Drupal\views\ViewExecutable $view
   if ($view->id() == 'civi_groupe_evenements') {
     if ($view->footer['area']) {
       if (count($view->result) > 2) {
-        $view->footer['area']->options['content']['value'] = "<a href='/toutes-mes-reunions' class='link-to-meeting-page'>Voir les autres réunions </a>";
+        $view->footer['area']->options['content']['value'] = "<a href='/toutes-mes-reunions' class='link-to-meeting-page'>Voir + </a>";
       }
     }
+    
   } 
+  if ($view->id() == 'civi_groupe_membres') {
+    
+
+    $view->build_info['title'] = '<p class="test">Référents</div>';
+  }
+}
+
+/**
+ * Implements hook_preprocess_views_view().
+ */
+function phenix_custom_block_preprocess_views_view(array &$variables) {
+  // Check if the view is the one you want to target.
+  if ($variables['view']->id() == 'civi_groupe_evenements') {
+    // Add classes and IDs to the main view container.
+    $variables['attributes']['class'][] = 'civi_groupe_evenements_class';
+  }
 }

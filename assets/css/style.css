@@ -13,6 +13,21 @@
     pointer-events: none;
   }
 /******/
+
+
+/* Page mes commission */
+.section-civicrm-group .views-element-container h2:before {
+    content: '\e81a';
+    position: relative;
+    font-family: "custom-icon-cv" !important;
+    font-style: normal;
+    font-weight: 400 !important;
+}
+.section-civicrm-group .button-purple {
+    display: none;
+}
+/**********/
+
 /* ajout doc => tag & arborescence */ 
 .custom-add-and-edit-form ul.custom-tag-dropdown .term-who-had-child > .fancytree-has-children  > .fancytree-checkbox.checked {
     background-position: -42px -2px !important;
@@ -617,3 +632,137 @@ ul.chosen-results li {
     height: initial;
 } 
 /*========================================= Fin ajout document===========================================================*/
+/* Large devices (desktops) */
+@media (max-width: 1200px) {
+    .custom-add-and-edit-form .layout--twocol-section {
+        gap: 1rem;
+    }
+    .custom-add-and-edit-form #edit-filiere #edit-widget {
+        flex-wrap: wrap;
+    }
+    .all-menu-checkboxes .form-checkboxes .form-item {
+        width: 25%;
+    }
+    .custom-add-and-edit-form .div-parent-save i, .custom-add-and-edit-form .div-parent-delete i {
+        right: 20%;
+    }
+    .custom-add-and-edit-form .js-form-managed-file.form-managed-file {
+        display: grid;
+    }
+}
+/* Extra small devices (portrait phones) */
+@media (max-width: 680px) {    
+     /*Ajout doc*/
+    .custom-add-and-edit-form .layout--twocol-section,
+    .custom-add-and-edit-form .wrapper-doc-type,
+    .custom-add-and-edit-form #edit-filiere #edit-widget  {
+        flex-wrap: wrap;
+        gap: initial;
+    }
+    .custom-add-and-edit-form .form-item-created-0-value-date,
+    .custom-add-and-edit-form .layout--twocol-section .layout__region--first,
+    .custom-add-and-edit-form .form-item-created-0-value-time,
+    .custom-add-and-edit-form .layout--twocol-section .layout__region--second,
+    .custom-add-and-edit-form #edit-field-type-de-document-wrapper,
+    .media-form .wrapper-status-and-author .field--name-status,
+    .custom-add-and-edit-form #edit-author,
+    .custom-add-and-edit-form #edit-created-wrapper,
+    .custom-add-and-edit-form #edit-uid-wrapper {
+        width: 100%;
+    }      
+    .custom-add-and-edit-form #edit-field-media-document-0-upload,
+    .custom-add-and-edit-form #edit-field-media-document-wrapper span.file,
+    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"] {
+        width: 70%;
+    }  
+    .custom-add-and-edit-form #edit-field-source-wrapper{
+        width: 60%;
+    }
+    .all-menu-checkboxes .form-checkboxes .form-item {
+        width: 50%;
+    }
+    .custom-add-and-edit-form #edit-field-social-wrapper{
+        width: 40%;
+    }
+    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="field_media_document_0_remove_button"] {
+        width: 30%;
+    }      
+    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"]::-webkit-file-upload-button,
+    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"]::file-selector-button{
+        width: max-content;
+        max-width: 100%;
+    } 
+    .custom-add-and-edit-form #edit-field-media-document-wrapper span.file {
+        border-radius: initial;
+        white-space: nowrap;
+        overflow: hidden;
+    } 
+    .custom-add-and-edit-form .js-form-managed-file.form-managed-file {
+       flex-wrap: nowrap;
+    }
+    .custom-add-and-edit-form .wrapper-status-and-author {
+        flex-direction: column-reverse;
+        gap: 20px;
+        padding-bottom: 20px;
+    }
+    .custom-add-and-edit-form #edit-author {
+        flex-direction: column-reverse;
+        gap: initial;
+    }
+    .layout__region--second .all-tag-dropdown ul ul {
+        padding-inline-start: 15px;
+    }
+    .custom-add-and-edit-form .div-parent-save, .custom-add-and-edit-form .div-parent-delete {
+        width: 50%;
+    }
+    .custom-add-and-edit-form .div-parent-save i, .custom-add-and-edit-form .div-parent-delete i {
+        right: 15%;
+    }
+    /*Fin ajout doc*/
+    
+    /*Text + image*/
+    body .text-image h2 {
+        font-size: xx-large;
+        margin-bottom: 1rem;
+    }
+    body .text-image .formatted-text pre {
+        white-space: pre-wrap;
+        padding: 2rem ;
+        border-radius: 30px 0;
+    }
+    body .text-image .img-html-bloc img, .middle.faq-dropdown p img {
+        border-radius: 50px 0;
+    }
+    body .text-image .img-html-bloc:after,
+    body .formatted-text table > thead > tr > th:nth-child(1):after {
+        right: 30px;
+        bottom: 30px;
+        width: 70px;
+        height: 150px;
+    }
+    body .formatted-text.img-txt-side-by-side table > thead tr {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+    body .text-image .formatted-text table > thead > tr > th,
+    body .middle.faq-dropdown table > thead > tr > th {
+        width: 100%;
+    }
+    body .text-image .formatted-text table > thead > tr > th > img,
+    body .middle.faq-dropdown table > thead > tr > th > img {
+        padding-right: initial;
+        width: 100%;
+        border-radius: 50px 0;
+
+    }
+    body .text-image .formatted-text, .text-image .text-img-video {
+        padding: 0 0 2rem;
+    }
+    .txt-img-custom-pdf {
+        width: 25%;
+    }
+    body .middle.faq-dropdown {
+        padding-left: 1rem;
+    }
+     /*Fin Text + image*/
+}

@@ -7,9 +7,9 @@ use Drupal\media\Entity\Media;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\file\Entity\File;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\file\Entity\File;
 /**
  * Class PubliciteService
  * @package Drupal\phenix_custom_block\Services
@@ -396,6 +396,16 @@ class CustomBlockServices {
     return $formatted_date;
   }
 
+  private function getYearFromTimestamp($timestamp) {
+    $format = 'Y';
+    // Create a new DrupalDateTime object using the timestamp.
+    $date = DrupalDateTime::createFromTimestamp($timestamp);
+
+    // Format the date using the desired format.
+    $year = $date->format($format);
+    return $year;
+  }
+
 
   /**
    * Retourne le renderable html d'image
@@ -486,6 +496,136 @@ public function hasChildren ($term_id) {
   }
 
 }
+
+/**
+ * Recupère la date de création d'un fichier
+ */
+public function getCreatedDocument ($file) {
+  $fileId = $file->id();
+  if ($file) {
+    $file_created_at = getNodeFieldValue ($file, 'created');
+    return date('d m Y', $file_created_at);
+  }
+}
+
+public function getFileTypeExtension ($file_type) {
+  return $file_type == 'application/pdf' ? 'pdf-3.png' : 'pdf-2.png';
+}
+
+/**
+ * Recupère les information sur le premièr document qui sera mis en evidence (document lié au terme)
+ */
+public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
+  
+  $data = [];
+  $db = \Drupal::database();
+  $term_object = $var['elements']['#taxonomy_term'];
+  $term_object_id = $this->getNodeFieldValue($term_object, 'tid');
+  $term_object = Term::load($term_object_id);
+  $term_name = $this->getNodeFieldValue($term_object, 'name');
+  $string_query = 'select entity_id from media__field_tags where field_tags_target_id = ' . $term_object_id;
+  $all_linked_doc = $db->query($string_query)->fetchAll();
+  if ($all_linked_doc) {
+    $all_linked_doc = array_column($all_linked_doc, 'entity_id');
+
+
+    //sort by created 
+    $entityTypeManager = \Drupal::entityTypeManager();
+    $query = $entityTypeManager->getStorage('media')->getQuery()
+      ->condition('mid', $all_linked_doc, 'IN')
+      ->sort('created', 'DESC') // Sort by creation date in descending order
+      ->range(0, count($all_linked_doc)); // Limit the results to the specified media IDs
+      
+    $media_entities = $query->execute();
+
+    $media_entities = $entityTypeManager->getStorage('media')->loadMultiple($media_entities);
+
+
+
+
+
+    // $media_entities = \Drupal::entityTypeManager()->getStorage('media')->loadMultiple($all_linked_doc);
+    
+    if (count($media_entities) > 1) {
+      $first_doc = reset($media_entities);
+      $created_at = $this->getNodeFieldValue($first_doc, 'created');
+      $document_year = $this->getYearFromTimestamp($created_at);
+      $first_doc_title = $this->getNodeFieldValue($first_doc, 'name');
+      $first_doc_type_doc = $this->getTypeDocument ($first_doc);
+      $first_doc_extrait = $this->getNodeFieldValue ($first_doc, 'field_resume');
+      $first_doc_file = $this->getNodeFieldValue ($first_doc, 'field_media_document');
+      $file_object = File::load($first_doc_file);
+      $first_doc_created_at = $this->getCreatedDocument($file_object);
+      $file_type = $this->getNodeFieldValue($file_object, 'filemime');
+      $first_doc_img_file = $this->getFileTypeExtension($file_type);
+      $first_doc_file_url = $this->getNodeFieldValue($file_object, 'uri');
+      $first_doc_file_size = filesize($first_doc_file_url);
+      $first_doc_file_size = round($first_doc_file_size / 1024, 2);
+      $first_doc_id = $first_doc->id();
+      $display_see_other_doc = true;
+      
+      $allOtherDoc = array_shift($media_entities);
+
+
+      return $var['content'] = [
+        '#theme' => 'phenix_custom_block_last_doc_automatique',
+        '#cache' => ['max-age' => 0],
+        '#content' => [
+          'data' => $this->getAllOtherDocInfo ($media_entities, $term_name),
+          'first_element' => 'tttt',
+          'first_title' => $first_doc_title,
+          'first_type_de_document' => $first_doc_type_doc,
+          'resume' => $first_doc_extrait,
+          'file_type' => $first_doc_img_file,
+          'file_size' => $first_doc_file_size,
+          'date_doc' => $first_doc_created_at,
+          'first_element_id' => $first_doc_id,
+          'first_element_title' => $first_doc_title,
+          'display_see_other_doc' => $display_see_other_doc,
+          'term_name' => $term_name,
+          'document_year' => $document_year,
+          'is_page_last_doc' => true,
+        ]
+      ];
+    } 
+  }
+}
  
+private function getAllOtherDocInfo ($allDoc, $termName) {
+  $all_documents = [];
+  foreach($allDoc as $doc) {
+    $created_at = $this->getNodeFieldValue($doc, 'created');
+    $document_year = $this->getYearFromTimestamp($created_at);
+    $file = $this->getNodeFieldValue ($doc, 'field_media_document');
+    $file_object = File::load($file);
+    $file_type = $this->getNodeFieldValue($file_object, 'filemime');
+    $first_doc_img_file = $this->getFileTypeExtension($file_type);
+    $first_doc_file_url = $this->getNodeFieldValue($file_object, 'uri');
+    $first_doc_file_size = filesize($first_doc_file_url);
+    $media_name = $this->getNodeFieldValue($doc, 'name');
+    $type_doc = $this->getTypeDocument ($doc);
+     $all_documents[$media_name][] = [
+        'fileType' => $first_doc_img_file,
+        'fileurl' => $first_doc_file_url,
+        'size' => $first_doc_file_size,
+        'fileId' => $file,
+        'type_document' => $type_doc,
+        'description' => $media_name,
+        'document_year' => $document_year,
+        'created_at' => $this->convertTimesptamToDate($created_at),
+        'paragraph_id' => '',
+        'term_name' => $termName,
+      ]; 
+  }
+
+  return $all_documents;
+      
+}
+
+private function getMediaName ($file) {
+  $get_description_by_id = \Drupal::database()->query('select * from  media__field_media_document where entity_id = ' . $file->id())->fetch()->field_media_document_description;
+  $size_of_file = filesize('/var/aegir/platforms/civicrm-d9/' . $file->createFileUrl());
+  $media_name = $this->getNodeFieldValue($media, 'field_titre_public') ?: $get_description_by_id;
+}
 
 }
