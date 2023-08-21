@@ -472,6 +472,12 @@ class CustomBlockServices {
   }
 
 
+public function isRubriqueWithTxtAndImg ($term_id) {
+
+  $term = Term::load($term_id);
+  $isRubriqueWithImgAndTxt = $this->getNodeFieldValue($term, 'field_taxonomy_views_integrator_');
+  return $isRubriqueWithImgAndTxt;
+}
 
 public function hasChildren ($term_id) {
   // Replace 'taxonomy_vocabulary_machine_name' with the actual machine name of your vocabulary.
@@ -479,7 +485,7 @@ public function hasChildren ($term_id) {
 
   // Replace 'term_tid' with the actual term ID you want to check.
   $tid = $term_id;
-
+  
   $term = Term::load($term_id);
 
   if ($term) {

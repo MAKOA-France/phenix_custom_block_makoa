@@ -542,7 +542,10 @@ ul.chosen-results li {
     font-size: 0.85rem;
 }
 .layout__region--second .chosen-container-multi .chosen-choices  li.search-field input.chosen-search-input{
-    display: none;
+    border: none;
+    width: 100% !important;
+    -webkit-box-shadow: unset;
+    box-shadow: unset;
 }
 .layout__region--second .chosen-container-multi .chosen-choices li.search-choice {
     border: initial;
@@ -639,6 +642,7 @@ ul.chosen-results li {
     }
     .custom-add-and-edit-form #edit-filiere #edit-widget {
         flex-wrap: wrap;
+        justify-content: initial;
     }
     .all-menu-checkboxes .form-checkboxes .form-item {
         width: 25%;
@@ -647,8 +651,78 @@ ul.chosen-results li {
         right: 20%;
     }
     .custom-add-and-edit-form .js-form-managed-file.form-managed-file {
-        display: grid;
+        flex-wrap: nowrap;
     }
+    #edit-field-media-document-wrapper .messages.messages--error.file-upload-js-error {
+        position: absolute;
+        width: auto;
+        top: 36px;
+    }
+    .layout__region--second .all-tag-dropdown ul ul {
+        padding-inline-start: 30px;
+    }
+}
+/* Medium devices (tablets) */
+@media (max-width: 992px) { 
+    .custom-add-and-edit-form #edit-field-media-document-0-upload,
+    .custom-add-and-edit-form #edit-field-media-document-wrapper span.file,
+    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"] {
+        width: 75%;
+    }
+    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="field_media_document_0_remove_button"],
+    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"]::-webkit-file-upload-button,
+    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"]::file-selector-button{
+        width: 25%;
+    } 
+    .custom-add-and-edit-form .wrapper-doc-type {
+        flex-wrap: wrap;
+        gap: initial;
+    }
+    .custom-add-and-edit-form #edit-field-type-de-document-wrapper,
+    .custom-add-and-edit-form #edit-uid-wrapper #edit-uid-0-target-id,
+    .custom-add-and-edit-form #edit-uid-wrapper,
+    .custom-add-and-edit-form #edit-created-wrapper,
+    .media-form .wrapper-status-and-author .field--name-status {
+        width: 100%;
+    }
+    .custom-add-and-edit-form #edit-field-social-wrapper,
+    .custom-add-and-edit-form #edit-field-source-wrapper {
+        width: 50%;
+    }
+    .all-menu-checkboxes .form-checkboxes .form-item {
+        width: 33.333%;
+    }
+    .custom-add-and-edit-form .wrapper-status-and-author {
+        flex-wrap: wrap;
+        flex-direction: column-reverse;
+    }
+    .custom-add-and-edit-form #edit-author {
+        width: 100%;
+        gap: initial;
+        flex-wrap: wrap;
+        flex-direction: column-reverse;
+    }
+    .custom-add-and-edit-form .div-parent-save i,
+    .custom-add-and-edit-form .div-parent-delete i {
+        right: 15%;
+    }
+    .layout__region--second .all-tag-dropdown ul ul {
+        padding-inline-start: 20px;
+    }
+}
+/* Small devices (landscape phones) */
+@media (max-width: 768px) { 
+    .custom-add-and-edit-form #edit-field-media-document-0-upload,
+    .custom-add-and-edit-form #edit-field-media-document-wrapper span.file,
+    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"] {
+        width: 70%;
+    }
+    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="field_media_document_0_remove_button"],   
+    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"]::-webkit-file-upload-button,
+    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"]::file-selector-button{
+        width: 30%;
+    } 
+
 }
 /* Extra small devices (portrait phones) */
 @media (max-width: 680px) {    
@@ -670,11 +744,6 @@ ul.chosen-results li {
     .custom-add-and-edit-form #edit-uid-wrapper {
         width: 100%;
     }      
-    .custom-add-and-edit-form #edit-field-media-document-0-upload,
-    .custom-add-and-edit-form #edit-field-media-document-wrapper span.file,
-    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"] {
-        width: 70%;
-    }  
     .custom-add-and-edit-form #edit-field-source-wrapper{
         width: 60%;
     }
@@ -684,14 +753,7 @@ ul.chosen-results li {
     .custom-add-and-edit-form #edit-field-social-wrapper{
         width: 40%;
     }
-    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="field_media_document_0_remove_button"] {
-        width: 30%;
-    }      
-    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"]::-webkit-file-upload-button,
-    .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"]::file-selector-button{
-        width: max-content;
-        max-width: 100%;
-    } 
+    
     .custom-add-and-edit-form #edit-field-media-document-wrapper span.file {
         border-radius: initial;
         white-space: nowrap;
@@ -718,51 +780,4 @@ ul.chosen-results li {
     .custom-add-and-edit-form .div-parent-save i, .custom-add-and-edit-form .div-parent-delete i {
         right: 15%;
     }
-    /*Fin ajout doc*/
-    
-    /*Text + image*/
-    body .text-image h2 {
-        font-size: xx-large;
-        margin-bottom: 1rem;
-    }
-    body .text-image .formatted-text pre {
-        white-space: pre-wrap;
-        padding: 2rem ;
-        border-radius: 30px 0;
-    }
-    body .text-image .img-html-bloc img, .middle.faq-dropdown p img {
-        border-radius: 50px 0;
-    }
-    body .text-image .img-html-bloc:after,
-    body .formatted-text table > thead > tr > th:nth-child(1):after {
-        right: 30px;
-        bottom: 30px;
-        width: 70px;
-        height: 150px;
-    }
-    body .formatted-text.img-txt-side-by-side table > thead tr {
-        display: flex;
-        flex-direction: column-reverse;
-    }
-    body .text-image .formatted-text table > thead > tr > th,
-    body .middle.faq-dropdown table > thead > tr > th {
-        width: 100%;
-    }
-    body .text-image .formatted-text table > thead > tr > th > img,
-    body .middle.faq-dropdown table > thead > tr > th > img {
-        padding-right: initial;
-        width: 100%;
-        border-radius: 50px 0;
-
-    }
-    body .text-image .formatted-text, .text-image .text-img-video {
-        padding: 0 0 2rem;
-    }
-    .txt-img-custom-pdf {
-        width: 25%;
-    }
-    body .middle.faq-dropdown {
-        padding-left: 1rem;
-    }
-     /*Fin Text + image*/
 }

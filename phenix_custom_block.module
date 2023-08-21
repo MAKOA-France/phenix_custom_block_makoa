@@ -574,6 +574,10 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
 
 
   }
+
+  if ($form['#form_id'] == 'taxonomy_term_rubrique_form') {
+    
+  }
  
 }
 
@@ -623,7 +627,7 @@ function convertToNestedULWithCheckboxes($items, $default_value) {
     $itemText = trim(str_replace('-', '', $item));
     $checked = in_array($id, $default_value) ? ' checked' : '';
     //check if term has children
-    $class_has_child = $custom_service->hasChildren($id) ? ' term-who-had-child' : ' term-don-t-have-child';
+    $class_has_child = $custom_service->hasChildren($id) || $custom_service->isRubriqueWithTxtAndImg($id) ? ' term-who-had-child' : ' term-don-t-have-child';
     $result .= '<li class="ifhas ' . $class_has_child . '" data-current-id="' . $id . '">
     <span class="fancytree-node fancytree-expanded fancytree-has-children fancytree-exp-e fancytree-ico-e">
     <span class="fancytree-expander"></span>
