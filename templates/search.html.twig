@@ -1,0 +1,14 @@
+<div class="document-content">
+    <div class="default-content-doc">
+        <a href="/media/{{ content.media_id }}"><h3>{{ content.title }}</h3></a><p class="doc-created-at">  {{ "Publié le " ~ content.published_on |raw}}</p>
+    </div>
+    <div class="doc-resume">
+        <p class="doc-resume">{{ content.resume|raw }}</p>
+    </div>
+    <div class="doc-info">
+        <span class="libelle-type-doc">Type de doc : </span><span class="doc-type">{{ content.type_document }}</span>
+        {% if content.filiere %}
+        | <span class="libelle-filiere-doc">Filière : </span><span class="doc-filiere">{{ content.filiere }}</span>
+        {% endif %}
+    </div>
+</div>

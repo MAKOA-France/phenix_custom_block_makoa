@@ -100,12 +100,38 @@ class CustomBlockServices {
     }
 
 
+    private function getAllEventId () {
+      $query = "SELECT
+        Event.start_date AS event_start_date,
+        civicrm_contact.id AS id,
+        Event.id AS event_id, 
+        Event.title as event_title
+      FROM
+        civicrm_contact
+      INNER JOIN civicrm_event AS Event ON civicrm_contact.id = Event.created_id
+      WHERE
+      DATE_FORMAT(
+              (Event.start_date  + INTERVAL 7200 SECOND),
+              '%Y-%m-%dT%H:%i:%s'
+          ) >= DATE_FORMAT(
+              (NOW() + INTERVAL 7200 SECOND),
+              '%Y-%m-%dT%H:%i:%s'
+          )
+        -- (DATE_FORMAT((Event.start_date + INTERVAL 7200 SECOND), '%Y-%m-%dT%H:%i:%s') >= DATE_FORMAT((NOW() + INTERVAL 7200 SECOND), '%Y-%m-%dT%H:%i:%s'))
+        AND
+         (Event.is_active = '1')
+      ";
+
+        $results =  \Drupal::database()->query($query)->fetchAll();
+        return $results;
+    } 
+
     /**
      * Recupère tous les reunions à venir
      * 
      */
     public function getAllMeetings ($cid) {
-        $query = "SELECT
+       /*  $query = "SELECT
         Event.start_date AS event_start_date,
         civicrm_contact.id AS id,
         Event.id AS event_id, Event.title as event_title
@@ -113,13 +139,91 @@ class CustomBlockServices {
         civicrm_contact
       INNER JOIN civicrm_event AS Event ON civicrm_contact.id = Event.created_id
       WHERE
-        (DATE_FORMAT((Event.start_date + INTERVAL 7200 SECOND), '%Y-%m-%dT%H:%i:%s') >= DATE_FORMAT(('2023-07-18T22:00:00' + INTERVAL 7200 SECOND), '%Y-%m-%dT%H:%i:%s'))
-        AND (Event.is_active = '1')  AND civicrm_contact.id = $cid  order by start_date limit 3
-      ";
-      $results =  \Drupal::database()->query($query)->fetchAll();
+        -- (DATE_FORMAT((Event.start_date + INTERVAL 7200 SECOND), '%Y-%m-%dT%H:%i:%s') >= DATE_FORMAT((NOW() + INTERVAL 7200 SECOND), '%Y-%m-%dT%H:%i:%s'))
+        -- AND
+         (Event.is_active = '1')  AND civicrm_contact.id = $cid  order by start_date limit 3
+      "; */
 
+
+      $isAllowedMeeting = $this->checkIfContactIsInsideAGroup($cid);
+      
+      // Use the ArrayFilter class to remove false values
+      $isAllowedMeeting = $this->removeFalseValues($isAllowedMeeting);
+      $isAllowedMeeting = array_keys($isAllowedMeeting);
+      if ($isAllowedMeeting) {
+        $isAllowedMeeting = implode(', ', $isAllowedMeeting);
+        
+        $query = "SELECT
+      `created_id_civicrm_contact`.`start_date` AS `event_start_date`,
+      `created_id_civicrm_contact`.`title`  as event_title,
+      `civicrm_contact`.`id` AS `id`,
+      `created_id_civicrm_contact`.`id` AS `created_id_civicrm_contact_id`
+  FROM
+      `civicrm_contact`
+  INNER JOIN
+      `civicrm_event` AS `created_id_civicrm_contact` ON `civicrm_contact`.`id` = `created_id_civicrm_contact`.`created_id`
+  WHERE
+      (
+          DATE_FORMAT(
+              (`created_id_civicrm_contact`.`start_date` + INTERVAL 7200 SECOND),
+              '%Y-%m-%dT%H:%i:%s'
+          ) >= DATE_FORMAT(
+              (NOW() + INTERVAL 7200 SECOND),
+              '%Y-%m-%dT%H:%i:%s'
+          )
+      )
+      AND
+      (`created_id_civicrm_contact`.`is_active` = '1')  AND `created_id_civicrm_contact`.`id` IN (" . $isAllowedMeeting . ")   ORDER BY
+      `event_start_date` ASC limit 3;
+  ";
+      $results =  \Drupal::database()->query($query)->fetchAll();
+      
+    }
+     
       return $results;
     }
+
+    /**
+     * 
+     */
+    private function checkIfContactIsInsideAGroup ($cid) {
+
+      $allEvent = $this->getAllEventId();
+      $contactInsideAgroup = [];
+      foreach($allEvent as $event) {
+        $event_id = $event->event_id;
+        if ($event_id) {
+
+          $events = \Civi\Api4\Event::get()
+          ->addSelect('rsvpevent_cg_linked_groups.rsvpevent_cf_linked_groups')
+          ->addWhere('id', '=', $event_id)
+          ->execute();
+          if ($events) {
+            
+            $eventGroupId = $events->getIterator();
+            $eventGroupId = iterator_to_array($eventGroupId);  
+            foreach ($eventGroupId as $group_id) {
+              $allContactId = \Civi\Api4\GroupContact::get()
+              ->addSelect('contact_id')
+              ->addWhere('group_id', '=', $group_id['rsvpevent_cg_linked_groups.rsvpevent_cf_linked_groups'][0])
+              ->execute()->getIterator();
+              $allContactId = iterator_to_array($allContactId);  
+              $allContactId = array_column($allContactId, 'contact_id');
+              $contactInsideAgroup[$event_id] = in_array($cid, $allContactId);
+            }
+            
+          }
+        }
+      }
+
+      return $contactInsideAgroup;
+    }
+
+  public function removeFalseValues($array) {
+    return array_filter($array, function ($value) {
+        return $value !== false;
+    });
+  }
 
     
   public function getContactIdByEmail ($email) {
@@ -193,7 +297,6 @@ class CustomBlockServices {
             'title' => $value
           ]
         ];
-        // dump($start_date, $current_id, $value);
       }
     }
 
@@ -247,6 +350,20 @@ class CustomBlockServices {
         }
         return $type_doc;
       }
+      
+      public function getTypeDocumentWithAutre ($media) {
+        if (!$media) {
+          return null;
+        }
+        $type_doc = '';
+        $type_doc_value = $this->getNodeFieldValue($media, 'field_type_de_document');
+        // if ($type_doc_value != 18) {
+          $type_doc = $media->get('field_type_de_document')->getFieldDefinition()->getItemDefinition()->getSettings()['allowed_values'][$type_doc_value];
+        // }
+        return $type_doc;
+      }
+
+
 
       /**
        * Gabarit text + image
@@ -406,6 +523,13 @@ class CustomBlockServices {
     return $year;
   }
 
+
+  public function convertTimestampToDateDMYHS ($timestamp) {
+    // Convert the timestamp to a formatted date and time string.
+    $date_format = 'l d/m/Y - H:i'; // Define your desired date and time format.
+    return \Drupal::service('date.formatter')->format($timestamp, 'custom', $date_format);
+
+  }
 
   /**
    * Retourne le renderable html d'image
@@ -628,10 +752,235 @@ private function getAllOtherDocInfo ($allDoc, $termName) {
       
 }
 
+/**
+ * Personnaliser l'affichage des resultat de recherche (search api)
+ */
+public function customResultSearchDoc (&$var) {
+  $field = $var['field'];
+  $view = $var['view'];
+	$row = $var['row'];
+  $value = $field->getValue($row);
+  $entity = $var['row']->_entity;
+  
+  if ($field->field == 'rendered_item') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'body') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'title') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'name') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'description') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'name_1') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  // $type_doc = $custom_service->getNodeFieldValue($entity, 'field_type_de_document');
+  // dump('qsmdlkf', $entity->hasField('field_type_de_document'), $entity);
+  if($field->field == 'name') {
+    if ($entity->hasField('field_type_de_document')) {
+      $published_on = $this->getNodeFieldValue($entity, 'created');
+      $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
+      $title = $this->getNodeFieldValue($entity, 'name');
+      $resume = $this->getNodeFieldValue($entity, 'field_resume');
+      $filieres = $this->getNodeFieldValue($entity, 'field_filieres');
+      $label = '';
+      if ($filieres) {
+        foreach(json_decode($filieres) as $filiere) {
+          $label .= $this->getFiliereLabelById($filiere->id)['label'] . ', ';
+          
+        }  
+      }
+    
+    
+    
+      $type_doc = $entity->get('field_type_de_document')->getValue()[0]['value'];
+      $libelle = $this->getTypeDocumentWithAutre($entity);
+      
+      if ($libelle) {
+        $doc_info = [
+          '#theme' => 'phenix_custom_bloc_search',
+          '#cache' => ['max-age' => 0],
+          '#content' => [
+            'title' => $value,
+            'resume' => $resume,
+            'type_document' => $libelle,
+            'filiere' => rtrim($label, ', '),
+            'published_on' => $convertedDate,
+            'media_id' => $entity->id()
+            ]
+        ];
+        $var['output'] = $doc_info;
+      }
+    }
+    return $var;
+  }
+}
+
+/**
+ * 
+ */
+public function customResultThumbnail(&$var) {
+  $field = $var['field'];
+	$row = $var['row'];
+  $value = $field->getValue($row);
+  $view = $var['view'];
+  $entity = $var['row']->_entity;
+  if ($value) {
+    $doc = $this->getNodeFieldValue($entity, 'field_media_document');
+    $file = \Drupal\file\Entity\File::load($doc);
+    $filememe = $this->getNodeFieldValue($file, 'filemime');
+    $txt_file = '';
+    switch($filememe) {
+      case 'application/pdf':
+        $txt_file = '.pdf';
+        break;
+        
+    }
+      
+    $var['output'] = ['#markup' => '<p class="thumbnail-type"> ' . $txt_file . ' </p>'];
+  }
+}
+
+public function customResultSearchNode(&$var){
+  $field = $var['field'];
+	$row = $var['row'];
+  $value = $field->getValue($row);
+  $view = $var['view'];
+  $entity = $var['row']->_entity;
+  // dump($field->field);
+  if ($field->field == 'body') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'title') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'rendered_item') {
+    $published_on = $this->getNodeFieldValue($entity, 'created');
+    $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
+    
+     $info_node_article = [
+      '#theme' => 'phenix_custom_bloc_search_node',
+      '#cache' => ['max-age' => 0],
+      '#content' => [
+         'title' => $entity->getTitle(),
+        'resume' => $this->getNodeFieldValue($entity, 'body'),
+        'published_on' => $convertedDate, 
+        'node_id' => $entity->id(),
+      ]
+    ]; 
+    $var['output'] = $info_node_article;
+    return $var;
+  }
+}
+
+/**
+ * Personnaliser l'affichage du resultat de recherche des term
+ */
+public function customResultSearchTerm(&$var){
+  $field = $var['field'];
+	$row = $var['row'];
+  $value = $field->getValue($row);
+  $view = $var['view'];
+  $entity = $var['row']->_entity;
+  // dump($field->field);
+  if ($field->field == 'body') {
+    $var['output'] = '';
+  }
+  if ($field->field == 'title') {
+    $var['output'] = '';
+  }
+  if ($field->field == 'rendered_item') {
+    $published_on = $this->getNodeFieldValue($entity, 'changed');
+    $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
+    $description =  $this->getNodeFieldValue($entity, 'description');
+    if (!$description) {//
+      $dossier_id = $this->getNodeFieldValue($entity, 'field_dossier');
+      $paragraph = \Drupal\paragraphs\Entity\Paragraph::load($dossier_id);
+      $description = $this->getNodeFieldValue($paragraph, 'field_texte_formate');
+
+      
+      // Create a DOMDocument instance and load the HTML
+      $doc = new \DOMDocument();
+      $doc->loadHTML($description);
+
+      // Use DOMXPath to query for text nodes
+      $xpath = new \DOMXPath($doc);
+
+      // Query for all text nodes within the table element
+      $textNodes = $xpath->query('//table//text()');
+
+      // Initialize a variable to store the extracted text
+      $extractedText = '';
+
+      // Loop through the text nodes and concatenate their text content
+      foreach ($textNodes as $node) {
+          $extractedText .= $node->nodeValue . ' ';
+      }
+
+      // Remove extra whitespace and trim the result
+      $description = trim($extractedText);
+      $description = utf8_decode($description);
+      
+    }
+     $info_node_article = [
+      '#theme' => 'phenix_custom_bloc_search_term',
+      '#cache' => ['max-age' => 0],
+      '#content' => [
+         'title' => $this->getNodeFieldValue($entity, 'name'),
+        'resume' => $description,
+        'published_on' => $convertedDate, 
+        'node_id' => $entity->id(),
+      ]
+    ]; 
+    $var['output'] = $info_node_article;
+    return $var;
+  }
+}
+
+/**
+ * Recupère le libellé du filiere par id
+ */
+private function getFiliereLabelById ($id) {
+  return \Civi\Api4\OptionValue::get()
+  ->addSelect('label')
+  ->addWhere('id', '=', $id)
+  ->execute()->first();
+}
+
+/**
+ * Ajoute le titre pour le résultat de recherche ==> "Résultats pour "mot clé"
+ */
+public function addTitleToViewSearch(&$var) {
+  if ($var['view']->id() == 'rechercher') {
+    $field_name = 'rendered_item';
+
+    // Get the field handler.
+    $field = $var['view']->display_handler->getHandler('field', $field_name);
+
+    // Change the label of the field.
+    $keyword = \Drupal::request()->query->get('search_api_fulltext');
+    // If you want to change the label only for a specific display, you can check for the display ID.
+    // Replace 'block_1' with your specific display ID.
+    if ($var['display_id'] == 'page_1') {
+      $field->options['label'] = [
+        '#markup' => '<p class="result-label"><span class="res-label-text">Résultat pour </span><span class="res-keyword">"' . $keyword . '"</span>',
+      ];
+    }
+
+  }
+}
+
 private function getMediaName ($file) {
   $get_description_by_id = \Drupal::database()->query('select * from  media__field_media_document where entity_id = ' . $file->id())->fetch()->field_media_document_description;
   $size_of_file = filesize('/var/aegir/platforms/civicrm-d9/' . $file->createFileUrl());
   $media_name = $this->getNodeFieldValue($media, 'field_titre_public') ?: $get_description_by_id;
 }
+
 
 }

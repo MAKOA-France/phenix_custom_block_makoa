@@ -113,6 +113,30 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
           'render element' => 'children',
           'path' => $path . '/templates',
           'template' => 'alter-view-detail-commission-reunion'
+        ],
+        'phenix_custom_bloc_search' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'search'
+        ],
+        'phenix_custom_bloc_search_node' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'search-node'
+        ],
+        'phenix_custom_bloc_search_term' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'search-term'
         ]
     ];
 }
@@ -170,6 +194,7 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
   $view = $variables['view'];
 	$field = $variables['field'];
 	$requests = \Drupal::request();
+  $custom_service = \Drupal::service('phenix_custom_block.view_services');
 	$row = $variables['row'];
 	
 	if ($view->storage->id() == 'home_caroussel' &&  $view->current_display == 'block_1') {
@@ -223,7 +248,27 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
   if ($view->storage->id() == 'civi_groupe_evenements' /* && $view->current_display == 'block_1' */) {
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
     $custom_service->customizeViewReunionOfTheCommissionPage($variables);
+
     
+  }
+
+  if ($view->storage->id() == 'rechercher') {
+    $entity = $variables['row']->_entity;
+    if ($entity instanceof  \Drupal\media\Entity\Media) {
+      $custom_service->customResultSearchDoc ($variables);
+    }
+    
+    if ($field->field == 'thumbnail') {
+      $custom_service->customResultThumbnail($variables);
+    }
+
+    if ($entity instanceof  \Drupal\node\Entity\Node) {
+      $custom_service->customResultSearchNode($variables);
+    }
+    
+    if ($entity instanceof  Drupal\taxonomy\Entity\Term) {
+      $custom_service->customResultSearchTerm($variables);
+    }
   }
 }
 
@@ -467,7 +512,7 @@ function getNodeFieldValue ($node, $field) {
 
 // Implements hook_form_alter().
 function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
-  
+  // dump($form, $form_state);
   //Page mot de passe oublié
   if ($form['#form_id'] == 'user_pass') {
     $form['actions']['#prefix'] = '<div class="btn-custom-submit">';
@@ -617,7 +662,7 @@ function convertToNestedULWithCheckboxes($items, $default_value) {
       $result .= "</li></ul>";
       array_pop($indentations);
     }
-
+    
     if ($indentation > end($indentations)) {
       $result .= "<ul>";
       array_push($indentations, $indentation);
@@ -632,11 +677,11 @@ function convertToNestedULWithCheckboxes($items, $default_value) {
     <span class="fancytree-node fancytree-expanded fancytree-has-children fancytree-exp-e fancytree-ico-e">
     <span class="fancytree-expander"></span>
     <span class="fancytree-checkbox ' . $checked . '"></span>
-      <span class="fancytree-title">' . $itemText . '</span></span>';
+    <span class="fancytree-title">' . $itemText . '</span></span>';
   }
-
+  
   $result .= str_repeat("</li></ul>", count($indentations) - 1) . "</li></ul></div>";
-
+  
   return $result;
 }
 
@@ -649,6 +694,7 @@ use Drupal\views\Plugin\views\area\Text;
  */
 function phenix_custom_block_views_pre_render(\Drupal\views\ViewExecutable $view) {
   // Check if the view is the one you want to target.
+  $custom_service = \Drupal::service('phenix_custom_block.view_services');
   if ($view->id() == 'civi_groupe_evenements') {
     if ($view->footer['area']) {
       if (count($view->result) > 2) {
@@ -659,18 +705,36 @@ function phenix_custom_block_views_pre_render(\Drupal\views\ViewExecutable $view
   } 
   if ($view->id() == 'civi_groupe_membres') {
     
-
+    
     $view->build_info['title'] = '<p class="test">Référents</div>';
   }
 }
+
+
 
 /**
  * Implements hook_preprocess_views_view().
  */
 function phenix_custom_block_preprocess_views_view(array &$variables) {
   // Check if the view is the one you want to target.
+  $view = $variables['view'];
+  $custom_service = \Drupal::service('phenix_custom_block.view_services');
+  $field = $variables['field'];
+  $requests = \Drupal::request();
+  $row = $variables['row'];
+  
+  $custom_service->addTitleToViewSearch($variables);
+
+
   if ($variables['view']->id() == 'civi_groupe_evenements') {
+    $variables['attached_markup'] = '<div class="custom-markup">Your custom markup goes here.</div>';
     // Add classes and IDs to the main view container.
     $variables['attributes']['class'][] = 'civi_groupe_evenements_class';
   }
+
+  /* if ($variables['view']->id() == 'rechercher') {
+    $field = $field->field;
+    $variables['view']->result[0]->_entity
+  } */
+  
 }

@@ -1,0 +1,10 @@
+<div class="node-search">
+    <div class="default-content-node">
+        <a href="/node/{{ content.node_id }}"><h3>{{ content.title }}</h3></a><span class="doc-created-at">  {{ "Publié le " ~ content.published_on |raw}}</span>
+        <span class="node-type"> Article </span>
+    </div>
+    <div class="node-description">
+        <p class="p-node-description">{{ content.resume|raw }}</p>
+    </div>
+     
+</div>
