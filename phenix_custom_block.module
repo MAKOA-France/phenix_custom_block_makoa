@@ -137,6 +137,14 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
           'render element' => 'children',
           'path' => $path . '/templates',
           'template' => 'search-term'
+        ],
+        'phenix_custom_bloc_search_media_video' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'search-media-video'
         ]
     ];
 }
@@ -254,6 +262,7 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
 
   if ($view->storage->id() == 'rechercher') {
     $entity = $variables['row']->_entity;
+    
     if ($entity instanceof  \Drupal\media\Entity\Media) {
       $custom_service->customResultSearchDoc ($variables);
     }
@@ -268,6 +277,14 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
     
     if ($entity instanceof  Drupal\taxonomy\Entity\Term) {
       $custom_service->customResultSearchTerm($variables);
+    }
+  }
+  
+  if ($view->storage->id() == 'civi_groupe_evenements' && $view->current_display == 'page_4') {
+    $id = $custom_service->getNodeFieldValue($row->_entity, 'id');
+    if ($field->field == 'title') {
+      dump($row);
+      $variables['output'] = ['#markup' => '<a href="/civicrm-event/' . $id . '"> ' . $field->getValue($row) . '</a>'];
     }
   }
 }
@@ -343,9 +360,9 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
       
     }else {
       /**** Affichage dans la page dernier doc les doc lié au terme TODO Comment differencier les terme lié a un doc ET terme qui a des doc****/
-      if ($term->id() == '4992') {
+      // if ($term->id() == '4992') {
         return $custom_service->getAllDataForDocumentLieAuxTermeFirstElement($variables);
-      }
+      // }
       /***** end *****/
       
       /**** Affichage dans la page dernier doc ****/
@@ -365,8 +382,8 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
           $all_documents = [];
           foreach ($documents as $index => $value) {
             if (is_numeric($index)) {
-              $title_doc = $value['#paragraph'] ? $value['#paragraph']->get('field_titre')->getValue()[0]['value'] : '';  //maybe need a condition if existe
-              $id_document = $value['#paragraph'] ? $value['#paragraph']->get('field_document')->getValue() : '';  //maybe need a condition if existe
+              $title_doc = $value['#paragraph'] ? ($value['#paragraph']->hasField('field_titre') ? $value['#paragraph']->get('field_titre')->getValue()[0]['value'] : '') : '';  //maybe need a condition if existe
+              $id_document = $value['#paragraph'] ? ($value['#paragraph']->hasField('field_document') ? $value['#paragraph']->get('field_document')->getValue() : '') : '';  //maybe need a condition if existe
 
 
               if (!$id_document) {
@@ -512,7 +529,6 @@ function getNodeFieldValue ($node, $field) {
 
 // Implements hook_form_alter().
 function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
-  // dump($form, $form_state);
   //Page mot de passe oublié
   if ($form['#form_id'] == 'user_pass') {
     $form['actions']['#prefix'] = '<div class="btn-custom-submit">';
@@ -698,7 +714,8 @@ function phenix_custom_block_views_pre_render(\Drupal\views\ViewExecutable $view
   if ($view->id() == 'civi_groupe_evenements') {
     if ($view->footer['area']) {
       if (count($view->result) > 2) {
-        $view->footer['area']->options['content']['value'] = "<a href='/toutes-mes-reunions' class='link-to-meeting-page'>Voir + </a>";
+        $group_id = $view->args[0];
+        $view->footer['area']->options['content']['value'] = "<a href='/toutes-les-reunions-a-venir/" . $group_id . "' class='link-to-meeting-page'>Voir + </a>";
       }
     }
     

@@ -102,32 +102,35 @@ class DetailGroupBlock  extends BlockBase  {
 
     $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($res);
     $firstDoc = reset($docs);
-    $allInfoDocs['first_title'] = $custom_service->getNodeFieldValue($firstDoc, 'name');
-    $allInfoDocs['first_type_de_document'] = $custom_service->getTypeDocument ($firstDoc);
-    $allInfoDocs['first_element_id'] = $custom_service->getNodeFieldValue($firstDoc, 'mid');
-    $date_doc = $custom_service->getNodeFieldValue($firstDoc, 'created');
-    $datetime = new DrupalDateTime();
-    $datetime->setTimestamp($date_doc);
+    if ($firstDoc) {
 
-    // Format the date using the desired format.
-    $formatted_date = $datetime->format('d.m.Y');
-    $allInfoDocs['date_doc'] = $formatted_date;
-    $fileValue = $custom_service->getNodeFieldValue($firstDoc, 'field_media_document');
-    $file = File::load($fileValue);
-    $fileType = $custom_service->getNodeFieldValue($file, 'filemime');
-    $fileType = $fileType =='application/pdf' ? 'pdf-3.png' : 'pdf-2.png';//todo mettre switch et ajouter tous les types de fichiers
-    $allInfoDocs['type_file'] = $this->getFileType($firstDoc);
+      $allInfoDocs['first_title'] = $custom_service->getNodeFieldValue($firstDoc, 'name');
+      $allInfoDocs['first_type_de_document'] = $custom_service->getTypeDocument ($firstDoc);
+      $allInfoDocs['first_element_id'] = $custom_service->getNodeFieldValue($firstDoc, 'mid');
+      $date_doc = $custom_service->getNodeFieldValue($firstDoc, 'created');
+      $datetime = new DrupalDateTime();
+      $datetime->setTimestamp($date_doc);
+      
+      // Format the date using the desired format.
+      $formatted_date = $datetime->format('d.m.Y');
+      $allInfoDocs['date_doc'] = $formatted_date;
+      $fileValue = $custom_service->getNodeFieldValue($firstDoc, 'field_media_document');
+      $file = File::load($fileValue);
+      $fileType = $custom_service->getNodeFieldValue($file, 'filemime');
+      $fileType = $fileType =='application/pdf' ? 'pdf-3.png' : 'pdf-2.png';//todo mettre switch et ajouter tous les types de fichiers
+      $allInfoDocs['type_file'] = $this->getFileType($firstDoc);
 
-    // // Get the file size in bytes   TODO GET FILE PATH
-    $file_uri = $custom_service->getNodeFieldValue($file, 'uri');
-    $file_path = file_create_url($file_uri);
-    $file_size_bytes = filesize($file_path);
-    $file_size_bytes = round($file_size_bytes / 1024, 2);
-    $allInfoDocs['file_size_readable'] = $file_size_bytes;
-    $date_doc = str_replace(' ', '.', $date_doc);
-    $media_extrait = $custom_service->getNodeFieldValue ($firstDoc, 'field_resume');
-    $allInfoDocs['resume'] = $media_extrait;
-    return $allInfoDocs;
+      // // Get the file size in bytes   TODO GET FILE PATH
+      $file_uri = $custom_service->getNodeFieldValue($file, 'uri');
+      $file_path = file_create_url($file_uri);
+      $file_size_bytes = filesize($file_path);
+      $file_size_bytes = round($file_size_bytes / 1024, 2);
+      $allInfoDocs['file_size_readable'] = $file_size_bytes;
+      $date_doc = str_replace(' ', '.', $date_doc);
+      $media_extrait = $custom_service->getNodeFieldValue ($firstDoc, 'field_resume');
+      $allInfoDocs['resume'] = $media_extrait;
+      return $allInfoDocs;
+    }
   }
 
   private function getFile ($media) {

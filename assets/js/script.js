@@ -85,10 +85,6 @@
             let value = $(this).prop('checked');
             $('[name="field_taxonomy_views_integrator_[0][value]"]').val(value)
         });
-
-        /* $('body').on('click', '[name="field_media_document_0_remove_button"]', function (){
-            console.log('trest')
-        }) */
     }); 
 
     // Fixer les boutton enregitrement et suppression de document quand il est en dehors du section parent'

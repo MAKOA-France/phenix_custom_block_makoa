@@ -535,25 +535,30 @@ class CustomBlockServices {
    * Retourne le renderable html d'image
    */
   public function getImageHtml ($paragraph, &$data) {
-    $image_media = $this->getNodeFieldValue($paragraph, 'field_image_media');
-    $media_entity = Media::load($image_media);
+    if ($paragraph) {
 
-    $image_field = $media_entity->get('field_media_image');
+      $image_media = $this->getNodeFieldValue($paragraph, 'field_image_media');
+      $media_entity = Media::load($image_media);
+      if ($media_entity) {
 
-    // Get the first item from the field (assuming it's a single-value field).
-    $image_item = $image_field->first();
-
-    // Render the image using Drupal's render system.
-    $image_render_array = $image_item->view([
-      'type' => 'image', // Replace with the desired image style, if any.
-      'settings' => [
-        // 'image_style' => 'thumbnail', // Replace with the desired image style, if any.
-      ],
-    ]);
-    
-    $data  .= '<div class="img-html-bloc">' . render($image_render_array)->__toString() . '</div>';
-    return $data;
+        $image_field = $media_entity->get('field_media_image');
+        
+        // Get the first item from the field (assuming it's a single-value field).
+        $image_item = $image_field->first();
+        
+        // Render the image using Drupal's render system.
+        $image_render_array = $image_item->view([
+          'type' => 'image', // Replace with the desired image style, if any.
+          'settings' => [
+            // 'image_style' => 'thumbnail', // Replace with the desired image style, if any.
+          ],
+        ]);
+        
+        $data  .= '<div class="img-html-bloc">' . render($image_render_array)->__toString() . '</div>';
+        return $data;
+      }
   }
+}
 
   /**
    * return $data contenant l'html de la video
@@ -782,6 +787,7 @@ public function customResultSearchDoc (&$var) {
   }
   // $type_doc = $custom_service->getNodeFieldValue($entity, 'field_type_de_document');
   // dump('qsmdlkf', $entity->hasField('field_type_de_document'), $entity);
+  
   if($field->field == 'name') {
     if ($entity->hasField('field_type_de_document')) {
       $published_on = $this->getNodeFieldValue($entity, 'created');
@@ -796,8 +802,6 @@ public function customResultSearchDoc (&$var) {
           
         }  
       }
-    
-    
     
       $type_doc = $entity->get('field_type_de_document')->getValue()[0]['value'];
       $libelle = $this->getTypeDocumentWithAutre($entity);
@@ -818,7 +822,27 @@ public function customResultSearchDoc (&$var) {
         $var['output'] = $doc_info;
       }
     }
-    return $var;
+
+
+    //Pour les media de type video
+    if ($entity->hasField('field_media_oembed_video')) {
+      $published_on = $this->getNodeFieldValue($entity, 'created');
+      $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
+      $title = $this->getNodeFieldValue($entity, 'name');
+      $video = $this->getNodeFieldValue($entity, 'field_media_oembed_video');
+      $video_info = [
+        '#theme' => 'phenix_custom_bloc_search_media_video',
+        '#cache' => ['max-age' => 0],
+        '#content' => [
+          'title' => $title,
+          'resume' => $resume,
+          'published_on' => $convertedDate,
+          'media_id' => $entity->id()
+          ]
+      ];
+      $var['output'] = $video_info;
+    }
+    // return $var;
   }
 }
 
@@ -831,14 +855,25 @@ public function customResultThumbnail(&$var) {
   $value = $field->getValue($row);
   $view = $var['view'];
   $entity = $var['row']->_entity;
-  if ($value) {
+  
+  if ($value && $entity->hasField('field_media_document')) {
     $doc = $this->getNodeFieldValue($entity, 'field_media_document');
     $file = \Drupal\file\Entity\File::load($doc);
     $filememe = $this->getNodeFieldValue($file, 'filemime');
     $txt_file = '';
+    
     switch($filememe) {
       case 'application/pdf':
         $txt_file = '.pdf';
+        break;
+      case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        $txt_file = '.docx';
+        break;
+      case 'application/msword':
+        $txt_file = '.doc';
+        break;
+      case 'application/rtf':
+        $txt_file = '.rtf';
         break;
         
     }
@@ -888,12 +923,18 @@ public function customResultSearchTerm(&$var){
   $value = $field->getValue($row);
   $view = $var['view'];
   $entity = $var['row']->_entity;
-  // dump($field->field);
+  
   if ($field->field == 'body') {
     $var['output'] = '';
   }
-  if ($field->field == 'title') {
-    $var['output'] = '';
+  if ($field->field == 'thumbnail') {
+    $var['output'] = ['#markup' => '<span class="node-type thumbnail-type">Rubrique</span>'];
+  }
+  if ($field->field == 'name_1') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'description') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
   if ($field->field == 'rendered_item') {
     $published_on = $this->getNodeFieldValue($entity, 'changed');
@@ -969,7 +1010,7 @@ public function addTitleToViewSearch(&$var) {
     // Replace 'block_1' with your specific display ID.
     if ($var['display_id'] == 'page_1') {
       $field->options['label'] = [
-        '#markup' => '<p class="result-label"><span class="res-label-text">Résultat pour </span><span class="res-keyword">"' . $keyword . '"</span>',
+        '#markup' => '<p class="result-label">Résultat pour <span class="res-keyword">"' . $keyword . '"</span>',
       ];
     }
 

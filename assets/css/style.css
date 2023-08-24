@@ -14,6 +14,22 @@
   }
 /******/
 
+/**** Page formation ***/
+
+.page-social-rh-formations .img-html-bloc {
+    width: 50%;
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+}
+.page-social-rh-formations .img-html-bloc img {
+    width: 100%;
+}
+.page-social-rh-formations .img-html-bloc::after {
+    content: initial !important;
+}
+/**** end***/
+
 
 /* Page mes commission */
 .section-civicrm-group .views-element-container h2:before {
