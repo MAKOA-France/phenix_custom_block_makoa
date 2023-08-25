@@ -66,11 +66,11 @@ class MyAccountBlock  extends BlockBase  {
       }
     }
 
-    $all_menu[0]['icon'] = "fas fa-comment";
-    $all_menu[1]['icon'] = "fas fa-home";
-    $all_menu[2]['icon'] = 'icon-custom-user-account';
-    $all_menu[3]['icon'] = "icon-custom-logout-accout";
-    $all_menu[4]['icon'] = 'icon-custom-refresh';
+    // $all_menu[0]['icon'] = "fas fa-comment";
+    $all_menu[0]['icon'] = "fas fa-home";
+    $all_menu[1]['icon'] = 'icon-custom-user-account';
+    $all_menu[2]['icon'] = "icon-custom-logout-accout";
+    $all_menu[3]['icon'] = 'icon-custom-refresh';
  
 
     return [

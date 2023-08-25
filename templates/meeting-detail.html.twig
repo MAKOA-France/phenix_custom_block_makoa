@@ -1,0 +1,18 @@
+<div class="meeting-detail">
+  <div class="group-name">
+    <p>{{ content.data.group_name }}</p>
+  </div>
+  <div class="meeting-title">
+    <p>{{ content.data.event_name }}</p>
+  </div>
+  <div class="meeting-date">
+    <p>{{ content.data.meeting_date }}</p>
+  </div>
+  <div class="meeting-confirm-my-presence">
+    <input type="submit" id="excuse" name="op" value="Excuser" class="button js-form-submit form-submit">
+    <input type="submit" id="confirm-presence" name="op" value="Confirmer la présence" class="button js-form-submit form-submit">
+  </div>
+  <div class="meeting-description">
+    <p>{{ content.data.description | raw }}</p>
+  </div>
+</div>

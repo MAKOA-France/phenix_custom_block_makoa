@@ -475,7 +475,7 @@ class CustomBlockServices {
         $file_size_bytes = filesize('/var/aegir/platforms/civicrm-d9/' . $file_url);
         
         // // Convert the size to a human-readable format
-        $file_size_readable = round($file_size_bytes / 1024, 2); 
+        $file_size_readable = round($file_size_bytes / 1024, 0); 
         // dump($file_size_readable)
         $date_doc_timestamp = $this->getNodeFieldValue($file_info, 'created');
         $date_doc = $this->convertTimesptamToDate($date_doc_timestamp);
@@ -695,7 +695,7 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
       $first_doc_img_file = $this->getFileTypeExtension($file_type);
       $first_doc_file_url = $this->getNodeFieldValue($file_object, 'uri');
       $first_doc_file_size = filesize($first_doc_file_url);
-      $first_doc_file_size = round($first_doc_file_size / 1024, 2);
+      $first_doc_file_size = round($first_doc_file_size / 1024, 0);
       $first_doc_id = $first_doc->id();
       $display_see_other_doc = true;
       
@@ -737,6 +737,7 @@ private function getAllOtherDocInfo ($allDoc, $termName) {
     $first_doc_img_file = $this->getFileTypeExtension($file_type);
     $first_doc_file_url = $this->getNodeFieldValue($file_object, 'uri');
     $first_doc_file_size = filesize($first_doc_file_url);
+    $first_doc_file_size = round($first_doc_file_size / 1024, 0);
     $media_name = $this->getNodeFieldValue($doc, 'name');
     $type_doc = $this->getTypeDocument ($doc);
      $all_documents[$media_name][] = [

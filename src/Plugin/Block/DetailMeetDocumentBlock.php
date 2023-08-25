@@ -15,12 +15,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Provides a 'Block detail commission' block.
  *
  * @Block(
- *  id = "detail_group",
- *  admin_label = @Translation("Block detail commission"),
- *  category = @Translation("Block detail commission"),
+ *  id = "detail_meet_all_document",
+ *  admin_label = @Translation("Block document detail reunion"),
+ *  category = @Translation("Block document detail reunion"),
  * )
  */
-class DetailGroupBlock  extends BlockBase  {
+class DetailMeetDocumentBlock  extends BlockBase  {
 
 
 
@@ -35,15 +35,15 @@ class DetailGroupBlock  extends BlockBase  {
     $data = [];
 
     \Drupal::service('civicrm')->initialize();
-    $group_id = \Drupal::request()->attributes->get('civicrm_group')->id->getValue()[0]['value'];
+    $eventId = \Drupal::request()->attributes->get('civicrm_event')->id->getValue()[0]['value'];
 
-    $data['totatl_member'] = $this->totalMembers($group_id);
-    $data['group_name'] = $this->getGroupName($group_id);
-    $data['group_presentation'] = $this->getGroupPresentation($group_id);
 
-    $allDocuments = $this->getAllDocuments ($group_id);
-    
-    $allOtherDocs = $this->getAllDocs($group_id);
+    // Load the CiviCRM event by its ID.
+$
+    $allDocuments = $this->getAllDocuments ($eventId);
+    // dump($event);
+     
+    $allOtherDocs = $this->getAllDocs($eventId);
 
     foreach ($allOtherDocs as $docId) {
       $mediaObject = \Drupal::service('entity_type.manager')->getStorage('media')->load($docId);
@@ -71,14 +71,24 @@ class DetailGroupBlock  extends BlockBase  {
         'paragraph_id' => null,
       ]; 
     
-    }
+    } 
     
     
     return [
-      '#theme' => 'detail_group',
+      '#theme' => 'document_detail_meet',
       '#cache' => ['max-age' => 0],
       '#content' => [
-        'data' => $data,
+        'data' => $all_other_document,
+        'first_title' => 'Documents',
+        'first_type_de_document' => $allDocuments['first_type_de_document'],
+        'resume' => $allDocuments['resume'],
+        'file_type' =>  $allDocuments['type_file'],
+        'file_size' => $allDocuments['file_size_readable'],
+        'date_doc' => $allDocuments['date_doc'],
+        'first_element_id' => $allDocuments['first_element_id'],
+        'first_element_title' => $allDocuments['first_title'],
+        'display_see_other_doc' => count($allOtherDocs),
+        'is_page_last_doc' => false
       ],
     ];
   }
@@ -86,8 +96,8 @@ class DetailGroupBlock  extends BlockBase  {
   private function getAllDocs ($groupId) {
     $db = \Drupal::database();
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
-    $res = $db->query('select * from media__field_groupes where field_groupes_target_id  = ' . $groupId)->fetchAll();
-    $res = array_column($res, 'entity_id');
+    $res = $db->query('select field_documents_target_id from civicrm_event__field_documents where entity_id  = ' . $groupId)->fetchAll();
+    $res = array_column($res, 'field_documents_target_id');
     unset($res[0]);
     return $res;
   }
@@ -96,12 +106,12 @@ class DetailGroupBlock  extends BlockBase  {
     $allInfoDocs = [];
     $db = \Drupal::database();
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
-    $res = $db->query('select * from media__field_groupes where field_groupes_target_id  = ' . $groupId)->fetchAll();//TODO USE ABOVE FUNCTION
+    $res = $db->query('select field_documents_target_id from civicrm_event__field_documents where entity_id  = ' . $groupId)->fetchAll();//TODO USE ABOVE FUNCTION
     $res = $this->getAllDocs($groupId);
-
-
+    
     $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($res);
     $firstDoc = reset($docs);
+    
     if ($firstDoc) {
 
       $allInfoDocs['first_title'] = $custom_service->getNodeFieldValue($firstDoc, 'name');
@@ -124,11 +134,12 @@ class DetailGroupBlock  extends BlockBase  {
       $file_uri = $custom_service->getNodeFieldValue($file, 'uri');
       $file_path = file_create_url($file_uri);
       $file_size_bytes = filesize($file_path);
-      $file_size_bytes = round($file_size_bytes / 1024, 0);
+      $file_size_bytes = round($file_size_bytes / 1024, 2);
       $allInfoDocs['file_size_readable'] = $file_size_bytes;
       $date_doc = str_replace(' ', '.', $date_doc);
       $media_extrait = $custom_service->getNodeFieldValue ($firstDoc, 'field_resume');
       $allInfoDocs['resume'] = $media_extrait;
+      
       return $allInfoDocs;
     }
   }
@@ -156,7 +167,7 @@ class DetailGroupBlock  extends BlockBase  {
     $file_uri = $custom_service->getNodeFieldValue($file, 'uri');
     $file_path = file_create_url($file_uri);
     $file_size_bytes = filesize($file_path);
-    $file_size_bytes = round($file_size_bytes / 1024, 0);
+    $file_size_bytes = round($file_size_bytes / 1024, 2);
     return $file_size_bytes;
   }
   

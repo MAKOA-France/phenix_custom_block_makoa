@@ -145,9 +145,54 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
           'render element' => 'children',
           'path' => $path . '/templates',
           'template' => 'search-media-video'
+        ],
+        'meeting_detail' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'meeting-detail'
+        ],
+        'document_detail_meet' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'document-detail-meet'
+        ],
+        'page_list_meeting' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'document-detail-meet'
         ]
     ];
 }
+
+/**
+ * Implements hook_entity_view().
+ */
+function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
+  // Check if the entity type is 'node'.
+  if ($entity->getEntityTypeId() === 'civicrm_event') {
+    // Modify the node view for the 'full' view mode.
+    if ($view_mode === 'full') {
+      // Add a custom field to the entity view.
+      unset($build['max_participants']);
+      $build['custom_field'] = [
+        '#markup' => '<div class="meeting-confirm-my-presence">
+            <a href="#" class="button js-form-submit form-submit">Excuser</a>
+            <a href="#" class="button js-form-submit form-submit">Confirmer la présence</a>
+          </div>'
+      ];
+    }
+  }
+}
+
 
 /**
  * Implements the form builder.
@@ -208,10 +253,45 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
 	if ($view->storage->id() == 'home_caroussel' &&  $view->current_display == 'block_1') {
     if ($field->field == 'field_slide') {
       $field_slide = $field->getValue($row);
-
+      
     }
-
+    
   }
+  
+  
+  if ($view->storage->id() == 'civievents_base_sur_le_contact_' &&  $view->current_display == 'block_7') {
+    // $custom_service->customizeMeetingList()
+    if ($field->field == 'title') {
+      $title = $field->getValue($row);
+      
+      $date = $row->created_id_civicrm_contact_start_date;
+      $dateArray = $custom_service->formatDateWithMonthInLetterAndHours($date);
+
+      return $variables['output'] = ['#markup' => '
+      <div class="views-field views-field-title"><span class="field-content"><div class="meeting-com even">
+    <div class="date-meet">
+        <span class="day">' . $dateArray['day'] . '</span>
+        <span class="month-and-year">' . $dateArray['month'] . $dateArray['year'] . '</span>
+    </div>    
+    <div class="title-meet">
+        <span class="title-meet-commission"><a href="/civicrm-event/991">' . $title . '</a></span>
+        <span class="hour-begining-meet-commission">Début de la réunion ' . $dateArray['hour'] . 'h ' . $dateArray['minute'] . '</span>
+    </div>
+</div></span></div>
+      '];
+
+      $variables['output'] = [
+        '#theme' => 'page_list_meeting',
+        '#cache' => ['max-age' => 0],
+        '#content' => [
+          'meeting_info' => $dateArray,
+          'title' => $title,
+        ],
+      ];
+    }
+  }
+
+
 	if ($view->storage->id() == 'civievents_base_sur_le_contact_' &&  $view->current_display == 'block_2') {
 		if ($field->field == 'title') {
 
@@ -280,10 +360,10 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
     }
   }
   
-  if ($view->storage->id() == 'civi_groupe_evenements' && $view->current_display == 'page_4') {
+  if ($view->storage->id() == 'civi_groupe_evenements' && (in_array($view->current_display, ['page_4', 'page_2']))) {
     $id = $custom_service->getNodeFieldValue($row->_entity, 'id');
     if ($field->field == 'title') {
-      dump($row);
+      $group_id = $view->args[0];
       $variables['output'] = ['#markup' => '<a href="/civicrm-event/' . $id . '"> ' . $field->getValue($row) . '</a>'];
     }
   }
@@ -312,21 +392,21 @@ function phenix_custom_block_preprocess_menu(&$variables) {
   $menu_items = [];
 
   // Get the current path.
-$currentPath = \Drupal::service('path.current')->getPath();
+  $currentPath = \Drupal::service('path.current')->getPath();
 
-if ($currentPath == '/node/96') {
-  
-  foreach ($menu_tree as $item) {
-    if (isset($item['user.page'])) {
+  if ($currentPath == '/node/96') {
+    
+    foreach ($menu_tree as $item) {
+      if (isset($item['user.page'])) {
 
+      }
+      // $menu_items[] = $item->link->getTitle();
     }
-    // $menu_items[] = $item->link->getTitle();
+    $menu_items[] = 'Communication';
+    $menu_items[] = 'Demande d\'accès';
+    $menu_items[] = 'Deconnecter test';
+    
   }
-  $menu_items[] = 'Communication';
-  $menu_items[] = 'Demande d\'accès';
-  $menu_items[] = 'Deconnecter test';
-  
-}
   $variables['menu_items'] = $menu_items;
 }
 
@@ -360,7 +440,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
       
     }else {
       /**** Affichage dans la page dernier doc les doc lié au terme TODO Comment differencier les terme lié a un doc ET terme qui a des doc****/
-      // if ($term->id() == '4992') {
+      // if ($term->id() == '4992') {  //TODO CECI PERMET D'AFFICHER LES DOCUMENT LIE AUX TERMES
         return $custom_service->getAllDataForDocumentLieAuxTermeFirstElement($variables);
       // }
       /***** end *****/
@@ -712,17 +792,20 @@ function phenix_custom_block_views_pre_render(\Drupal\views\ViewExecutable $view
   // Check if the view is the one you want to target.
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
   if ($view->id() == 'civi_groupe_evenements') {
-    if ($view->footer['area']) {
-      if (count($view->result) > 2) {
-        $group_id = $view->args[0];
-        $view->footer['area']->options['content']['value'] = "<a href='/toutes-les-reunions-a-venir/" . $group_id . "' class='link-to-meeting-page'>Voir + </a>";
+    $group_id = $view->args[0];
+    
+    if ( $view->current_display != 'page_4') {
+      if ($view->footer['area']) {
+        if (count($view->result) > 2) {
+          $view->footer['area']->options['content']['value'] = "<a href='/toutes-les-reunions-a-venir/" . $group_id . "' class='link-to-meeting-page'>Voir + </a>";
+        }
       }
     }
-    
+    if(in_array($view->current_display, ['page_4', 'page_2'])) {
+      $view->footer['area']->options['content']['value'] = "<a href='/civicrm-group/" . $group_id . "' class='link-to-meeting-page'>⇠ Retour vers la page du groupe</a>";
+    }
   } 
   if ($view->id() == 'civi_groupe_membres') {
-    
-    
     $view->build_info['title'] = '<p class="test">Référents</div>';
   }
 }
