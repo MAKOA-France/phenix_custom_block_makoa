@@ -615,7 +615,7 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
   
   if (in_array($form['#id'], ['media-document-add-form', 'media-document-edit-form'])) {
 
-    $form['name']['widget']['#title'] = 'Nom (titre interne)';
+    $form['name']['widget'][0]['value']['#title'] = 'Nom (titre interne)';
     $form['#attributes']['class'][] = 'custom-add-and-edit-form';
     $form['status']['#prefix'] = '<div class="wrapper-status-and-author">';
     $form['author']['#suffix'] = '</div>';
