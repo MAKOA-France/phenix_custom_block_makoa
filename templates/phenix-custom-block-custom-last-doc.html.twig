@@ -91,8 +91,12 @@
     {% set temp_title = title %}
     {% set i = i + 1 %}
   {% endfor %}
-
+  
+  {% if content.event_id %}
+    <a href="/media_download_all/civicrm_event/{{content.event_id}}/field_documents" class="media-download-all downloda-all-event-doc">Télécharger tous les fichiers (zip)</a>
+  {% endif %}
   <div class="line-container-moins">
+
     <hr class="hr-line-accoredon"> 
     <a class="btn-dismiss-other-doc"><i class="fa fa-angle-double-up" aria-hidden="true"></i> Voir moins de document <i class="fa fa-angle-double-up" aria-hidden="true"></i></a>
     <hr class="hr-line-accoredon">

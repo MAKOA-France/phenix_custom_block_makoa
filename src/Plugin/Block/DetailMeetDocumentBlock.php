@@ -39,40 +39,42 @@ class DetailMeetDocumentBlock  extends BlockBase  {
 
 
     // Load the CiviCRM event by its ID.
-$
     $allDocuments = $this->getAllDocuments ($eventId);
-    // dump($event);
      
-    $allOtherDocs = $this->getAllDocs($eventId);
+    $allOtherDocs = $this->getAllDocs($eventId, true);
 
     foreach ($allOtherDocs as $docId) {
       $mediaObject = \Drupal::service('entity_type.manager')->getStorage('media')->load($docId);
-      
-      $title_doc = $custom_service->getNodeFieldValue($mediaObject, 'name');
-      $allInfoDocs['first_type_de_document'] = $custom_service->getTypeDocument ($mediaObject);
-      $allInfoDocs['first_element_id'] = $custom_service->getNodeFieldValue($mediaObject, 'mid');
-      $date_doc = $custom_service->getNodeFieldValue($mediaObject, 'created');
-      $datetime = new DrupalDateTime();
-      $datetime->setTimestamp($date_doc);
-  
-      // Format the date using the desired format.
-      $formatted_date = $datetime->format('d.m.Y');
-      $allInfoDocs['date_doc'] = $formatted_date;
+      if ($mediaObject) {
 
-
-      $all_other_document[$title_doc][] = [
-        'fileType' => $this->getFileType($mediaObject),
-        'fileurl' => '',
-        'size' => $this->getFileSize ($mediaObject),
-        'fileId' => $this->getFile ($mediaObject)->id(),
-        'type_document' => $custom_service->getTypeDocument ($mediaObject),
-        'description' => $title_doc,
-        'created_at' => $this->getFormattedDate($mediaObject),
-        'paragraph_id' => null,
-      ]; 
+        $title_doc = $custom_service->getNodeFieldValue($mediaObject, 'name');
+        $allInfoDocs['first_type_de_document'] = $custom_service->getTypeDocument ($mediaObject);
+        $allInfoDocs['first_element_id'] = $custom_service->getNodeFieldValue($mediaObject, 'mid');
+        $date_doc = $custom_service->getNodeFieldValue($mediaObject, 'created');
+        $datetime = new DrupalDateTime();
+        $datetime->setTimestamp($date_doc);
+        
+        // Format the date using the desired format.
+        $formatted_date = $datetime->format('d.m.Y');
+        $allInfoDocs['date_doc'] = $formatted_date;
+        
+        
+        $all_other_document[$title_doc][] = [
+          'fileType' => $this->getFileType($mediaObject),
+          'fileurl' => '',
+          'size' => $this->getFileSize ($mediaObject),
+          'fileId' => $this->getFile ($mediaObject)->id(),
+          'type_document' => $custom_service->getTypeDocument ($mediaObject),
+          'description' => $title_doc,
+          'created_at' => $this->getFormattedDate($mediaObject),
+          'paragraph_id' => null,
+        ]; 
+      }
     
     } 
-    
+    if (!$allDocuments) {//s'il n'y a aucun document on return
+      return;
+    }
     
     return [
       '#theme' => 'document_detail_meet',
@@ -88,30 +90,33 @@ $
         'first_element_id' => $allDocuments['first_element_id'],
         'first_element_title' => $allDocuments['first_title'],
         'display_see_other_doc' => count($allOtherDocs),
-        'is_page_last_doc' => false
+        'is_page_last_doc' => false,
+        'event_id' => 991
       ],
     ];
   }
 
-  private function getAllDocs ($groupId) {
+  private function getAllDocs ($groupId, $notIncludeFirstDoc) {
     $db = \Drupal::database();
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
     $res = $db->query('select field_documents_target_id from civicrm_event__field_documents where entity_id  = ' . $groupId)->fetchAll();
     $res = array_column($res, 'field_documents_target_id');
-    unset($res[0]);
+    if ($notIncludeFirstDoc) {
+      unset($res[0]);
+    }
     return $res;
   }
 
-  private function getAllDocuments ($groupId) {
+  private function getAllDocuments ($groupId): array {
     $allInfoDocs = [];
     $db = \Drupal::database();
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
     $res = $db->query('select field_documents_target_id from civicrm_event__field_documents where entity_id  = ' . $groupId)->fetchAll();//TODO USE ABOVE FUNCTION
-    $res = $this->getAllDocs($groupId);
+    $res = $this->getAllDocs($groupId, false);
     
     $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($res);
     $firstDoc = reset($docs);
-    
+    // dump($firstDoc);
     if ($firstDoc) {
 
       $allInfoDocs['first_title'] = $custom_service->getNodeFieldValue($firstDoc, 'name');
@@ -134,14 +139,15 @@ $
       $file_uri = $custom_service->getNodeFieldValue($file, 'uri');
       $file_path = file_create_url($file_uri);
       $file_size_bytes = filesize($file_path);
-      $file_size_bytes = round($file_size_bytes / 1024, 2);
+      $file_size_bytes = round($file_size_bytes / 1024, 0);
       $allInfoDocs['file_size_readable'] = $file_size_bytes;
       $date_doc = str_replace(' ', '.', $date_doc);
       $media_extrait = $custom_service->getNodeFieldValue ($firstDoc, 'field_resume');
       $allInfoDocs['resume'] = $media_extrait;
-      
-      return $allInfoDocs;
     }
+
+    // dump($allInfoDocs, ' what');
+    return $allInfoDocs;
   }
 
   private function getFile ($media) {
@@ -167,7 +173,7 @@ $
     $file_uri = $custom_service->getNodeFieldValue($file, 'uri');
     $file_path = file_create_url($file_uri);
     $file_size_bytes = filesize($file_path);
-    $file_size_bytes = round($file_size_bytes / 1024, 2);
+    $file_size_bytes = round($file_size_bytes / 1024, 0);
     return $file_size_bytes;
   }
   

@@ -1,3 +1,5 @@
+
+
 <div class="node-search document-content">
     <div class="default-content-node default-content-doc">
         <a href="/taxonomy/term/{{ content.node_id }}"><h3>{{ content.title }}</h3></a><p class="doc-created-at">  {{ "Publié le " ~ content.published_on |raw}}</p>        
@@ -5,5 +7,6 @@
     <div class="node-description doc-resume">
         <p class="p-node-description doc-resume">{{ content.resume|raw }}</p>
     </div>
-     {# <p class="node-type thumbnail-type">Rubrique</p> #}
+    {# <p class="node-type thumbnail-type">Rubrique</p> #}
+    {{ content.video| raw }}
 </div>

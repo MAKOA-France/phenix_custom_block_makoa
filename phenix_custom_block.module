@@ -168,7 +168,7 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
           ],
           'render element' => 'children',
           'path' => $path . '/templates',
-          'template' => 'document-detail-meet'
+          'template' => 'page-list-meeting'
         ]
     ];
 }
@@ -183,12 +183,13 @@ function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\Enti
     if ($view_mode === 'full') {
       // Add a custom field to the entity view.
       unset($build['max_participants']);
-      $build['custom_field'] = [
-        '#markup' => '<div class="meeting-confirm-my-presence">
+      $build['custom_179']['#prefix'] = '<div class="meeting-page"><i class="icon-custom-calendar custom-icon-meeting"></i></div>';
+      $build['description']['#prefix'] = '<div class="meeting-confirm-my-presence">
             <a href="#" class="button js-form-submit form-submit">Excuser</a>
             <a href="#" class="button js-form-submit form-submit">Confirmer la présence</a>
           </div>'
-      ];
+      ;
+
     }
   }
 }
@@ -266,19 +267,6 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
       
       $date = $row->created_id_civicrm_contact_start_date;
       $dateArray = $custom_service->formatDateWithMonthInLetterAndHours($date);
-
-      return $variables['output'] = ['#markup' => '
-      <div class="views-field views-field-title"><span class="field-content"><div class="meeting-com even">
-    <div class="date-meet">
-        <span class="day">' . $dateArray['day'] . '</span>
-        <span class="month-and-year">' . $dateArray['month'] . $dateArray['year'] . '</span>
-    </div>    
-    <div class="title-meet">
-        <span class="title-meet-commission"><a href="/civicrm-event/991">' . $title . '</a></span>
-        <span class="hour-begining-meet-commission">Début de la réunion ' . $dateArray['hour'] . 'h ' . $dateArray['minute'] . '</span>
-    </div>
-</div></span></div>
-      '];
 
       $variables['output'] = [
         '#theme' => 'page_list_meeting',

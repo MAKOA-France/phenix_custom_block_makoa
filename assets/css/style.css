@@ -1,3 +1,9 @@
+.media-download-all.downloda-all-event-doc {
+    width: fit-content !important;
+    display: flex !important;
+    margin-top: 22px !important;
+}
+
 /* breadcrumb */
 .custom-submenu-li .with-link {
     color: black;

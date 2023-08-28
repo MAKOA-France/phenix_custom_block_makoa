@@ -476,7 +476,6 @@ class CustomBlockServices {
         
         // // Convert the size to a human-readable format
         $file_size_readable = round($file_size_bytes / 1024, 0); 
-        // dump($file_size_readable)
         $date_doc_timestamp = $this->getNodeFieldValue($file_info, 'created');
         $date_doc = $this->convertTimesptamToDate($date_doc_timestamp);
         $all_doc_info[$file_id]['created_at'] = $date_doc;
@@ -786,9 +785,45 @@ public function customResultSearchDoc (&$var) {
   if ($field->field == 'name_1') {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
-  // $type_doc = $custom_service->getNodeFieldValue($entity, 'field_type_de_document');
-  // dump('qsmdlkf', $entity->hasField('field_type_de_document'), $entity);
   
+
+  //Si l'entity media a une video
+  if ($entity->hasField('field_media_video_file') || $entity->hasField('field_media_oembed_video')) {
+    if ($field->field == 'thumbnail') {
+      $var['output'] = ['#markup' => '<p class="thumbnail-type">Mp4</p>'];
+    }
+  }
+
+  //pour les videos
+  if($field->field == 'field_media_video_file') {
+    //Pour les media de type video
+    if ($entity->hasField('field_media_video_file')) {
+      $file_video_id = $field->getValue($row);
+
+      $current_output = $var['output'];
+      $published_on = $this->getNodeFieldValue($entity, 'created');
+      $field_media_video_file = $this->getNodeFieldValue($entity, 'field_media_video_file');
+      $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
+      $title = $this->getNodeFieldValue($entity, 'name');
+      $file_video_object = File::load($file_video_id);
+      $extension_video = $this->getNodeFieldValue($file_video_object, 'filemime');
+      $video_info = [
+        '#theme' => 'phenix_custom_bloc_search_media_video',
+        '#cache' => ['max-age' => 0],
+        '#content' => [
+          'video' => $current_output->__toString(),
+          'title' => $title,
+          'resume' => '',
+          'published_on' => $convertedDate,
+          'media_id' => $field_media_video_file, 
+          ]
+      ];
+      $var['output'] = $video_info;
+    }
+  }
+
+
+
   if($field->field == 'name') {
     if ($entity->hasField('field_type_de_document')) {
       $published_on = $this->getNodeFieldValue($entity, 'created');
@@ -825,7 +860,8 @@ public function customResultSearchDoc (&$var) {
     }
 
 
-    //Pour les media de type video
+    
+    
     if ($entity->hasField('field_media_oembed_video')) {
       $published_on = $this->getNodeFieldValue($entity, 'created');
       $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
@@ -889,7 +925,6 @@ public function customResultSearchNode(&$var){
   $value = $field->getValue($row);
   $view = $var['view'];
   $entity = $var['row']->_entity;
-  // dump($field->field);
   if ($field->field == 'body') {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
