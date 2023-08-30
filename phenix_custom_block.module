@@ -169,6 +169,14 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
           'render element' => 'children',
           'path' => $path . '/templates',
           'template' => 'page-list-meeting'
+        ],
+        'phenix_custom_bloc_search_civicrm_meeting' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'search-civicrm-meeting'
         ]
     ];
 }
@@ -177,19 +185,56 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
  * Implements hook_entity_view().
  */
 function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
-  // Check if the entity type is 'node'.
+  // Check if the entity type is 'civicrm_event'.
+  $custom_service = \Drupal::service('phenix_custom_block.view_services');
+  // Get the current request object.
+  $request = \Drupal::request();
+
+  // Get the path of the current request.
+  $current_path = $request->getPathInfo();
+
+  // Check if the path contains "/civicrm-group/".
+  if (strpos($current_path, '/civicrm-group/') !== false) {
+    if ($entity->getEntityTypeId() == 'media') {
+      // unset($build[''])
+      $build['field_media_document'][0]['#attributes']['class'][] = 'to-hide-doc';
+      $build['#attributes']['class'][] = 'to-hide-doc';
+    }
+  }
+
+    if ($entity->getEntityTypeId() === 'civicrm_group' and $view_mode === 'full') {
+  //  unset($build['#civicrm_group']->getFieldDefinitions()['field_documents_groupe']); 
+      $build['#attributes']['class'][] = 'group-detail-page';
+    }
   if ($entity->getEntityTypeId() === 'civicrm_event') {
     // Modify the node view for the 'full' view mode.
     if ($view_mode === 'full') {
       // Add a custom field to the entity view.
       unset($build['max_participants']);
-      $build['custom_179']['#prefix'] = '<div class="meeting-page"><i class="icon-custom-calendar custom-icon-meeting"></i></div>';
-      $build['description']['#prefix'] = '<div class="meeting-confirm-my-presence">
-            <a href="#" class="button js-form-submit form-submit">Excuser</a>
-            <a href="#" class="button js-form-submit form-submit">Confirmer la présence</a>
-          </div>'
-      ;
 
+      // Get the current user object.
+      $current_user = \Drupal::currentUser();
+      // Check if the user is authenticated (logged in).
+      if ($current_user->isAuthenticated()) {
+        // Get the email address of the current user.
+        $email = $current_user->getEmail();
+        // You can now use $email for further processing.
+        $cid = $custom_service->getContactIdByEmail($email);
+        $event_id = \Drupal::request()->attributes->get('civicrm_event')->get('id')->getValue()[0]['value'];
+        $participant_id = \Civi\Api4\Participant::get()
+        ->addSelect('id')
+        ->addWhere('contact_id', '=', $cid)
+        ->addWhere('event_id', '=', $event_id)
+        ->execute()->first()['id'];
+
+        $build['custom_179']['#prefix'] = '<div class="meeting-page"><i class="icon-custom-calendar custom-icon-meeting"></i></div>';
+        $build['description']['#prefix'] = '<div class="meeting-confirm-my-presence">
+        
+        <a href="/civicrm-participant/' . $participant_id . '" class="button js-form-submit form-submit">Je confirme ma présence</a>
+        </div>'
+        ;
+        // $ex = '<a href="#" class="button js-form-submit form-submit">Excuser</a>';
+      }
     }
   }
 }
@@ -345,6 +390,9 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
     
     if ($entity instanceof  Drupal\taxonomy\Entity\Term) {
       $custom_service->customResultSearchTerm($variables);
+    }    
+    if ($entity instanceof  Drupal\civicrm_entity\Entity\CivicrmEntity) {
+      $custom_service->customResultSearchMeeting($variables);
     }
   }
   
@@ -427,10 +475,11 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
       ];  
       
     }else {
+      
       /**** Affichage dans la page dernier doc les doc lié au terme TODO Comment differencier les terme lié a un doc ET terme qui a des doc****/
-      // if ($term->id() == '4992') {  //TODO CECI PERMET D'AFFICHER LES DOCUMENT LIE AUX TERMES
+      if ($term->id() == '4992') {  //TODO CECI PERMET D'AFFICHER LES DOCUMENT LIE AUX TERMES
         return $custom_service->getAllDataForDocumentLieAuxTermeFirstElement($variables);
-      // }
+      }
       /***** end *****/
       
       /**** Affichage dans la page dernier doc ****/
@@ -487,7 +536,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
 
                   $get_description_by_id = \Drupal::database()->query('select * from  media__field_media_document where entity_id = ' . $fileId)->fetch()->field_media_document_description;
                   $size_of_file = filesize('/var/aegir/platforms/civicrm-d9/' . $file->createFileUrl());
-                  $media_name = $custom_service->getNodeFieldValue($media, 'field_titre_public') ?: $get_description_by_id;
+                  $media_name = getNodeFieldValue($media, 'field_titre_public') ? getNodeFieldValue($media, 'field_titre_public') : getNodeFieldValue($media, 'name');
                   //todo find link
 
                   //recupere le type de document 
@@ -516,7 +565,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
           $media = Drupal\media\Entity\Media::load($first_element_id);
           if ($media) {
             $media_extrait = getNodeFieldValue ($media, 'field_resume');
-            $title = getNodeFieldValue ($media, 'name');
+            $title = getNodeFieldValue($media, 'field_titre_public') ? getNodeFieldValue($media, 'field_titre_public') : getNodeFieldValue($media, 'name');
           }
           $file_type = $custom_service->getFileTypeExtension($get_first_element[0]['fileType']);//todo mettre switch et ajouter tous les types de fichiers
           $file_size = $get_first_element[0]['size'];
@@ -531,9 +580,10 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
           $html = ['#markup' => $media_extrait];
           $html = \Drupal::service('renderer')->render($html);
           unset($all_documents[$first_title][0]);
+
           $counted_doc = count(reset($all_documents));
-          $display_see_other_doc = ($counted_doc > 1);
-          
+          // $display_see_other_doc = ($counted_doc > 1); TODO 
+          $display_see_other_doc = ($all_documents > 2);
           $variables['content'] = [
             '#theme' => 'phenix_custom_block_custom_last_doc',
             '#cache' => ['max-age' => 0],

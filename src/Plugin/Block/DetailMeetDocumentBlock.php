@@ -35,11 +35,12 @@ class DetailMeetDocumentBlock  extends BlockBase  {
     $data = [];
 
     \Drupal::service('civicrm')->initialize();
-    $eventId = \Drupal::request()->attributes->get('civicrm_event')->id->getValue()[0]['value'];
+    if (\Drupal::request()->attributes->get('civicrm_event')) {
 
-
-    // Load the CiviCRM event by its ID.
-    $allDocuments = $this->getAllDocuments ($eventId);
+      $eventId = \Drupal::request()->attributes->get('civicrm_event')->id->getValue()[0]['value'];
+      
+      // Load the CiviCRM event by its ID.
+      $allDocuments = $this->getAllDocuments ($eventId);
      
     $allOtherDocs = $this->getAllDocs($eventId, true);
 
@@ -47,7 +48,7 @@ class DetailMeetDocumentBlock  extends BlockBase  {
       $mediaObject = \Drupal::service('entity_type.manager')->getStorage('media')->load($docId);
       if ($mediaObject) {
 
-        $title_doc = $custom_service->getNodeFieldValue($mediaObject, 'name');
+        $title_doc = $custom_service->getNodeFieldValue($mediaObject, 'field_titre_public') ? $custom_service->getNodeFieldValue($mediaObject, 'field_titre_public') : $custom_service->getNodeFieldValue($mediaObject, 'name');
         $allInfoDocs['first_type_de_document'] = $custom_service->getTypeDocument ($mediaObject);
         $allInfoDocs['first_element_id'] = $custom_service->getNodeFieldValue($mediaObject, 'mid');
         $date_doc = $custom_service->getNodeFieldValue($mediaObject, 'created');
@@ -94,6 +95,7 @@ class DetailMeetDocumentBlock  extends BlockBase  {
         'event_id' => 991
       ],
     ];
+  }
   }
 
   private function getAllDocs ($groupId, $notIncludeFirstDoc) {

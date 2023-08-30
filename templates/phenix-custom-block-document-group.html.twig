@@ -1,2 +1,5 @@
-
-{% include 'phenix-custom-block-custom-last-doc.html.twig' %}
+{% if content.there_is_a_doc %}
+    {% include 'phenix-custom-block-custom-last-doc.html.twig' %}
+{% else %}
+    <p class="no-doc">Aucun document pour l'instant</p>
+{% endif %}    

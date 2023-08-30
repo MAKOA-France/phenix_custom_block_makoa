@@ -38,8 +38,11 @@ class DetailGroupBlock  extends BlockBase  {
     $group_id = \Drupal::request()->attributes->get('civicrm_group')->id->getValue()[0]['value'];
 
     $data['totatl_member'] = $this->totalMembers($group_id);
-    $data['group_name'] = $this->getGroupName($group_id);
-    $data['group_presentation'] = $this->getGroupPresentation($group_id);
+    $publicTitle = $this->getGroupName($group_id)['frontend_title'];
+    $defaultTitle = $this->getGroupName($group_id)['title'];
+    $data['group_name'] = $publicTitle ? $publicTitle : $defaultTitle;
+    $description = $this->getGroupName($group_id)['frontend_description'];
+    $data['group_presentation'] = $description ? $description : '';
 
     $allDocuments = $this->getAllDocuments ($group_id);
     
@@ -171,8 +174,10 @@ class DetailGroupBlock  extends BlockBase  {
   private function getGroupName($group_id) {
     return \Civi\Api4\Group::get()
       ->addSelect('title')
+      ->addSelect('frontend_title')
+      ->addSelect('frontend_description')
       ->addWhere('id', '=', $group_id)
-      ->execute()->first()['title'];
+      ->execute()->first();
   }
 
   private function getFileType ($media) {
@@ -182,12 +187,6 @@ class DetailGroupBlock  extends BlockBase  {
     $fileType = $custom_service->getNodeFieldValue($file, 'filemime');
     $fileType = $fileType =='application/pdf' ? 'pdf-3.png' : 'pdf-2.png';//todo mettre switch et ajouter tous les types de fichiers
     return $fileType;
-  }
-
-  private function getGroupPresentation ($group_id) {
-    return "Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
-    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
-    when an unknown printer took a galley of type and scrambled it to make a type specimen book. ";
   }
   
   /**

@@ -684,7 +684,7 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
       $first_doc = reset($media_entities);
       $created_at = $this->getNodeFieldValue($first_doc, 'created');
       $document_year = $this->getYearFromTimestamp($created_at);
-      $first_doc_title = $this->getNodeFieldValue($first_doc, 'name');
+      $first_doc_title = $this->getNodeFieldValue($first_doc, 'field_titre_public') ? $this->getNodeFieldValue($first_doc, 'field_titre_public') : $this->getNodeFieldValue($first_doc, 'name');
       $first_doc_type_doc = $this->getTypeDocument ($first_doc);
       $first_doc_extrait = $this->getNodeFieldValue ($first_doc, 'field_resume');
       $first_doc_file = $this->getNodeFieldValue ($first_doc, 'field_media_document');
@@ -737,7 +737,7 @@ private function getAllOtherDocInfo ($allDoc, $termName) {
     $first_doc_file_url = $this->getNodeFieldValue($file_object, 'uri');
     $first_doc_file_size = filesize($first_doc_file_url);
     $first_doc_file_size = round($first_doc_file_size / 1024, 0);
-    $media_name = $this->getNodeFieldValue($doc, 'name');
+    $media_name = $this->getNodeFieldValue($doc, 'field_titre_public') ? $this->getNodeFieldValue($doc, 'field_titre_public') : $this->getNodeFieldValue($doc, 'name');
     $type_doc = $this->getTypeDocument ($doc);
      $all_documents[$media_name][] = [
         'fileType' => $first_doc_img_file,
@@ -783,6 +783,9 @@ public function customResultSearchDoc (&$var) {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
   if ($field->field == 'name_1') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'title_1') {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
   
@@ -950,6 +953,67 @@ public function customResultSearchNode(&$var){
   }
 }
 
+public function customResultSearchMeeting(&$var){
+  $field = $var['field'];
+	$row = $var['row'];
+  $value = $field->getValue($row);
+  $view = $var['view'];
+  $entity = $var['row']->_entity;
+
+  //Pour les résultats de type reunion
+  if($entity->getEntityTypeId() == 'civicrm_event') {
+
+    if ($field->field == 'body') {
+      $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+    }
+    if (in_array($field->field, ['title', 'title_1', 'description', 'name_1'])) {
+      $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+    }
+    
+    if ($field->field == 'thumbnail') {
+      $var['output'] = ['#markup' => '<p class="thumbnail-type"> Réunion </p>'];
+    }
+    if ($field->field == 'rendered_item') {
+      // $published_on = $this->getNodeFieldValue($entity, 'created');
+      // $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
+      // Create a DateTime object from the date string
+      $start_date = $this->getNodeFieldValue($entity, 'start_date');
+      $dateTime = new \DateTime($start_date);
+      
+      // Get the day
+      $day = $dateTime->format('d');
+
+      // Get the month
+      $month = $dateTime->format('m');
+      // Obtient le mois en français
+      setlocale(LC_TIME, 'fr_FR.utf8');
+      $dayLetter = strftime('%A', $dateTime->getTimestamp());
+
+      // Get the year
+      $year = $dateTime->format('Y');
+      
+      // Get the hour
+      $hour = $dateTime->format('H');
+
+      // Get the minute value.
+      $minute = $dateTime->format('i');
+      $event_title = $this->getNodeFieldValue($entity, 'title');
+      $info_node_article = [
+        '#theme' => 'phenix_custom_bloc_search_civicrm_meeting',
+        '#cache' => ['max-age' => 0],
+        '#content' => [
+          'published_on' => $dayLetter . ' ' . $day . '/' . $month . '/' . $year . ' à ' . $hour . ':' . $minute,
+          // 'resume' => $this->getNodeFieldValue($entity, 'body'),
+          'title' => $event_title, 
+          'event_id' => $entity->id(),
+          ]
+        ]; 
+        $var['output'] = $info_node_article;
+        return $var;
+      }
+  }
+}
+
 /**
  * Personnaliser l'affichage du resultat de recherche des term
  */
@@ -979,32 +1043,35 @@ public function customResultSearchTerm(&$var){
     if (!$description) {//
       $dossier_id = $this->getNodeFieldValue($entity, 'field_dossier');
       $paragraph = \Drupal\paragraphs\Entity\Paragraph::load($dossier_id);
-      $description = $this->getNodeFieldValue($paragraph, 'field_texte_formate');
+      if ($paragraph) {
+  
+        $description = $this->getNodeFieldValue($paragraph, 'field_texte_formate');
 
-      
-      // Create a DOMDocument instance and load the HTML
-      $doc = new \DOMDocument();
-      $doc->loadHTML($description);
+        
+        // Create a DOMDocument instance and load the HTML
+        $doc = new \DOMDocument();
+        $doc->loadHTML($description);
 
-      // Use DOMXPath to query for text nodes
-      $xpath = new \DOMXPath($doc);
+        // Use DOMXPath to query for text nodes
+        $xpath = new \DOMXPath($doc);
 
-      // Query for all text nodes within the table element
-      $textNodes = $xpath->query('//table//text()');
+        // Query for all text nodes within the table element
+        $textNodes = $xpath->query('//table//text()');
 
-      // Initialize a variable to store the extracted text
-      $extractedText = '';
+        // Initialize a variable to store the extracted text
+        $extractedText = '';
 
-      // Loop through the text nodes and concatenate their text content
-      foreach ($textNodes as $node) {
-          $extractedText .= $node->nodeValue . ' ';
+        // Loop through the text nodes and concatenate their text content
+        foreach ($textNodes as $node) {
+            $extractedText .= $node->nodeValue . ' ';
+        }
+
+        // Remove extra whitespace and trim the result
+        $description = trim($extractedText);
+        $description = utf8_decode($description);
       }
-
-      // Remove extra whitespace and trim the result
-      $description = trim($extractedText);
-      $description = utf8_decode($description);
-      
     }
+    
      $info_node_article = [
       '#theme' => 'phenix_custom_bloc_search_term',
       '#cache' => ['max-age' => 0],

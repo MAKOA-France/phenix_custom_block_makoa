@@ -33,7 +33,7 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     $current_user = \Drupal::currentUser();
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
     $data = [];
-
+    \Drupal::service('cache.render')->invalidateAll();
     \Drupal::service('civicrm')->initialize();
     $group_id = \Drupal::request()->attributes->get('civicrm_group')->id->getValue()[0]['value'];
 
@@ -41,14 +41,15 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     $data['group_name'] = $this->getGroupName($group_id);
     $data['group_presentation'] = $this->getGroupPresentation($group_id);
 
-    $allDocuments = $this->getAllDocuments ($group_id);
+    $allDocuments = $this->getAllDocuments ($group_id, false);//Pour  le Premier element du document
     
-    $allOtherDocs = $this->getAllDocs($group_id);
+    $allOtherDocs = $this->getAllDocs($group_id, true);//Pour Les autres documents
+    
 
     foreach ($allOtherDocs as $docId) {
       $mediaObject = \Drupal::service('entity_type.manager')->getStorage('media')->load($docId);
       
-      $title_doc = $custom_service->getNodeFieldValue($mediaObject, 'name');
+      $title_doc = $custom_service->getNodeFieldValue($mediaObject, 'field_titre_public') ? $custom_service->getNodeFieldValue($mediaObject, 'field_titre_public') : $custom_service->getNodeFieldValue($mediaObject, 'name');
       $allInfoDocs['first_type_de_document'] = $custom_service->getTypeDocument ($mediaObject);
       $allInfoDocs['first_element_id'] = $custom_service->getNodeFieldValue($mediaObject, 'mid');
       $date_doc = $custom_service->getNodeFieldValue($mediaObject, 'created');
@@ -70,7 +71,7 @@ class DocumentDetailGroupBlock  extends BlockBase  {
         'created_at' => $this->getFormattedDate($mediaObject),
         'paragraph_id' => null,
       ]; 
-    
+      
     }
     
     
@@ -78,6 +79,7 @@ class DocumentDetailGroupBlock  extends BlockBase  {
       '#theme' => 'doc_detail_group',
       '#cache' => ['max-age' => 0],
       '#content' => [
+        'there_is_a_doc' => !empty($allOtherDocs) ? true : false,
         'data' => $all_other_document,
         'first_title' => 'Documents',
         'first_type_de_document' => $allDocuments['first_type_de_document'],
@@ -88,33 +90,42 @@ class DocumentDetailGroupBlock  extends BlockBase  {
         'first_element_id' => $allDocuments['first_element_id'],
         'first_element_title' => $allDocuments['first_title'],
         'display_see_other_doc' => count($allOtherDocs),
-        'is_page_last_doc' => false
+        'is_page_last_doc' => false,
+        'group_id' => $group_id
       ],
     ];
   }
 
-  private function getAllDocs ($groupId) {
+  private function getAllDocs ($groupId, $isFirstElement) {
     $db = \Drupal::database();
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
-    $res = $db->query('select * from media__field_groupes where field_groupes_target_id  = ' . $groupId)->fetchAll();
-    $res = array_column($res, 'entity_id');
-    unset($res[0]);
+    $res_linked_doc = $db->query('select * from media__field_groupes where field_groupes_target_id  = ' . $groupId)->fetchAll();
+    $res_linked_doc = array_column($res_linked_doc, 'entity_id');
+    
+    $res_doc_group = $db->query('select * from civicrm_group__field_documents_groupe where entity_id = ' . $groupId)->fetchAll();
+    $res_doc_group = array_column($res_doc_group, 'field_documents_groupe_target_id');
+
+    $res = array_merge($res_linked_doc, $res_doc_group);
+    if ($isFirstElement) {
+      unset($res[0]);
+    }
     return $res;
   }
 
-  private function getAllDocuments ($groupId) {
+  private function getAllDocuments ($groupId, $isFirstElement) {
     $allInfoDocs = [];
     $db = \Drupal::database();
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
-    $res = $db->query('select * from media__field_groupes where field_groupes_target_id  = ' . $groupId)->fetchAll();//TODO USE ABOVE FUNCTION
-    $res = $this->getAllDocs($groupId);
+    // $res = $db->query('select * from media__field_groupes where field_groupes_target_id  = ' . $groupId)->fetchAll();//TODO USE ABOVE FUNCTION
+    $res = $db->query('select * from civicrm_group__field_documents_groupe where entity_id = ' . $groupId)->fetchAll();//TODO USE ABOVE FUNCTION
+    $res = $this->getAllDocs($groupId, $isFirstElement);
 
 
     $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($res);
     $firstDoc = reset($docs);
     if ($firstDoc) {
 
-      $allInfoDocs['first_title'] = $custom_service->getNodeFieldValue($firstDoc, 'name');
+      $allInfoDocs['first_title'] = $custom_service->getNodeFieldValue($firstDoc, 'field_titre_public') ? $custom_service->getNodeFieldValue($firstDoc, 'field_titre_public') : $custom_service->getNodeFieldValue($firstDoc, 'name');
       $allInfoDocs['first_type_de_document'] = $custom_service->getTypeDocument ($firstDoc);
       $allInfoDocs['first_element_id'] = $custom_service->getNodeFieldValue($firstDoc, 'mid');
       $date_doc = $custom_service->getNodeFieldValue($firstDoc, 'created');

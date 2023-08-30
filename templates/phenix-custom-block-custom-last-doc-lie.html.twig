@@ -25,16 +25,18 @@
         </div>
 
         <div class="detail-date-button-first-doc">
-          <span class="date-size-first-doc ">{{ content.date_doc }}  | {{ content.file_size }} Ko 
-          {% if content.first_type_de_document %}
-            | {{ content.first_type_de_document }} 
-          {% endif %}
-          </span>
-          
-          <a href="/media/{{ content.first_element_id }}/download" class="media-download-file-first"><i class='icon-custom-download-file'></i>Télécharger le document</a>
-        </div>
+          <div  class="date-size-first-doc ">
+            <span>{{ content.date_doc }}  | {{ content.file_size }} Ko </span>
 
-      </div>
+            <span class="type-first-doc">
+              {% if content.first_type_de_document %}
+                {{ content.first_type_de_document }} 
+              {% endif %}
+            </span>
+            </div>
+            <a href="/media/{{ content.first_element_id }}/download" class="media-download-file-first"><i class='icon-custom-download-file'></i>Télécharger le document</a>
+          </div>
+        </div>
   </div>
 
   {% if content.display_see_other_doc %}

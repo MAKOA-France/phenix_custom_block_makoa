@@ -4,7 +4,7 @@
   <div class="all-meet-who-s-mine col-md-6">
     
      {% for key, elm in content.data %}
-     <a href="/civicrm-event/{{ elm.id }}" class="lists-meeting">
+     <a href="/civicrm-event/{{ elm.created_id_civicrm_contact_id }}" class="lists-meeting">
         <h2 class="meeting-date">{{ elm.formated_start_date.day }} {{ elm.formated_start_date.month }} {{ elm.formated_start_date.year }}</h2>
         
         <div class="meeting-hour">

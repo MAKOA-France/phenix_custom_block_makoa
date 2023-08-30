@@ -20,6 +20,18 @@
   }
 /******/
 
+/******Page detail commission ******/
+.group-detail-page .layout.layout--twocol-section.layout--twocol-section--50-50 + .layout--onecol {
+    display: none !important;
+    color: cyan;
+    background-color: red;
+}
+
+.bloc-head-meetings-in-theme .block-layout-builder {
+    display: none;
+}
+/************/
+
 /**** Page formation ***/
 
 .page-social-rh-formations .img-html-bloc {

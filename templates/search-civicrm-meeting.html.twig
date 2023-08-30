@@ -1,0 +1,9 @@
+<div class="node-search document-content">
+    <div class="default-content-node default-content-doc">
+        <a href="/civicrm-event/{{ content.event_id }}"><h3>{{ content.title }}</h3></a><p class="doc-created-at">  {{ "Programmé le " ~ content.published_on |raw}}</p>        
+    </div>
+    <div class="node-description doc-resume">
+        <p class="p-node-description doc-resume">{{ content.resume|raw }}</p>
+    </div>
+     {# <p class="node-type thumbnail-type">Rubrique</p> #}
+</div>
