@@ -164,7 +164,7 @@ class DetailGroupBlock  extends BlockBase  {
   }
   
   private function totalMembers ($group_id) {
-    return \Civi\Api4\GroupContact::get()
+    return \Civi\Api4\GroupContact::get(FALSE)
       ->addSelect('COUNT(id) AS count')
       ->addWhere('group_id', '=', $group_id)
       ->addWhere('status', '!=', 'Removed')
@@ -172,7 +172,7 @@ class DetailGroupBlock  extends BlockBase  {
   }
 
   private function getGroupName($group_id) {
-    return \Civi\Api4\Group::get()
+    return \Civi\Api4\Group::get(FALSE)
       ->addSelect('title')
       ->addSelect('frontend_title')
       ->addSelect('frontend_description')

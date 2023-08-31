@@ -10,6 +10,8 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\file\Entity\File;
+use Drupal\Component\Utility\Unicode;
+
 /**
  * Class PubliciteService
  * @package Drupal\phenix_custom_block\Services
@@ -194,7 +196,7 @@ class CustomBlockServices {
         $event_id = $event->event_id;
         if ($event_id) {
 
-          $events = \Civi\Api4\Event::get()
+          $events = \Civi\Api4\Event::get(FALSE)
           ->addSelect('rsvpevent_cg_linked_groups.rsvpevent_cf_linked_groups')
           ->addWhere('id', '=', $event_id)
           ->execute();
@@ -203,7 +205,7 @@ class CustomBlockServices {
             $eventGroupId = $events->getIterator();
             $eventGroupId = iterator_to_array($eventGroupId);  
             foreach ($eventGroupId as $group_id) {
-              $allContactId = \Civi\Api4\GroupContact::get()
+              $allContactId = \Civi\Api4\GroupContact::get(FALSE)
               ->addSelect('contact_id')
               ->addWhere('group_id', '=', $group_id['rsvpevent_cg_linked_groups.rsvpevent_cf_linked_groups'][0])
               ->execute()->getIterator();
@@ -915,6 +917,9 @@ public function customResultThumbnail(&$var) {
       case 'application/rtf':
         $txt_file = '.rtf';
         break;
+      case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+        $txt_file = '.excel';
+        break;
         
     }
       
@@ -937,19 +942,27 @@ public function customResultSearchNode(&$var){
   if ($field->field == 'rendered_item') {
     $published_on = $this->getNodeFieldValue($entity, 'created');
     $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
-    
+    $max_length = 200;
+    $truncated_text = Unicode::truncate($this->getNodeFieldValue($entity, 'body'), $max_length, TRUE, TRUE);
+
      $info_node_article = [
       '#theme' => 'phenix_custom_bloc_search_node',
       '#cache' => ['max-age' => 0],
       '#content' => [
          'title' => $entity->getTitle(),
-        'resume' => $this->getNodeFieldValue($entity, 'body'),
+        'resume' => $truncated_text,
         'published_on' => $convertedDate, 
         'node_id' => $entity->id(),
       ]
     ]; 
     $var['output'] = $info_node_article;
     return $var;
+  }
+  if ($field->field == 'thumbnail') {
+    $var['output'] = ['#markup' => '<p class="thumbnail-type"> Article </p>'];
+  }
+  if (in_array($field->field, ['title_1', 'name_1', 'description'])) {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
 }
 
@@ -1033,7 +1046,7 @@ public function customResultSearchTerm(&$var){
   if ($field->field == 'name_1') {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
-  if ($field->field == 'description') {
+  if ($field->field == 'description' || $field->field == 'title_1') {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
   if ($field->field == 'rendered_item') {
@@ -1091,7 +1104,7 @@ public function customResultSearchTerm(&$var){
  * Recupère le libellé du filiere par id
  */
 private function getFiliereLabelById ($id) {
-  return \Civi\Api4\OptionValue::get()
+  return \Civi\Api4\OptionValue::get(FALSE)
   ->addSelect('label')
   ->addWhere('id', '=', $id)
   ->execute()->first();

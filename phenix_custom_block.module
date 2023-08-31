@@ -230,7 +230,7 @@ function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\Enti
         $build['custom_179']['#prefix'] = '<div class="meeting-page"><i class="icon-custom-calendar custom-icon-meeting"></i></div>';
         $build['description']['#prefix'] = '<div class="meeting-confirm-my-presence">
         
-        <a href="/civicrm-participant/' . $participant_id . '" class="button js-form-submit form-submit">Je confirme ma présence</a>
+        <a href="/civicrm-participant/' . $participant_id . '/edit" class="button js-form-submit form-submit">Je confirme ma présence</a>
         </div>'
         ;
         // $ex = '<a href="#" class="button js-form-submit form-submit">Excuser</a>';
@@ -324,6 +324,20 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
     }
   }
 
+
+	if ($view->storage->id() == 'civievents_base_sur_le_contact_' &&  $view->current_display == 'block_5') {
+    if ($field->field == 'frontend_title') {
+      // $formatted = implode(' ',str_split($value, 2));
+      $title = $field->getValue($row);
+      $default_title = $title ? $title : $row->civicrm_group_civicrm_group_contact_title;
+      $group_id = $row->civicrm_group_civicrm_group_contact_id_1;
+			$html = '<div class="my-meeting">
+      <a href="/civicrm-group/' . $group_id . '">' . $default_title . '</a>
+      </div>';
+      $html = ['#markup' =>  $html]; 
+      $variables['output'] = $html;
+    }
+  }
 
 	if ($view->storage->id() == 'civievents_base_sur_le_contact_' &&  $view->current_display == 'block_2') {
 		if ($field->field == 'title') {

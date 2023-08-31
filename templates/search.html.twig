@@ -6,7 +6,9 @@
         <p class="doc-resume">{{ content.resume|raw }}</p>
     </div>
     <div class="doc-info">
-        <span class="libelle-type-doc">Type de doc : </span><span class="doc-type">{{ content.type_document }}</span>
+        {% if content.type_document %}
+            <span class="libelle-type-doc">Type de doc : </span><span class="doc-type">{{ content.type_document }}</span>
+        {% endif %}
         {% if content.filiere %}
         | <span class="libelle-filiere-doc">Filière : </span><span class="doc-filiere">{{ content.filiere }}</span>
         {% endif %}
