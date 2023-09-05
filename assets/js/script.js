@@ -1,6 +1,9 @@
 (function($) {
     $(document).ready(function() {
 
+        //page recherche
+        jQuery('.page-recherche .views-element-container table > tbody > tr').has('p.row-to-hide').hide();
+        
         //Page ajout document 
         if (jQuery('.field--name-field-tags').length) {
 

@@ -65,6 +65,7 @@ class DetailMeetDocumentBlock  extends BlockBase  {
           'fileurl' => '',
           'size' => $this->getFileSize ($mediaObject),
           'fileId' => $this->getFile ($mediaObject)->id(),
+          'media_id' => $mediaObject->id(),
           'type_document' => $custom_service->getTypeDocument ($mediaObject),
           'description' => $title_doc,
           'created_at' => $this->getFormattedDate($mediaObject),
@@ -76,6 +77,8 @@ class DetailMeetDocumentBlock  extends BlockBase  {
     if (!$allDocuments) {//s'il n'y a aucun document on return
       return;
     }
+
+    $allowToEdit = $custom_service->checkIfUserCanEditDoc ();
     
     return [
       '#theme' => 'document_detail_meet',
@@ -92,7 +95,8 @@ class DetailMeetDocumentBlock  extends BlockBase  {
         'first_element_title' => $allDocuments['first_title'],
         'display_see_other_doc' => count($allOtherDocs),
         'is_page_last_doc' => false,
-        'event_id' => 991
+        'event_id' => 991,
+        'can_edit_doc' => $allowToEdit
       ],
     ];
   }
@@ -103,6 +107,9 @@ class DetailMeetDocumentBlock  extends BlockBase  {
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
     $res = $db->query('select field_documents_target_id from civicrm_event__field_documents where entity_id  = ' . $groupId)->fetchAll();
     $res = array_column($res, 'field_documents_target_id');
+
+    $res = $custom_service->skipDocSocial($res);
+
     if ($notIncludeFirstDoc) {
       unset($res[0]);
     }
@@ -180,7 +187,7 @@ class DetailMeetDocumentBlock  extends BlockBase  {
   }
   
   private function totalMembers ($group_id) {
-    return \Civi\Api4\GroupContact::get()
+    return \Civi\Api4\GroupContact::get(false)
       ->addSelect('COUNT(id) AS count')
       ->addWhere('group_id', '=', $group_id)
       ->addWhere('status', '!=', 'Removed')
@@ -188,7 +195,7 @@ class DetailMeetDocumentBlock  extends BlockBase  {
   }
 
   private function getGroupName($group_id) {
-    return \Civi\Api4\Group::get()
+    return \Civi\Api4\Group::get(false)
       ->addSelect('title')
       ->addWhere('id', '=', $group_id)
       ->execute()->first()['title'];

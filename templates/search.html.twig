@@ -1,3 +1,4 @@
+{% if content.has_result %}
 <div class="document-content">
     <div class="default-content-doc">
         <a href="/media/{{ content.media_id }}/download"><h3>{{ content.title }}</h3></a><p class="doc-created-at">  {{ "Publié le " ~ content.published_on |raw}}</p>
@@ -12,5 +13,10 @@
         {% if content.filiere %}
         | <span class="libelle-filiere-doc">Filière : </span><span class="doc-filiere">{{ content.filiere }}</span>
         {% endif %}
+        {% if content.can_edit_doc %}
+            <a href="/media/{{ content.media_id }}/edit" class="edit-doc-button btn-ask-question-home"> <i class="fas fa-edit"></i>Modifier</a>
+        {% endif %}
     </div>
 </div>
+
+{% endif %}

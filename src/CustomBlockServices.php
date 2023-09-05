@@ -674,15 +674,15 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
       
     $media_entities = $query->execute();
 
+    $media_entities = $this->skipDocSocial($media_entities);
+
     $media_entities = $entityTypeManager->getStorage('media')->loadMultiple($media_entities);
-
-
 
 
 
     // $media_entities = \Drupal::entityTypeManager()->getStorage('media')->loadMultiple($all_linked_doc);
     
-    if (count($media_entities) > 1) {
+    if (count($media_entities) > 0) {
       $first_doc = reset($media_entities);
       $created_at = $this->getNodeFieldValue($first_doc, 'created');
       $document_year = $this->getYearFromTimestamp($created_at);
@@ -701,8 +701,9 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
       $display_see_other_doc = true;
       
       $allOtherDoc = array_shift($media_entities);
-
-
+     
+      $seeMoreDoc = $this->getAllOtherDocInfo ($media_entities, $term_name) ? true : false;
+      $allowToEdit = $this->checkIfUserCanEditDoc ();
       return $var['content'] = [
         '#theme' => 'phenix_custom_block_last_doc_automatique',
         '#cache' => ['max-age' => 0],
@@ -717,14 +718,25 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
           'date_doc' => $first_doc_created_at,
           'first_element_id' => $first_doc_id,
           'first_element_title' => $first_doc_title,
-          'display_see_other_doc' => $display_see_other_doc,
+          'display_see_other_doc' => $seeMoreDoc,
           'term_name' => $term_name,
           'document_year' => $document_year,
           'is_page_last_doc' => true,
+          'there_is_a_document' => true,
+          'can_edit_doc' => $allowToEdit,
         ]
       ];
-    } 
-  }
+    }
+  }else {
+    return $var['content'] = [
+      '#theme' => 'phenix_custom_block_last_doc_automatique',
+      '#cache' => ['max-age' => 0],
+      '#content' => [
+        'data' => [],
+        'there_is_a_document' => false,
+      ]
+    ];
+    }
 }
  
 private function getAllOtherDocInfo ($allDoc, $termName) {
@@ -752,6 +764,7 @@ private function getAllOtherDocInfo ($allDoc, $termName) {
         'created_at' => $this->convertTimesptamToDate($created_at),
         'paragraph_id' => '',
         'term_name' => $termName,
+        'media_id' => $doc->id(),
       ]; 
   }
 
@@ -768,7 +781,7 @@ public function customResultSearchDoc (&$var) {
 	$row = $var['row'];
   $value = $field->getValue($row);
   $entity = $var['row']->_entity;
-  
+
   if ($field->field == 'rendered_item') {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
@@ -843,10 +856,23 @@ public function customResultSearchDoc (&$var) {
           
         }  
       }
+      $isUserSocial = $this->checkIfUserIsAdminOrSocial();
+      $isDocSocial = $this->getNodeFieldValue($entity, 'field_social');
+      if (!$isUserSocial && $isDocSocial) {
+        $doc_info = [
+          '#theme' => 'phenix_custom_bloc_search',
+          '#cache' => ['max-age' => 0],
+          '#content' => [
+            'has_result' => false
+            ]
+          ];
+          $var['output'] = ['#markup' => '<p class="row-to-hide"></p>'];
+        return $doc_info;
+      }
     
       $type_doc = $entity->get('field_type_de_document')->getValue()[0]['value'];
       $libelle = $this->getTypeDocumentWithAutre($entity);
-      
+      $allowToEdit = $this->checkIfUserCanEditDoc ();
       if ($libelle) {
         $doc_info = [
           '#theme' => 'phenix_custom_bloc_search',
@@ -857,7 +883,9 @@ public function customResultSearchDoc (&$var) {
             'type_document' => $libelle,
             'filiere' => rtrim($label, ', '),
             'published_on' => $convertedDate,
-            'media_id' => $entity->id()
+            'media_id' => $entity->id(),
+            'can_edit_doc' => $allowToEdit,
+            'has_result' => true
             ]
         ];
         $var['output'] = $doc_info;
@@ -1137,6 +1165,78 @@ private function getMediaName ($file) {
   $get_description_by_id = \Drupal::database()->query('select * from  media__field_media_document where entity_id = ' . $file->id())->fetch()->field_media_document_description;
   $size_of_file = filesize('/var/aegir/platforms/civicrm-d9/' . $file->createFileUrl());
   $media_name = $this->getNodeFieldValue($media, 'field_titre_public') ?: $get_description_by_id;
+}
+
+public function checkIfUserCanEditDoc () {
+  // Get the current user object.
+  $current_user = \Drupal::currentUser();
+
+  $user = \Drupal\user\Entity\User::load($current_user->id());
+
+  // Get an array of role IDs for the current user.
+  $user_roles = $current_user->getRoles();
+  $whiteListRole = ['administrator', 'super_utilisateur', 'permanent'];
+  // dump($user_roles);
+  $allowToEdit = false;
+  if (in_array('administrator', $user_roles) || in_array('super_utilisateur', $user_roles) || in_array('permanent', $user_roles)) {
+    $allowToEdit = true;
+  }
+
+  return $allowToEdit;
+}
+
+public function checkIfUserIsAdminOrSocial () {
+  // Get the current user object.
+  $current_user = \Drupal::currentUser();
+
+  $user = \Drupal\user\Entity\User::load($current_user->id());
+
+  // Get an array of role IDs for the current user.
+  $user_roles = $current_user->getRoles();
+  $whiteListRole = ['administrator', 'social'];
+  // dump($user_roles);
+  $allowToEdit = false;
+  if (in_array('administrator', $user_roles) || in_array('social', $user_roles)) {
+    $allowToEdit = true;
+  }
+
+  return $allowToEdit;
+}
+
+/**
+ * 
+ */
+public function skipDocSocial ($currentIdDocs) {
+  $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($currentIdDocs);
+  $isUserSocial = $this->checkIfUserIsAdminOrSocial();
+  //si l'utilisateur n'est pas social
+  if (!$isUserSocial) {
+    $currentIdDocs = [];
+    usort($docs, function($a, $b) {
+      $timestampA = $a->get('created')->value;
+      $timestampB = $b->get('created')->value;
+      return $timestampB - $timestampA;
+    });
+
+    foreach($docs as $doc) {
+      $isDocSocial = $this->getNodeFieldValue($doc, 'field_social');
+      if (!$isDocSocial) {
+        $currentIdDocs[] =  $doc->id();
+      }
+    }
+  }
+  return $currentIdDocs;
+}
+
+public function compareByDate($a, $b) {
+  $dateA = $this->getNodeFieldValue($a, 'created'); // Replace 'dateProperty' with your date property name
+  $dateB = $this->getNodeFieldValue($b, 'created'); // Replace 'dateProperty' with your date property name
+  
+  if ($dateA == $dateB) {
+      return 0;
+  }
+  
+  return ($dateA < $dateB) ? -1 : 1;
 }
 
 

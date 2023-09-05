@@ -5,6 +5,12 @@
 }
 
 /* breadcrumb */
+
+/********REcherche ***/
+tr:has(td > p.row-to-hide) {
+    display: none !important;
+}
+/***********/
 .custom-submenu-li .with-link {
     color: black;
 }
@@ -20,6 +26,19 @@
   }
 /******/
 
+/*****Page dernier document ******/
+.edit-doc-button {
+    text-transform: uppercase;
+    font-size: .75rem;
+    color: #3e7269;
+    padding: 0px 15px;
+    font-weight: 600;
+    border-radius: 20px 0;
+    line-height: initial;
+}
+
+/**************/
+
 /******Page detail commission ******/
 .group-detail-page .layout.layout--twocol-section.layout--twocol-section--50-50 + .layout--onecol {
     display: none !important;
@@ -30,6 +49,7 @@
 .bloc-head-meetings-in-theme .block-layout-builder {
     display: none;
 }
+
 /************/
 
 /**** Page formation ***/
@@ -690,6 +710,9 @@ ul.chosen-results li {
     .custom-add-and-edit-form #edit-field-source-wrapper {
         width: 50%;
     }
+    .custom-add-and-edit-form .wrapper-status-and-author {
+        gap: 15px;
+    }
 }
 @media (max-width: 1400px) {
     .all-menu-checkboxes .form-checkboxes .form-item {
@@ -742,11 +765,11 @@ ul.chosen-results li {
     .media-form .wrapper-status-and-author .field--name-status {
         width: 100%;
     }
-    .custom-add-and-edit-form #edit-field-social-wrapper {
-        width: 40%;
-    }
     .custom-add-and-edit-form #edit-field-source-wrapper{
         width: 60%;
+    }
+    .custom-add-and-edit-form #edit-field-social-wrapper {
+        width: 40%;
     }
     .custom-add-and-edit-form .wrapper-status-and-author {
         flex-wrap: wrap;
@@ -778,6 +801,10 @@ ul.chosen-results li {
     .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"]::file-selector-button{
         width: 30%;
     } 
+    .custom-add-and-edit-form #edit-field-source-wrapper,
+    .custom-add-and-edit-form #edit-field-social-wrapper {
+        width: 100%;
+    }
 
 }
 /* Extra small devices (portrait phones) */
@@ -812,8 +839,7 @@ ul.chosen-results li {
     }
     .custom-add-and-edit-form #edit-field-social-wrapper{
         width: 40%;
-    }
-    
+    }    
     .custom-add-and-edit-form #edit-field-media-document-wrapper span.file {
         border-radius: initial;
         white-space: nowrap;

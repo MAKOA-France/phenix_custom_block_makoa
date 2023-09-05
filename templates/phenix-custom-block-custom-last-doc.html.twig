@@ -36,6 +36,9 @@
                     {{ content.first_type_de_document }} 
                 </span>
               {% endif %}
+              {% if content.can_edit_doc %}
+              <a href="/media/{{ content.first_element_id }}/edit" class="edit-doc-button btn-ask-question-home"> <i class="fas fa-edit"></i>  Modifier</a>
+              {% endif %}
             </div>
             <a href="/media/{{ content.first_element_id }}/download" class="media-download-file-first"><i class='icon-custom-download-file'></i>Télécharger le document</a>
           </div>
@@ -83,6 +86,9 @@
               {% if each_data['type_document'] %}
                 | <span class="type-doc">{{ each_data['type_document'] }}<span>
               {% endif %}
+              {% if content.can_edit_doc %}
+                <a href="/media/{{ each_data['media_id'] }}/edit" class="edit-doc-button btn-ask-question-home dernierdoc">  <i class="fas fa-edit"></i> Modifier</a>
+              {% endif %}
           </div>
         </div>
       </div>
@@ -103,7 +109,7 @@
   <div class="line-container-moins">
 
     <hr class="hr-line-accoredon"> 
-    <a class="btn-dismiss-other-doc"><i class="fa fa-angle-double-up" aria-hidden="true"></i> Voir moins de document <i class="fa fa-angle-double-up" aria-hidden="true"></i></a>
+    <a class="btn-dismiss-other-doc"><i class="fa fa-angle-double-up" aria-hidden="true"></i> Masquer la liste des documents <i class="fa fa-angle-double-up" aria-hidden="true"></i></a>
     <hr class="hr-line-accoredon">
   </div>
 

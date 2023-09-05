@@ -36,7 +36,7 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     \Drupal::service('cache.render')->invalidateAll();
     \Drupal::service('civicrm')->initialize();
     $group_id = \Drupal::request()->attributes->get('civicrm_group')->id->getValue()[0]['value'];
-
+    $isUserSocial = $custom_service->checkIfUserIsAdminOrSocial();
     $data['totatl_member'] = $this->totalMembers($group_id);
     $data['group_name'] = $this->getGroupName($group_id);
     $data['group_presentation'] = $this->getGroupPresentation($group_id);
@@ -70,10 +70,14 @@ class DocumentDetailGroupBlock  extends BlockBase  {
         'description' => $title_doc,
         'created_at' => $this->getFormattedDate($mediaObject),
         'paragraph_id' => null,
+        'media_id' => $mediaObject->id(),
       ]; 
       
     }
-    
+
+   
+
+    $allowToEdit = $custom_service->checkIfUserCanEditDoc ();
     
     return [
       '#theme' => 'doc_detail_group',
@@ -91,7 +95,8 @@ class DocumentDetailGroupBlock  extends BlockBase  {
         'first_element_title' => $allDocuments['first_title'],
         'display_see_other_doc' => count($allOtherDocs),
         'is_page_last_doc' => false,
-        'group_id' => $group_id
+        'group_id' => $group_id,
+        'can_edit_doc' => $allowToEdit,
       ],
     ];
   }
@@ -106,6 +111,11 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     $res_doc_group = array_column($res_doc_group, 'field_documents_groupe_target_id');
 
     $res = array_merge($res_linked_doc, $res_doc_group);
+
+
+    $res = $custom_service->skipDocSocial($res);
+
+    // dump($res_doc_group, $res_linked_doc);
     if ($isFirstElement) {
       unset($res[0]);
     }
@@ -120,11 +130,26 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     $res = $db->query('select * from civicrm_group__field_documents_groupe where entity_id = ' . $groupId)->fetchAll();//TODO USE ABOVE FUNCTION
     $res = $this->getAllDocs($groupId, $isFirstElement);
 
-
     $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($res);
+    
+    
+    
+/*     $isUserSocial = $custom_service->checkIfUserIsAdminOrSocial();
+    $newResWithoutIdSocial = [];
+    //si l'utilisateur n'est pas social
+    if (!$isUserSocial) {
+      foreach($docs as $doc) {
+        $isDocSocial = $custom_service->getNodeFieldValue($doc, 'field_social');
+        if (!$isDocSocial) {
+          
+          $newResWithoutIdSocial[] =  $doc->id();
+        }
+        $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($newResWithoutIdSocial);
+      }
+    } */
+    
     $firstDoc = reset($docs);
     if ($firstDoc) {
-
       $allInfoDocs['first_title'] = $custom_service->getNodeFieldValue($firstDoc, 'field_titre_public') ? $custom_service->getNodeFieldValue($firstDoc, 'field_titre_public') : $custom_service->getNodeFieldValue($firstDoc, 'name');
       $allInfoDocs['first_type_de_document'] = $custom_service->getTypeDocument ($firstDoc);
       $allInfoDocs['first_element_id'] = $custom_service->getNodeFieldValue($firstDoc, 'mid');
@@ -228,5 +253,7 @@ class DocumentDetailGroupBlock  extends BlockBase  {
 
      return \Drupal::database()->query($query)->fetchAll();
   }
+
+
 
 }

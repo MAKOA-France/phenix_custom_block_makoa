@@ -69,7 +69,7 @@ class MeetingDetailBlock  extends BlockBase  {
   
   private function getAllinfosByMeetingId ($meetingId) {
     $allInfos = [];
-    $events = \Civi\Api4\Event::get()
+    $events = \Civi\Api4\Event::get(FALSE)
         ->addSelect('start_date', 'end_date', 'description', 'rsvpevent_cg_linked_groups.rsvpevent_cf_linked_groups', 'title')
         ->addWhere('id', '=', $meetingId)
         ->execute()->first();
@@ -78,7 +78,7 @@ class MeetingDetailBlock  extends BlockBase  {
     $endDate = $events['end_date'];
     $description = $events['description'];
     $groupId = $events['rsvpevent_cg_linked_groups.rsvpevent_cf_linked_groups'][0];
-    $groupName = \Civi\Api4\Group::get()
+    $groupName = \Civi\Api4\Group::get(FALSE)
       ->addSelect('title')
       ->addWhere('id', '=', $groupId)
       ->execute()->first()['title'];
