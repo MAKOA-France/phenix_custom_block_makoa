@@ -232,7 +232,6 @@ function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\Enti
         $response = new TrustedRedirectResponse($path);
         $response->send();
       }else {
-        // dump($child_terms);
         
         uasort($child_terms, function ($a, $b) {
           return \Drupal::service('phenix_custom_block.view_services')->getNodeFieldValue($a, 'weight') - \Drupal::service('phenix_custom_block.view_services')->getNodeFieldValue($b, 'weight');
@@ -244,7 +243,6 @@ function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\Enti
         $response->send();
       }
     }
-
   }
 
   
@@ -475,7 +473,12 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
     $id = $custom_service->getNodeFieldValue($row->_entity, 'id');
     if ($field->field == 'title') {
       $group_id = $view->args[0];
-      $variables['output'] = ['#markup' => '<a href="/civicrm-event/' . $id . '"> ' . $field->getValue($row) . '</a>'];
+
+      $group_name = \Civi\Api4\Group::get()
+        ->addSelect('title')
+        ->addWhere('id', '=', $group_id)
+        ->execute()->first()['title'];
+      $variables['output'] = ['#markup' => '<div class="info-meet-group"><p class="info-group-title">' . $group_name . '</p><a href="/civicrm-event/' . $id . '"> ' . $field->getValue($row) . '</a>'];
     }
   }
 }
@@ -975,12 +978,5 @@ function phenix_custom_block_preprocess_views_view(array &$variables) {
   
 }
 
-/**
- * Implements hook_views_query_alter().
- */
-function phenix_custom_block_search_api_query_alter(\Drupal\search_api\Query\QueryInterface $query) {
-  
-  // Add conditions to the condition group.
-  // $query->addCondition('field_social', true);
- 
-}
+
+
