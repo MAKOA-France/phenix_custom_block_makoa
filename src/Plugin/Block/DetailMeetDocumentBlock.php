@@ -33,7 +33,7 @@ class DetailMeetDocumentBlock  extends BlockBase  {
     $current_user = \Drupal::currentUser();
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
     $data = [];
-
+    \Drupal::service('page_cache_kill_switch')->trigger();
     \Drupal::service('civicrm')->initialize();
     if (\Drupal::request()->attributes->get('civicrm_event')) {
 
@@ -108,7 +108,12 @@ class DetailMeetDocumentBlock  extends BlockBase  {
     $res = $db->query('select field_documents_target_id from civicrm_event__field_documents where entity_id  = ' . $groupId)->fetchAll();
     $res = array_column($res, 'field_documents_target_id');
 
+    $res = $custom_service->sortTermIdByDateCreation($res);
+
+    
     $res = $custom_service->skipDocSocial($res);
+
+    
 
     if ($notIncludeFirstDoc) {
       unset($res[0]);
@@ -125,7 +130,7 @@ class DetailMeetDocumentBlock  extends BlockBase  {
     
     $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($res);
     $firstDoc = reset($docs);
-    // dump($firstDoc);
+
     if ($firstDoc) {
 
       $allInfoDocs['first_title'] = $custom_service->getNodeFieldValue($firstDoc, 'name');

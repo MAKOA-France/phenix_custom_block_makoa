@@ -5,9 +5,9 @@
         jQuery('.page-recherche .views-element-container table > tbody > tr').has('p.row-to-hide').hide();
         
         //Page ajout document 
-        if (jQuery('.field--name-field-tags').length) {
+        if (jQuery('.field--name-field-tag').length) {
 
-            let allDefaultValue = jQuery('.field--name-field-tags').attr('data-default-value').split(',');
+            let allDefaultValue = jQuery('.field--name-field-tag').attr('data-default-value').split(',');
             allDefaultValue.forEach(function (el, index) {
                 jQuery('[data-current-id="' + el + '"]').parents('ul').show();
             })
@@ -43,7 +43,7 @@
             let curr_val = $(this).closest('li').attr('data-current-id');
 
             // Get the checkbox element using its ID
-            var checkbox = $('[name="field_tags[' + curr_val + ']"]');
+            var checkbox = $('[name="field_tag[' + curr_val + ']"]');
 
             // Toggle the checked state of the checkbox using prop()
             checkbox.prop('checked', !checkbox.prop('checked'));

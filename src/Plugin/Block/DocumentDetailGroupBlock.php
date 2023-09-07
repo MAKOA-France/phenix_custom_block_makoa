@@ -112,6 +112,7 @@ class DocumentDetailGroupBlock  extends BlockBase  {
 
     $res = array_merge($res_linked_doc, $res_doc_group);
 
+    $res = $custom_service->sortTermIdByDateCreation($res);
 
     $res = $custom_service->skipDocSocial($res);
 

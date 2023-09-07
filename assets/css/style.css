@@ -86,8 +86,8 @@ tr:has(td > p.row-to-hide) {
 .layout__region--second ul.custom-tag-dropdown > ul {
     display: block !important;
 }
-.layout__region.layout__region--second .field--name-field-tags {
-    display: none;
+.layout__region.layout__region--second .field--name-field-tag {
+     display: none;
 }
 .custom-placeholder-overlay {
     position: absolute;
@@ -98,6 +98,26 @@ tr:has(td > p.row-to-hide) {
     pointer-events: none;
 }
 /*****/
+
+/***** Page liste des documents en mode vanessa ******/
+.page-admin-content-media.role--permanent .form-item{
+    float: left;
+    padding: 6px;
+    margin: 0.75em 0;
+}
+
+.page-admin-content-media.role--permanent [id*="edit-actions--3"], .page-admin-content-media.role--permanent #edit-actions{
+    display: flex;
+    width: 100%;
+}
+.role--permanent .block-core.block-b-zf-local-actions > nav.action-links > li {
+    list-style: none;
+}
+.page-admin-content-media.role--permanent .js-form-item.form-item.js-form-type-select.form-item-action.js-form-item-action ,
+.page-admin-content-media.role--permanent [id*="edit-actions--3"] > input {
+    margin-top: 0;
+}
+/**********/
 
 /*========================================= Police "new order" from CDN ===========================================================*/
 h1,h2, h3, p, span, label, li, button, a,  input, select, textarea,.description{

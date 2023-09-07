@@ -70,11 +70,11 @@
     {% for each_data in elm %}
         {% set id_para = each_data['paragraph_id'] %}
       <div class="section-document custom-section-doc">
-        <a href="/media/{{ each_data['fileId'] }}/download" class="custom-icon-document each-img-link">
+        <a href="/media/{{ each_data['media_id'] }}/download" class="custom-icon-document each-img-link">
           <img class="" src="/files/assets/pdf-3.png">
         </a>
         <div class="description-with-date-size">
-          <a href="/media/{{ each_data['fileId'] }}/download" class="each-img-link">
+          <a href="/media/{{ each_data['media_id'] }}/download" class="each-img-link">
             <span class="description">{{ each_data['description'] }}</span>
           </a>
           <div class="date-and-size">

@@ -659,7 +659,7 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
   $term_object_id = $this->getNodeFieldValue($term_object, 'tid');
   $term_object = Term::load($term_object_id);
   $term_name = $this->getNodeFieldValue($term_object, 'name');
-  $string_query = 'select entity_id from media__field_tags where field_tags_target_id = ' . $term_object_id;
+  $string_query = 'select entity_id from media__field_tag where field_tag_target_id = ' . $term_object_id;
   $all_linked_doc = $db->query($string_query)->fetchAll();
   if ($all_linked_doc) {
     $all_linked_doc = array_column($all_linked_doc, 'entity_id');
@@ -675,6 +675,7 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
     $media_entities = $query->execute();
 
     $media_entities = $this->skipDocSocial($media_entities);
+    
 
     $media_entities = $entityTypeManager->getStorage('media')->loadMultiple($media_entities);
 
@@ -948,6 +949,9 @@ public function customResultThumbnail(&$var) {
       case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
         $txt_file = '.excel';
         break;
+      case 'application/vnd.ms-excel':
+        $txt_file = '.xls';
+        break;
         
     }
       
@@ -1196,6 +1200,7 @@ public function checkIfUserIsAdminOrSocial () {
   $whiteListRole = ['administrator', 'social'];
   // dump($user_roles);
   $allowToEdit = false;
+  
   if (in_array('administrator', $user_roles) || in_array('social', $user_roles)) {
     $allowToEdit = true;
   }
@@ -1210,13 +1215,13 @@ public function skipDocSocial ($currentIdDocs) {
   $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($currentIdDocs);
   $isUserSocial = $this->checkIfUserIsAdminOrSocial();
   //si l'utilisateur n'est pas social
+  uasort($docs, function($a, $b) {
+    $timestampA = $a->get('created')->value;
+    $timestampB = $b->get('created')->value;
+    return $timestampB - $timestampA;
+  });
   if (!$isUserSocial) {
     $currentIdDocs = [];
-    usort($docs, function($a, $b) {
-      $timestampA = $a->get('created')->value;
-      $timestampB = $b->get('created')->value;
-      return $timestampB - $timestampA;
-    });
 
     foreach($docs as $doc) {
       $isDocSocial = $this->getNodeFieldValue($doc, 'field_social');
@@ -1224,8 +1229,35 @@ public function skipDocSocial ($currentIdDocs) {
         $currentIdDocs[] =  $doc->id();
       }
     }
+
+    return $currentIdDocs;
   }
   return $currentIdDocs;
+}
+
+public function sortTermIdByDateCreation ($res) {
+  $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($res);
+    uasort($docs, function($a, $b) {
+      // dump($a->get('created')->value);
+      $timestampA = $a->get('created')->value;
+      $timestampB = $b->get('created')->value;
+      return $timestampB - $timestampA;
+    });
+    $current_timestamp = \Drupal::time()->getRequestTime();
+    $newres = [];
+    foreach($docs as $d ) {
+      $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
+      $is_social = $this->checkIfUserIsAdminOrSocial();
+      if (($d->get('created')->value <= $two_years_ago_timestamp) && !$is_social) {//si le document date d'il y a deux ans on ne l'affiche pas (sauf pour le rôle social)
+        // dump(['CONTINUE', $this->getNodeFieldValue($d, 'name'), $d->id()]);
+        continue;
+      }else {
+        
+        // dump(['ELSE', $this->getNodeFieldValue($d, 'name'), $d->id()]);
+        $newres[] = $d->id();
+      }
+    }
+    return $newres;
 }
 
 public function compareByDate($a, $b) {

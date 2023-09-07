@@ -745,7 +745,6 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
   }
   
   if (in_array($form['#id'], ['media-document-add-form', 'media-document-edit-form'])) {
-
     $form['name']['widget'][0]['value']['#title'] = 'Nom (titre interne)';
     $form['#attributes']['class'][] = 'custom-add-and-edit-form';
     $form['status']['#prefix'] = '<div class="wrapper-status-and-author">';
@@ -762,7 +761,7 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
 		$menu_parameters->setMaxDepth(1); // Profondeur du menu à afficher
 		$menu_name = 'guide'; // Nom machine du menu à afficher
 		$menuLoaded = $menu_tree_service->load($menu_name, $menu_parameters);
-
+    
 		foreach($menuLoaded as $key => $eachMenu) {
 		  //Skip for menu 'Condition general and disabled menu
 		  if (!$eachMenu->link->isEnabled() || ($eachMenu->link->getPluginId() == 'menu_link_content:f2ea2bf5-f176-4a63-83ba-4904c0312619')) {
@@ -808,11 +807,11 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
     $form['field_extrait']['#attributes']['class'][] = 'hidden';
 
     //get option form 
-    $all_option = $form['field_tags']['widget']['#options'];
+    $all_option = $form['field_tag']['widget']['#options'];
 
     
     $form['field_media_document']['widget'][0]['#description'] = '<span class="only-one-file">1 seul fichier </span> | <span class="size-limit">Max 80 Mo</span>';
-    $default_value_tags = $form['field_tags']['widget']['#default_value'];
+    $default_value_tags = $form['field_tag']['widget']['#default_value'];
     $form['field_groupes']['#prefix'] = convertToNestedULWithCheckboxes($all_option, $default_value_tags);
     
     $curr_description = $form['field_media_document']['widget'][0]['#description'];
@@ -828,9 +827,9 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
     }
 
 
-    $default_value_tags = $form['field_tags']['widget']['#default_value'];
+    $default_value_tags = $form['field_tag']['widget']['#default_value'];
     $default_value_tags= implode(',', $default_value_tags);
-    $form['field_tags']['#attributes']['data-default-value'] = $default_value_tags;
+    $form['field_tag']['#attributes']['data-default-value'] = $default_value_tags;
 
 
   }
