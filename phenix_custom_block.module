@@ -216,9 +216,10 @@ function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\Enti
       // Load your term.
       // $term_id = 123; // Replace with the actual term ID.
       $term = $taxonomy_term_storage->load($tid);
-      
+      $term_par = $taxonomy_term_storage->load($tid);
       // Now you can get the children using $this->taxonomyTermStorage->getChildren($term).
       $child_terms = $taxonomy_term_storage->getChildren($term);
+      
       $level_one_tid = array_key_first($child_terms);
       $hasChildren = $custom_service->hasChildren($level_one_tid);
       if ($hasChildren) {
@@ -227,20 +228,17 @@ function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\Enti
         // Now you can get the children using $this->taxonomyTermStorage->getChildren($term).
         $child_terms = $taxonomy_term_storage->getChildren($term);
         //redirection
-        $path = reset($child_terms)->toUrl()->toString();
-        // Redirect the user to the specified URL.
-        $response = new TrustedRedirectResponse($path);
-        $response->send();
-      }else {
+        $path = reset($child_terms)->toUrl()->toString(); 
+        redirectTerm ($term , $term_par);
         
+      }else {
         uasort($child_terms, function ($a, $b) {
           return \Drupal::service('phenix_custom_block.view_services')->getNodeFieldValue($a, 'weight') - \Drupal::service('phenix_custom_block.view_services')->getNodeFieldValue($b, 'weight');
         });
         
         $path = reset($child_terms)->toUrl()->toString();
+        redirectTerm ($term , $term_par);
         //redirection
-        $response = new TrustedRedirectResponse($path);
-        $response->send();
       }
     }
   }
@@ -296,6 +294,33 @@ function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\Enti
       }
     }
   }
+}
+
+function redirectTerm ($term_chil , $term) {
+  $taxonomy_term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $child_terms = $taxonomy_term_storage->getChildren($term_chil);
+  //redirection
+  uasort($child_terms, function ($a, $b) {
+    return \Drupal::service('phenix_custom_block.view_services')->getNodeFieldValue($a, 'weight') - \Drupal::service('phenix_custom_block.view_services')->getNodeFieldValue($b, 'weight');
+  });
+  $path = reset($child_terms)->toUrl()->toString(); 
+  $custom_service = \Drupal::service('phenix_custom_block.view_services');
+  $term_parent = Term::load($custom_service->getNodeFieldValue($term, 'parent'));
+  if ($custom_service->getNodeFieldValue($term_parent, 'name') == 'Accueil') {
+    // Redirect the user to the specified URL.
+    $response = new TrustedRedirectResponse($path);
+    $response->send();
+  }
+}
+
+function redirectToFirstChild ($term) {
+  $taxonomy_term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $child_terms = $taxonomy_term_storage->getChildren($term);
+  //redirection
+  $path = reset($child_terms)->toUrl()->toString(); 
+
+  $response = new TrustedRedirectResponse($path);
+  $response->send();
 }
 
 
@@ -478,7 +503,8 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
         ->addSelect('title')
         ->addWhere('id', '=', $group_id)
         ->execute()->first()['title'];
-      $variables['output'] = ['#markup' => '<div class="info-meet-group"><p class="info-group-title">' . $group_name . '</p><a href="/civicrm-event/' . $id . '"> ' . $field->getValue($row) . '</a>'];
+        
+      $variables['output'] = ['#markup' => '<div class="info-meet-group"><a href="/civicrm-event/' . $id . '"> ' . $field->getValue($row) . '</a>'];
     }
   }
 }
@@ -976,6 +1002,18 @@ function phenix_custom_block_preprocess_views_view(array &$variables) {
   } */
   
 }
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function phenix_custom_block_views_pre_view(\Drupal\views\ViewExecutable $view, $display_id, array &$args) {
+  // Check if this is the view where you want to add a header.
+  if ($view->id() == 'civi_groupe_evenements' && $display_id == 'page_2') {
+
+
+  }
+}
+
 
 
 

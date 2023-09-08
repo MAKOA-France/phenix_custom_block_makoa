@@ -99,6 +99,11 @@ tr:has(td > p.row-to-hide) {
 }
 /*****/
 
+/*****Tous réunion***/
+.all-meet-group-name {
+    font-weight: bold;
+}
+/*****/
 /***** Page liste des documents en mode vanessa ******/
 .page-admin-content-media.role--permanent .form-item{
     float: left;

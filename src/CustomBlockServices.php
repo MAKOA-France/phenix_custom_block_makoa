@@ -676,10 +676,10 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
 
     $media_entities = $this->skipDocSocial($media_entities);
     
+    $media_entities = $this->sortTermIdByDateCreation($media_entities);
+    
 
     $media_entities = $entityTypeManager->getStorage('media')->loadMultiple($media_entities);
-
-
 
     // $media_entities = \Drupal::entityTypeManager()->getStorage('media')->loadMultiple($all_linked_doc);
     
@@ -1249,11 +1249,8 @@ public function sortTermIdByDateCreation ($res) {
       $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
       $is_social = $this->checkIfUserIsAdminOrSocial();
       if (($d->get('created')->value <= $two_years_ago_timestamp) && !$is_social) {//si le document date d'il y a deux ans on ne l'affiche pas (sauf pour le rôle social)
-        // dump(['CONTINUE', $this->getNodeFieldValue($d, 'name'), $d->id()]);
         continue;
       }else {
-        
-        // dump(['ELSE', $this->getNodeFieldValue($d, 'name'), $d->id()]);
         $newres[] = $d->id();
       }
     }
