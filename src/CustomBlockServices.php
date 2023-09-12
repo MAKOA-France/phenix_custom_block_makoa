@@ -504,7 +504,7 @@ class CustomBlockServices {
   * @return string
   *   The formatted date string.
   */
-  private function convertTimesptamToDate($timestamp) {
+  public function convertTimesptamToDate($timestamp) {
     $format = 'd.m.y';
     // Create a new DrupalDateTime object using the timestamp.
     $date = DrupalDateTime::createFromTimestamp($timestamp);
@@ -661,6 +661,7 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
   $term_name = $this->getNodeFieldValue($term_object, 'name');
   $string_query = 'select entity_id from media__field_tag where field_tag_target_id = ' . $term_object_id;
   $all_linked_doc = $db->query($string_query)->fetchAll();
+  $is_term_social = $this->getNodeFieldValue($term_object, 'field_social') ? true : false;
   if ($all_linked_doc) {
     $all_linked_doc = array_column($all_linked_doc, 'entity_id');
 
@@ -676,7 +677,7 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
 
     $media_entities = $this->skipDocSocial($media_entities);
     
-    $media_entities = $this->sortTermIdByDateCreation($media_entities);
+    $media_entities = $this->sortTermIdByDateCreation($media_entities, $is_term_social);
     
 
     $media_entities = $entityTypeManager->getStorage('media')->loadMultiple($media_entities);
@@ -700,6 +701,7 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
       $first_doc_file_size = round($first_doc_file_size / 1024, 0);
       $first_doc_id = $first_doc->id();
       $display_see_other_doc = true;
+      $filieres = $this->getFiliereLabels($first_doc);
       
       $allOtherDoc = array_shift($media_entities);
      
@@ -725,6 +727,7 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
           'is_page_last_doc' => true,
           'there_is_a_document' => true,
           'can_edit_doc' => $allowToEdit,
+          'filiere' => $filieres,
         ]
       ];
     }
@@ -766,11 +769,19 @@ private function getAllOtherDocInfo ($allDoc, $termName) {
         'paragraph_id' => '',
         'term_name' => $termName,
         'media_id' => $doc->id(),
+        'filiere' => $this->getFiliereLabels($doc)
+        
       ]; 
   }
 
   return $all_documents;
       
+}
+
+public function getFileSize($file_object) {
+  $first_doc_file_url = $this->getNodeFieldValue($file_object, 'uri');
+  $first_doc_file_size = filesize($first_doc_file_url);
+  return round($first_doc_file_size / 1024, 0);
 }
 
 /**
@@ -859,18 +870,36 @@ public function customResultSearchDoc (&$var) {
       }
       $isUserSocial = $this->checkIfUserIsAdminOrSocial();
       $isDocSocial = $this->getNodeFieldValue($entity, 'field_social');
-      if (!$isUserSocial && $isDocSocial) {
-        $doc_info = [
-          '#theme' => 'phenix_custom_bloc_search',
-          '#cache' => ['max-age' => 0],
-          '#content' => [
-            'has_result' => false
-            ]
-          ];
-          $var['output'] = ['#markup' => '<p class="row-to-hide"></p>'];
-        return $doc_info;
+
+
+      ///CHeck si le document est lié avec une rubrique social 
+      $queryGetDossierId = \Drupal::database()->query('select entity_id from paragraph__field_document where field_document_target_id = ' . $entity->id());  
+      $queryGetDossierId = $queryGetDossierId->fetch()->entity_id;
+      if ($queryGetDossierId) {
+        $queryGetTermId = \Drupal::database()->query('select entity_id from taxonomy_term__field_dossier where field_dossier_target_id = ' . $queryGetDossierId);
+        $queryGetTermId = $queryGetTermId->fetch()->entity_id;
+        $termObj = Term::load($queryGetTermId);
+        if ($termObj) {
+
+          $isTermSocial = $this->getNodeFieldValue($termObj, 'field_social');
+          
+          $current_timestamp = \Drupal::time()->getRequestTime();
+          $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
+          $created_at = $this->getNodeFieldValue($entity, 'created');
+          if (($created_at <= $two_years_ago_timestamp) && !$isTermSocial) {
+            $doc_info = [
+              '#theme' => 'phenix_custom_bloc_search',
+              '#cache' => ['max-age' => 0],
+              '#content' => [
+                'has_result' => false
+                ]
+              ];
+              $var['output'] = ['#markup' => '<p class="row-to-hide"></p>'];
+            return $doc_info;
+          }
+        }
       }
-    
+
       $type_doc = $entity->get('field_type_de_document')->getValue()[0]['value'];
       $libelle = $this->getTypeDocumentWithAutre($entity);
       $allowToEdit = $this->checkIfUserCanEditDoc ();
@@ -914,6 +943,36 @@ public function customResultSearchDoc (&$var) {
       $var['output'] = $video_info;
     }
     // return $var;
+  }
+}
+
+public function accessRubriqueSocial ($idDoc) {
+  ///CHeck si le document est lié avec une rubrique social 
+  $queryGetDossierId = \Drupal::database()->query('select entity_id from paragraph__field_document where field_document_target_id = ' . $idDoc);  
+  $queryGetDossierId = $queryGetDossierId->fetch()->entity_id;
+  if ($queryGetDossierId) {
+    $queryGetTermId = \Drupal::database()->query('select entity_id from taxonomy_term__field_dossier where field_dossier_target_id = ' . $queryGetDossierId);
+    $queryGetTermId = $queryGetTermId->fetch()->entity_id;
+    $termObj = Term::load($queryGetTermId);
+    if ($termObj) {
+
+      $isTermSocial = $this->getNodeFieldValue($termObj, 'field_social');
+      
+      $current_timestamp = \Drupal::time()->getRequestTime();
+      $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
+      $created_at = $this->getNodeFieldValue($entity, 'created');
+      if (($created_at <= $two_years_ago_timestamp) && !$isTermSocial) {
+        $doc_info = [
+          '#theme' => 'phenix_custom_bloc_search',
+          '#cache' => ['max-age' => 0],
+          '#content' => [
+            'has_result' => false
+            ]
+          ];
+          $var['output'] = ['#markup' => '<p class="row-to-hide"></p>'];
+        return $doc_info;
+      }
+    }
   }
 }
 
@@ -1235,8 +1294,10 @@ public function skipDocSocial ($currentIdDocs) {
   return $currentIdDocs;
 }
 
-public function sortTermIdByDateCreation ($res) {
+public function sortTermIdByDateCreation ($res, $isTermSocial = false) {
   $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($res);
+  if ($docs) {
+
     uasort($docs, function($a, $b) {
       // dump($a->get('created')->value);
       $timestampA = $a->get('created')->value;
@@ -1247,14 +1308,15 @@ public function sortTermIdByDateCreation ($res) {
     $newres = [];
     foreach($docs as $d ) {
       $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
-      $is_social = $this->checkIfUserIsAdminOrSocial();
-      if (($d->get('created')->value <= $two_years_ago_timestamp) && !$is_social) {//si le document date d'il y a deux ans on ne l'affiche pas (sauf pour le rôle social)
+      if (($d->get('created')->value <= $two_years_ago_timestamp) && !$isTermSocial) {//si le document date d'il y a deux ans on ne l'affiche pas (sauf pour le rôle social)
         continue;
       }else {
         $newres[] = $d->id();
       }
     }
     return $newres;
+  }
+  return $res;
 }
 
 public function compareByDate($a, $b) {
@@ -1266,6 +1328,31 @@ public function compareByDate($a, $b) {
   }
   
   return ($dateA < $dateB) ? -1 : 1;
+}
+
+public function getFiliereLabels ($media) {
+  $filieres = getNodeFieldValue($media, 'field_filieres');
+  $filiere_label = '';
+  if ($filieres) {
+    $filieres = json_decode($filieres);
+    $filieres = array_column($filieres, 'id');
+
+    $filieresOption = \Civi\Api4\OptionValue::get(FALSE)
+    ->addSelect('id', 'label')
+    ->addWhere('option_group_id', '=', 163)
+    ->execute()->getIterator();
+    $filieresOption = iterator_to_array($filieresOption); 
+    $filiere_label = '';
+    foreach ($filieresOption as $fil) {
+      foreach($filieres as $filiere) {
+        if ($filiere == $fil['id']) {
+          $filiere_label .= $fil['label'] . ', ';
+        }
+      }
+    }
+    $filiere_label = rtrim($filiere_label, ', ');
+  }
+  return $filiere_label;
 }
 
 

@@ -71,6 +71,8 @@ class DocumentDetailGroupBlock  extends BlockBase  {
         'created_at' => $this->getFormattedDate($mediaObject),
         'paragraph_id' => null,
         'media_id' => $mediaObject->id(),
+        'filiere' => $custom_service->getFiliereLabels($mediaObject)
+
       ]; 
       
     }
@@ -97,6 +99,7 @@ class DocumentDetailGroupBlock  extends BlockBase  {
         'is_page_last_doc' => false,
         'group_id' => $group_id,
         'can_edit_doc' => $allowToEdit,
+        'filiere' => $allDocuments['filiere'],
       ],
     ];
   }
@@ -154,6 +157,7 @@ class DocumentDetailGroupBlock  extends BlockBase  {
       $allInfoDocs['first_title'] = $custom_service->getNodeFieldValue($firstDoc, 'field_titre_public') ? $custom_service->getNodeFieldValue($firstDoc, 'field_titre_public') : $custom_service->getNodeFieldValue($firstDoc, 'name');
       $allInfoDocs['first_type_de_document'] = $custom_service->getTypeDocument ($firstDoc);
       $allInfoDocs['first_element_id'] = $custom_service->getNodeFieldValue($firstDoc, 'mid');
+      $allInfoDocs['filiere'] = $custom_service->getFiliereLabels($firstDoc);
       $date_doc = $custom_service->getNodeFieldValue($firstDoc, 'created');
       $datetime = new DrupalDateTime();
       $datetime->setTimestamp($date_doc);

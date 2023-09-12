@@ -41,7 +41,7 @@ class ParticipantListBlock  extends BlockBase  {
     
     foreach ($all_participants as $participant) {
       $contact_id = $participant->civicrm_contact_id;
-      $contacts = \Civi\Api4\Contact::get()
+      $contacts = \Civi\Api4\Contact::get(FALSE)
         ->addSelect('first_name', 'last_name', 'gender_id:label', 'employer_id.legal_name', 'addressee_display')
         ->addWhere('id', '=', $contact_id)
         ->execute()->getIterator();

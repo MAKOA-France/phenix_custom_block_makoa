@@ -70,6 +70,7 @@ class DetailMeetDocumentBlock  extends BlockBase  {
           'description' => $title_doc,
           'created_at' => $this->getFormattedDate($mediaObject),
           'paragraph_id' => null,
+          'filiere' => $custom_service->getFiliereLabels($mediaObject)
         ]; 
       }
     
@@ -96,7 +97,8 @@ class DetailMeetDocumentBlock  extends BlockBase  {
         'display_see_other_doc' => count($allOtherDocs),
         'is_page_last_doc' => false,
         'event_id' => 991,
-        'can_edit_doc' => $allowToEdit
+        'can_edit_doc' => $allowToEdit,
+        'filiere' => $custom_service->getFiliereLabels($mediaObject)
       ],
     ];
   }
@@ -137,6 +139,7 @@ class DetailMeetDocumentBlock  extends BlockBase  {
       $allInfoDocs['first_type_de_document'] = $custom_service->getTypeDocument ($firstDoc);
       $allInfoDocs['first_element_id'] = $custom_service->getNodeFieldValue($firstDoc, 'mid');
       $date_doc = $custom_service->getNodeFieldValue($firstDoc, 'created');
+      $allInfoDocs['filiere'] = $custom_service->getFiliereLabels($firstDoc);
       $datetime = new DrupalDateTime();
       $datetime->setTimestamp($date_doc);
       

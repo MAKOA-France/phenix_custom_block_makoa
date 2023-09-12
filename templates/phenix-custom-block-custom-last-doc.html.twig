@@ -31,8 +31,13 @@
           <div  class="date-size-first-doc ">
             <span>{{ content.date_doc }}  | {{ content.file_size }} Ko </span>
 
+              {% if content.filiere %}
+                | <span class="">
+                    {{ content.filiere }} 
+                </span>
+              {% endif %}
               {% if content.first_type_de_document  is not empty %}
-                <span class="type-first-doc">
+                | <span class="type-first-doc">
                     {{ content.first_type_de_document }} 
                 </span>
               {% endif %}
@@ -83,9 +88,13 @@
                 <span class="file-size">| {{ each_data['size'] }} Ko<span> 
               {% endif %}
 
+              {% if each_data['filiere'] %}
+                | <span class="type-doc">{{ each_data['filiere'] }}<span>
+              {% endif %}
               {% if each_data['type_document'] %}
                 | <span class="type-doc">{{ each_data['type_document'] }}<span>
               {% endif %}
+
               {% if content.can_edit_doc %}
                 <a href="/media/{{ each_data['media_id'] }}/edit" class="edit-doc-button btn-ask-question-home dernierdoc">  <i class="fas fa-edit"></i> Modifier</a>
               {% endif %}

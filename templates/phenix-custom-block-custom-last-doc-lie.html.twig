@@ -28,8 +28,13 @@
         <div class="detail-date-button-first-doc">
           <div  class="date-size-first-doc ">
             <span>{{ content.date_doc }}  | {{ content.file_size }} Ko </span>
+              {% if content.filiere %}
+               |  <span class="">
+                    {{ content.filiere }} 
+                </span>
+              {% endif %}
               {% if content.first_type_de_document %}
-                <span class="type-first-doc">
+               |  <span class="type-first-doc">
                     {{ content.first_type_de_document }} 
                 </span>
               {% endif %}
@@ -82,6 +87,10 @@
             <span class="date-creation">{{ each_data['created_at'] }}  <span>
               {% if each_data['size'] %}
                 <span class="file-size">| {{ each_data['size'] }} Ko<span> 
+              {% endif %}
+
+              {% if each_data['filiere'] %}
+                | <span class="type-doc">{{ each_data['filiere'] }}<span>
               {% endif %}
 
               {% if each_data['type_document'] %}

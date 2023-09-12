@@ -204,13 +204,31 @@ function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\Enti
     }
   }
   
-
+  
+  // $custom_service->accessRubriqueSocial();
+  
   //Rediriger vers 
   if ($entity->getEntityTypeId() == 'taxonomy_term' && $custom_service->getNodeFieldValue($entity, 'vid') == 'rubrique') {
     $tid = $custom_service->getNodeFieldValue($entity, 'tid');
     $hasChildren = $custom_service->hasChildren($tid);
     $taxonomy_term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
     
+   
+    //TODO RESTRICTION DOC QUI EST LIE A UN TERME SOCIAL NE DOIT PAS ETRE ACCESSIBLE QUE POUR LE ROLE SOCIAL A VERIFIER 
+    $termObj = Term::load($tid);
+    $isTermSocial = $custom_service->getNodeFieldValue($termObj, 'field_social');
+    if ($termObj &&  $isTermSocial) {
+        // Get the current user object.
+      $current_user = \Drupal::currentUser();
+      // Get an array of role IDs for the current user.
+      $user_roles = $current_user->getRoles();
+      $allowToEdit = false;
+      if (!in_array('administrator', $user_roles) /* || in_array('super_utilisateur', $user_roles) */ && !in_array('social', $user_roles)) {
+        $response = new TrustedRedirectResponse('/');
+        $response->send();
+      }
+    }
+
     if ($hasChildren) {
       
       // Load your term.
@@ -374,6 +392,7 @@ function phenix_custom_block_preprocess_page(&$variables)
  * Modifie l'affichage d'un champ dans une vue
  */
 function phenix_custom_block_preprocess_views_view_field(&$variables) {
+  
   $view = $variables['view'];
 	$field = $variables['field'];
 	$requests = \Drupal::request();
@@ -499,7 +518,7 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
     if ($field->field == 'title') {
       $group_id = $view->args[0];
 
-      $group_name = \Civi\Api4\Group::get()
+      $group_name = \Civi\Api4\Group::get(FALSE)
         ->addSelect('title')
         ->addWhere('id', '=', $group_id)
         ->execute()->first()['title'];
@@ -568,15 +587,15 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
     
     //check si la page de term en question est lié a une vue ou pas (en se servant du champ field_taxonomy_views_integrator_)
     //Donc ça va être les gabarits textes + images
-    if ($term->get('field_taxonomy_views_integrator_')->getValue()) {
+    if (getNodeFieldValue($term , 'field_gabarit_texte_et_images')) {
       $datas = $custom_service->allDataTxtImg($variables);
       $variables['content'] = [
         '#theme' => 'phenix_custom_block_custom_texte_image',
         '#cache' => ['max-age' => 0],
         '#content' => [
           'data' => $datas
-        ]
-      ];  
+          ]
+        ];  
       
     }else {
       
@@ -585,12 +604,11 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
         return $custom_service->getAllDataForDocumentLieAuxTermeFirstElement($variables);
       }
       /***** end *****/
-      
       /**** Affichage dans la page dernier doc ****/
       $field_dosssier = $variables['elements']['field_dossier'];
       $date_changed = $variables['elements']['#taxonomy_term']->get('changed')->getValue();
-
       $formatted_date = '';
+      
       if ($date_changed) {
         if( $date_changed[0]['value']) {
 
@@ -601,6 +619,12 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
           $documents = $variables['content']['field_dossier'];
 
           $all_documents = [];
+          
+          //S'il n'y a pas de document on return 
+          $there_is_no_document = count($documents)  < 4;
+          if ($there_is_no_document) {
+            return '';
+          }
           foreach ($documents as $index => $value) {
             if (is_numeric($index)) {
               $title_doc = $value['#paragraph'] ? ($value['#paragraph']->hasField('field_titre') ? $value['#paragraph']->get('field_titre')->getValue()[0]['value'] : '') : '';  //maybe need a condition if existe
@@ -625,7 +649,11 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
 
               //s'il n'y a pas de documents on redirige vers le 1er enfant 
               $id_document = array_column($id_document, 'target_id');
-            if(!$id_document) continue;
+
+              //Trie les id de document par date et check si le terme est social ou pas
+              if(!$id_document) continue;
+              $is_term_social = $custom_service->getNodeFieldValue($term_object, 'field_social') ? true : false;
+              $id_document = $custom_service->sortTermIdByDateCreation($id_document, $is_term_social);
               //load file 
               $paragraph_id = $value['#paragraph']->id();
               $files = File::loadMultiple($id_document);
@@ -638,6 +666,9 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                     $created_at = date('d m Y', $file_created_at);
                   }
 
+
+                  $created_at = $custom_service->convertTimesptamToDate($custom_service->getNodeFieldValue($media, 'created'));
+
                   $get_description_by_id = \Drupal::database()->query('select * from  media__field_media_document where entity_id = ' . $fileId)->fetch()->field_media_document_description;
                   $size_of_file = filesize('/var/aegir/platforms/civicrm-d9/' . $file->createFileUrl());
                   $media_name = getNodeFieldValue($media, 'field_titre_public') ? getNodeFieldValue($media, 'field_titre_public') : getNodeFieldValue($media, 'name');
@@ -645,16 +676,24 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
 
                   //recupere le type de document 
                   $type_doc = $custom_service->getTypeDocument ($media);
+                  
+                  $filiere_label = $custom_service->getFiliereLabels($media);
+
+                  $file_id = $custom_service->getNodeFieldValue($media, 'field_media_document');
+                  $file0bj = File::load($file_id);
+                  $sizz = $custom_service->getFileSize($file0bj);
 
                   $all_documents[$title_doc][] = [
                     'fileType' => $file->getMimeType(),
                     'fileurl' => $file->createFileUrl(),
-                    'size' => round($size_of_file / 1024, 2),
+                    'size' => $sizz,
                     'fileId' => $file->id(),
                     'type_document' => $type_doc,
                     'description' => $media_name,
                     'created_at' => $created_at,
-                    'paragraph_id' => $paragraph_id,
+                    'paragraph_id' => $paragraph_id, 
+                    'media_id' => $media->id(), 
+                    'filiere' => $filiere_label
                   ];
               }
                 
@@ -679,8 +718,9 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
 
           // // Convert the size to a human-readable format
           $file_size_readable = round($file_size_bytes / 1024, 2);
-          $date_doc = $get_first_element[0]['created_at'];
-          $date_doc = str_replace(' ', '.', $date_doc);
+
+
+          $date_doc = $custom_service->convertTimesptamToDate($custom_service->getNodeFieldValue($media, 'created'));
           $html = ['#markup' => $media_extrait];
           $html = \Drupal::service('renderer')->render($html);
           unset($all_documents[$first_title][0]);
@@ -688,8 +728,12 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
           $allowToEdit = $custom_service->checkIfUserCanEditDoc ();
           
           $counted_doc = count(reset($all_documents));
+
+          $file_id = $custom_service->getNodeFieldValue($media, 'field_media_document');
+          $file0bj = File::load($file_id);
+          $file_size_readable = $custom_service->getFileSize($file0bj);
           // $display_see_other_doc = ($counted_doc > 1); TODO 
-          $display_see_other_doc = ($all_documents > 2);
+          $display_see_other_doc = (count($all_documents) > 2);
           $variables['content'] = [
             '#theme' => 'phenix_custom_block_custom_last_doc',
             '#cache' => ['max-age' => 0],
@@ -706,7 +750,8 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
               'first_element_title' => $title,
               'display_see_other_doc' => $display_see_other_doc,
               'is_page_last_doc' => true,
-              'can_edit_doc' => $allowToEdit
+              'can_edit_doc' => $allowToEdit,
+              'filiere' => $custom_service->getFiliereLabels($media)
             ]
           ]; 
         }
