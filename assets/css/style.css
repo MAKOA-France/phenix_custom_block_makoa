@@ -5,7 +5,12 @@
 }
 
 /* breadcrumb */
-
+.page-form-poser-une-question .js-form-item-civicrm-1-activity-1-cg30-custom-166, .page-form-poser-une-question .js-form-item-civicrm-1-activity-1-activity-subject {
+    width: 48%;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+}
 /********REcherche ***/
 tr:has(td > p.row-to-hide) {
     display: none !important;

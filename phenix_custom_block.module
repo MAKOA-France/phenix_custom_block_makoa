@@ -579,8 +579,8 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
   $db = \Drupal::database();
 
   $term_object = $variables['elements']['#taxonomy_term'];
+  
   $term_object_id = $custom_service->getNodeFieldValue($term_object, 'tid');
-
   // Alter the term page variables here.
   $term = $variables['elements']['#taxonomy_term'];
   if( $variables['theme_hook_original'] == 'taxonomy_term' && $variables['elements']['#view_mode'] == 'full') {
