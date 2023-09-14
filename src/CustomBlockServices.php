@@ -605,7 +605,7 @@ class CustomBlockServices {
 public function isRubriqueWithTxtAndImg ($term_id) {
 
   $term = Term::load($term_id);
-  $isRubriqueWithImgAndTxt = $this->getNodeFieldValue($term, 'field_taxonomy_views_integrator_');
+  $isRubriqueWithImgAndTxt = $this->getNodeFieldValue($term, 'field_gabarit_texte_et_images');
   return $isRubriqueWithImgAndTxt;
 }
 
@@ -728,7 +728,8 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
           'there_is_a_document' => true,
           'can_edit_doc' => $allowToEdit,
           'filiere' => $filieres,
-        ]
+        ], 
+        'there_is_a_doc' => true,
       ];
     }
   }else {
@@ -738,9 +739,22 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
       '#content' => [
         'data' => [],
         'there_is_a_document' => false,
-      ]
+      ], 
+      'there_is_a_doc' => false,
     ];
     }
+}
+
+public function getAllLinkedDocByTags (&$var) {
+  $db = \Drupal::database();
+  $term_object = $var['elements']['#taxonomy_term'];
+  $term_object_id = $this->getNodeFieldValue($term_object, 'tid');
+  $term_object = Term::load($term_object_id);
+  $term_name = $this->getNodeFieldValue($term_object, 'name');
+  $string_query = 'select entity_id from media__field_tag where field_tag_target_id = ' . $term_object_id;
+  $all_linked_doc = $db->query($string_query)->fetchAll();
+  // dump($all_linked_doc, $term_object_id);
+  return $all_linked_doc;
 }
  
 private function getAllOtherDocInfo ($allDoc, $termName) {

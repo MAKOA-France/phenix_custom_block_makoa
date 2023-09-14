@@ -599,12 +599,14 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
       
     }else {
       
-      /**** Affichage dans la page dernier doc les doc lié au terme TODO Comment differencier les terme lié a un doc ET terme qui a des doc****/
-      if (empty($term->getFields()['field_taxonomy_views_integrator_']->getValue())) {
+      /**** Affichage dans la page dernier doc les doc lié aux tags (si ce n'est pas vide on retourne sinon on affiche les paragraphes ****/
+      if(!empty($custom_service->getAllLinkedDocByTags ($variables))) {
         return $custom_service->getAllDataForDocumentLieAuxTermeFirstElement($variables);
       }
+
       /***** end *****/
-      /**** Affichage dans la page dernier doc ****/
+
+      /**** Affichage dans la page dernier doc (pour les paragraphes) ****/
       $field_dosssier = $variables['elements']['field_dossier'];
       $date_changed = $variables['elements']['#taxonomy_term']->get('changed')->getValue();
       $formatted_date = '';
