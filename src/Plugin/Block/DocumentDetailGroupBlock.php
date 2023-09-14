@@ -142,21 +142,6 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($res);
     
     
-    
-/*     $isUserSocial = $custom_service->checkIfUserIsAdminOrSocial();
-    $newResWithoutIdSocial = [];
-    //si l'utilisateur n'est pas social
-    if (!$isUserSocial) {
-      foreach($docs as $doc) {
-        $isDocSocial = $custom_service->getNodeFieldValue($doc, 'field_social');
-        if (!$isDocSocial) {
-          
-          $newResWithoutIdSocial[] =  $doc->id();
-        }
-        $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($newResWithoutIdSocial);
-      }
-    } */
-    
     $firstDoc = reset($docs);
     if ($firstDoc) {
       $allInfoDocs['first_title'] = $custom_service->getNodeFieldValue($firstDoc, 'field_titre_public') ? $custom_service->getNodeFieldValue($firstDoc, 'field_titre_public') : $custom_service->getNodeFieldValue($firstDoc, 'name');
@@ -185,6 +170,7 @@ class DocumentDetailGroupBlock  extends BlockBase  {
       $date_doc = str_replace(' ', '.', $date_doc);
       $media_extrait = $custom_service->getNodeFieldValue ($firstDoc, 'field_resume');
       $allInfoDocs['resume'] = $media_extrait;
+      
       return $allInfoDocs;
     }
   }

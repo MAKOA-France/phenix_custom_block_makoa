@@ -1,3 +1,6 @@
+{% if content.group_id %}
+<a class="btn-add-meeting" style="width: fit-content" href="/media/add/document"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+ {% endif %} 
 {% if content.there_is_a_doc %}
     {% include 'phenix-custom-block-custom-last-doc.html.twig' %}
 {% else %}
