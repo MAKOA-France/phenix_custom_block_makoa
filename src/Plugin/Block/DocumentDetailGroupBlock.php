@@ -44,7 +44,7 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     $allDocuments = $this->getAllDocuments ($group_id, true);//Pour  le Premier element du document
     
     $allOtherDocs = $this->getAllDocs($group_id, false);//Pour Les autres documents
-    // dump($allDocuments, $allOtherDocs);
+    
     $all_other_document = [];
 
     if ($allOtherDocs) {
@@ -124,9 +124,9 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     $res = $custom_service->skipDocSocial($res);
 
     if ($isFirstElement) {
-      // unset($res[0]);
       $res = array_slice($res, 0, 1);//remove all element except the first one
-
+    }else {
+      unset($res[0]);//remove the first one
     }
     return $res;
   }
