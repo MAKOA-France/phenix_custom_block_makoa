@@ -570,7 +570,7 @@ function phenix_custom_block_preprocess_menu(&$variables) {
 }
 
 
-/**
+  /**
  * Implements hook_preprocess_HOOK() for taxonomy term templates.
  */
 function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
@@ -584,6 +584,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
   // Alter the term page variables here.
   $term = $variables['elements']['#taxonomy_term'];
   if( $variables['theme_hook_original'] == 'taxonomy_term' && $variables['elements']['#view_mode'] == 'full') {
+    
     //check si la page de term en question est lié a une vue ou pas (en se servant du champ field_taxonomy_views_integrator_)
     //Donc ça va être les gabarits textes + images
     if (getNodeFieldValue($term , 'field_gabarit_texte_et_images')) {
@@ -595,17 +596,16 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
           'data' => $datas
           ]
         ];  
-        
-      }else {
-        
-        /**** Affichage dans la page dernier doc les doc lié aux tags (si ce n'est pas vide on retourne sinon on affiche les paragraphes ****/
-        if(!empty($custom_service->getAllLinkedDocByTags ($variables))) {
-          return $custom_service->getAllDataForDocumentLieAuxTermeFirstElement($variables);
-        }
-        
-        /***** end *****/
-        
-        
+      
+    }else {
+      
+      /**** Affichage dans la page dernier doc les doc lié aux tags (si ce n'est pas vide on retourne sinon on affiche les paragraphes ****/
+      if(!empty($custom_service->getAllLinkedDocByTags ($variables))) {
+        return $custom_service->getAllDataForDocumentLieAuxTermeFirstElement($variables);
+      }
+
+      /***** end *****/
+
       /**** Affichage dans la page dernier doc (pour les paragraphes) ****/
       $field_dosssier = $variables['elements']['field_dossier'];
       $date_changed = $variables['elements']['#taxonomy_term']->get('changed')->getValue();
@@ -627,7 +627,6 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
           if ($there_is_no_document) {
             return '';
           }
-          
           foreach ($documents as $index => $value) {
             if (is_numeric($index)) {
               $title_doc = $value['#paragraph'] ? ($value['#paragraph']->hasField('field_titre') ? $value['#paragraph']->get('field_titre')->getValue()[0]['value'] : '') : '';  //maybe need a condition if existe
@@ -645,7 +644,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                 $term = $taxonomy_term_storage->load($curr_term_id);
 
                 // Now you can get the children using $this->taxonomyTermStorage->getChildren($term).
-                // $child_terms = $taxonomy_term_storage->getChildren($term);
+                $child_terms = $taxonomy_term_storage->getChildren($term);
 
               }
 
@@ -705,61 +704,58 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             }
           } 
 
-          if ($all_documents) {
-
-            $get_first_element = reset($all_documents);
-            $first_title = array_keys($all_documents)[0];
-            $first_element_id = $get_first_element[0]['fileId'];
-            $media = Drupal\media\Entity\Media::load($first_element_id);
-            if ($media) {
-              $media_extrait = getNodeFieldValue ($media, 'field_resume');
-              $title = getNodeFieldValue($media, 'field_titre_public') ? getNodeFieldValue($media, 'field_titre_public') : getNodeFieldValue($media, 'name');
-            }
-            $file_type = $custom_service->getFileTypeExtension($get_first_element[0]['fileType']);//todo mettre switch et ajouter tous les types de fichiers
-            $file_size = $get_first_element[0]['size'];
-
-            // // Get the file size in bytes
-            $file_size_bytes = filesize('/var/aegir/platforms/civicrm-d9/' . $get_first_element[0]['fileurl']);
-
-            // // Convert the size to a human-readable format
-            $file_size_readable = round($file_size_bytes / 1024, 2);
-
-
-            $date_doc = $custom_service->convertTimesptamToDate($custom_service->getNodeFieldValue($media, 'created'));
-            $html = ['#markup' => $media_extrait];
-            $html = \Drupal::service('renderer')->render($html);
-            unset($all_documents[$first_title][0]);
-            
-            $allowToEdit = $custom_service->checkIfUserCanEditDoc ();
-            
-            $counted_doc = count(reset($all_documents));
-
-            $file_id = $custom_service->getNodeFieldValue($media, 'field_media_document');
-            $file0bj = File::load($file_id);
-            $file_size_readable = $custom_service->getFileSize($file0bj);
-            // $display_see_other_doc = ($counted_doc > 1); TODO 
-            $display_see_other_doc = (count($all_documents) > 2);
-            $variables['content'] = [
-              '#theme' => 'phenix_custom_block_custom_last_doc',
-              '#cache' => ['max-age' => 0],
-              '#content' => [
-                'data' => $all_documents,
-                'first_element' => $get_first_element,
-                'first_title' => $first_title,
-                'first_type_de_document' => $custom_service->getTypeDocument ($media),
-                'resume' => $media_extrait,
-                'file_type' => $file_type,
-                'file_size' => $file_size_readable/* $file_size */,
-                'date_doc' => $date_doc,
-                'first_element_id' => $first_element_id,
-                'first_element_title' => $title,
-                'display_see_other_doc' => $display_see_other_doc,
-                'is_page_last_doc' => true,
-                'can_edit_doc' => $allowToEdit,
-                'filiere' => $custom_service->getFiliereLabels($media)
-              ]
-            ]; 
+          $get_first_element = reset($all_documents);
+          $first_title = array_keys($all_documents)[0];
+          $first_element_id = $get_first_element[0]['fileId'];
+          $media = Drupal\media\Entity\Media::load($first_element_id);
+          if ($media) {
+            $media_extrait = getNodeFieldValue ($media, 'field_resume');
+            $title = getNodeFieldValue($media, 'field_titre_public') ? getNodeFieldValue($media, 'field_titre_public') : getNodeFieldValue($media, 'name');
           }
+          $file_type = $custom_service->getFileTypeExtension($get_first_element[0]['fileType']);//todo mettre switch et ajouter tous les types de fichiers
+          $file_size = $get_first_element[0]['size'];
+
+          // // Get the file size in bytes
+          $file_size_bytes = filesize('/var/aegir/platforms/civicrm-d9/' . $get_first_element[0]['fileurl']);
+
+          // // Convert the size to a human-readable format
+          $file_size_readable = round($file_size_bytes / 1024, 2);
+
+
+          $date_doc = $custom_service->convertTimesptamToDate($custom_service->getNodeFieldValue($media, 'created'));
+          $html = ['#markup' => $media_extrait];
+          $html = \Drupal::service('renderer')->render($html);
+          unset($all_documents[$first_title][0]);
+          
+          $allowToEdit = $custom_service->checkIfUserCanEditDoc ();
+          
+          $counted_doc = count(reset($all_documents));
+
+          $file_id = $custom_service->getNodeFieldValue($media, 'field_media_document');
+          $file0bj = File::load($file_id);
+          $file_size_readable = $custom_service->getFileSize($file0bj);
+          // $display_see_other_doc = ($counted_doc > 1); TODO 
+          $display_see_other_doc = (count($all_documents) > 2);
+          $variables['content'] = [
+            '#theme' => 'phenix_custom_block_custom_last_doc',
+            '#cache' => ['max-age' => 0],
+            '#content' => [
+              'data' => $all_documents,
+              'first_element' => $get_first_element,
+              'first_title' => $first_title,
+              'first_type_de_document' => $custom_service->getTypeDocument ($media),
+              'resume' => $media_extrait,
+              'file_type' => $file_type,
+              'file_size' => $file_size_readable/* $file_size */,
+              'date_doc' => $date_doc,
+              'first_element_id' => $first_element_id,
+              'first_element_title' => $title,
+              'display_see_other_doc' => $display_see_other_doc,
+              'is_page_last_doc' => true,
+              'can_edit_doc' => $allowToEdit,
+              'filiere' => $custom_service->getFiliereLabels($media)
+            ]
+          ]; 
         }
       }
     }
