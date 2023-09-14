@@ -91,7 +91,8 @@ tr:has(td > p.row-to-hide) {
 .layout__region--second ul.custom-tag-dropdown > ul {
     display: block !important;
 }
-.layout__region.layout__region--second .field--name-field-tag {
+.layout__region.layout__region--second .field--name-field-tag, .path-media .field--type-entity-reference.field--name-field-tag.field--widget-options-buttons
+, .path-media .field--type-entity-reference.field--name-field-tags.field--widget-options-buttons {
      display: none;
 }
 .custom-placeholder-overlay {

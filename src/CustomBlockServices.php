@@ -83,7 +83,7 @@ class CustomBlockServices {
         WHERE
             (civicrm_group_civicrm_group_contact.group_type LIKE '%3%')
             AND (civicrm_group_civicrm_group_contact.is_active = '1')
-            AND civicrm_contact.id = $cid
+            -- AND civicrm_contact.id = $cid
         GROUP BY
             civicrm_group_civicrm_group_contact_id,
             civicrm_group_civicrm_group_contact_title,
@@ -542,13 +542,13 @@ class CustomBlockServices {
       $media_entity = Media::load($image_media);
       if ($media_entity) {
 
-        $image_field = $media_entity->get('field_media_image');
-        
-        // Get the first item from the field (assuming it's a single-value field).
-        $image_item = $image_field->first();
-        
-        // Render the image using Drupal's render system.
-        $image_render_array = $image_item->view([
+          $image_field = $media_entity->get('field_media_image');
+          
+          // Get the first item from the field (assuming it's a single-value field).
+          $image_item = $image_field->first();
+          
+          // Render the image using Drupal's render system.
+          $image_render_array = $image_item->view([
           'type' => 'image', // Replace with the desired image style, if any.
           'settings' => [
             // 'image_style' => 'thumbnail', // Replace with the desired image style, if any.
@@ -557,7 +557,7 @@ class CustomBlockServices {
         
         $data  .= '<div class="img-html-bloc">' . render($image_render_array)->__toString() . '</div>';
         return $data;
-      }
+    }
   }
 }
 

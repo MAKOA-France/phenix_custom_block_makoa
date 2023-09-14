@@ -49,7 +49,7 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     foreach ($allOtherDocs as $docId) {
       $mediaObject = \Drupal::service('entity_type.manager')->getStorage('media')->load($docId);
       
-      $title_doc = $custom_service->getNodeFieldValue($mediaObject, 'field_titre_public') ? $custom_service->getNodeFieldValue($mediaObject, 'field_titre_public') : $custom_service->getNodeFieldValue($mediaObject, 'name');
+      $title_doc = $custom_service->getNodeFieldValue($mediaObject, 'field_titre_public') ? $custom_service->getNodeFieldValue($mediaObject, 'field_titre_public') : $custom_service->getNodeFieldValue($mediaObject, 'name') ? $custom_service->getNodeFieldValue($mediaObject, 'name') : '';
       $allInfoDocs['first_type_de_document'] = $custom_service->getTypeDocument ($mediaObject);
       $allInfoDocs['first_element_id'] = $custom_service->getNodeFieldValue($mediaObject, 'mid');
       $date_doc = $custom_service->getNodeFieldValue($mediaObject, 'created');

@@ -1028,17 +1028,20 @@ function phenix_custom_block_preprocess_views_view(array &$variables) {
   // Check if the view is the one you want to target.
   $view = $variables['view'];
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
-  $field = $variables['field'];
-  $requests = \Drupal::request();
-  $row = $variables['row'];
-  
-  $custom_service->addTitleToViewSearch($variables);
+  if (isset($variables['field'])) {
+
+    $field = $variables['field'];
+    $requests = \Drupal::request();
+    $row = $variables['row'];
+    
+    $custom_service->addTitleToViewSearch($variables);
 
 
-  if ($variables['view']->id() == 'civi_groupe_evenements') {
-    $variables['attached_markup'] = '<div class="custom-markup">Your custom markup goes here.</div>';
-    // Add classes and IDs to the main view container.
-    $variables['attributes']['class'][] = 'civi_groupe_evenements_class';
+    if ($variables['view']->id() == 'civi_groupe_evenements') {
+      $variables['attached_markup'] = '<div class="custom-markup">Your custom markup goes here.</div>';
+      // Add classes and IDs to the main view container.
+      $variables['attributes']['class'][] = 'civi_groupe_evenements_class';
+    }
   }
 
   /* if ($variables['view']->id() == 'rechercher') {
