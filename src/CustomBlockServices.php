@@ -324,6 +324,7 @@ class CustomBlockServices {
         return $data_groups;
     }
     
+
     public function getNodeFieldValue ($node, $field) {
         $value = '';
         $getValue = $node->get($field)->getValue();
