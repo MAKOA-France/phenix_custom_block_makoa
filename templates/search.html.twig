@@ -7,11 +7,11 @@
         <p class="doc-resume">{{ content.resume|raw }}</p>
     </div>
     <div class="doc-info">
-        {% if content.type_document %}
-            <span class="libelle-type-doc">Type de doc : </span><span class="doc-type">{{ content.type_document }}</span>
-        {% endif %}
         {% if content.filiere %}
-        | <span class="libelle-filiere-doc">Filière : </span><span class="doc-filiere">{{ content.filiere }}</span>
+         <span class="libelle-filiere-doc"></span><span class="doc-filiere">{{ content.filiere }}</span> |
+        {% endif %}
+        {% if content.type_document %}
+            <span class="libelle-type-doc"></span><span class="doc-type">{{ content.type_document }}</span>
         {% endif %}
         {% if content.can_edit_doc %}
             <a href="/media/{{ content.media_id }}/edit" class="edit-doc-button btn-ask-question-home"> <i class="fas fa-edit"></i>Modifier</a>
