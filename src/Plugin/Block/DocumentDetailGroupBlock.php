@@ -41,40 +41,44 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     $data['group_name'] = $this->getGroupName($group_id);
     $data['group_presentation'] = $this->getGroupPresentation($group_id);
 
-    $allDocuments = $this->getAllDocuments ($group_id, false);//Pour  le Premier element du document
+    $allDocuments = $this->getAllDocuments ($group_id, true);//Pour  le Premier element du document
     
-    $allOtherDocs = $this->getAllDocs($group_id, true);//Pour Les autres documents
-    
+    $allOtherDocs = $this->getAllDocs($group_id, false);//Pour Les autres documents
+    // dump($allDocuments, $allOtherDocs);
+    $all_other_document = [];
 
-    foreach ($allOtherDocs as $docId) {
-      $mediaObject = \Drupal::service('entity_type.manager')->getStorage('media')->load($docId);
+    if ($allOtherDocs) {
+
+      foreach ($allOtherDocs as $docId) {
+        $mediaObject = \Drupal::service('entity_type.manager')->getStorage('media')->load($docId);
+        if ($mediaObject) {
+
+          $title_doc = $custom_service->getNodeFieldValue($mediaObject, 'field_titre_public') ? $custom_service->getNodeFieldValue($mediaObject, 'field_titre_public') : $custom_service->getNodeFieldValue($mediaObject, 'name') ? $custom_service->getNodeFieldValue($mediaObject, 'name') : '';
+          $allInfoDocs['first_type_de_document'] = $custom_service->getTypeDocument ($mediaObject);
+          $allInfoDocs['first_element_id'] = $custom_service->getNodeFieldValue($mediaObject, 'mid');
+          $date_doc = $custom_service->getNodeFieldValue($mediaObject, 'created');
+          $datetime = new DrupalDateTime();
+          $datetime->setTimestamp($date_doc);
       
-      $title_doc = $custom_service->getNodeFieldValue($mediaObject, 'field_titre_public') ? $custom_service->getNodeFieldValue($mediaObject, 'field_titre_public') : $custom_service->getNodeFieldValue($mediaObject, 'name') ? $custom_service->getNodeFieldValue($mediaObject, 'name') : '';
-      $allInfoDocs['first_type_de_document'] = $custom_service->getTypeDocument ($mediaObject);
-      $allInfoDocs['first_element_id'] = $custom_service->getNodeFieldValue($mediaObject, 'mid');
-      $date_doc = $custom_service->getNodeFieldValue($mediaObject, 'created');
-      $datetime = new DrupalDateTime();
-      $datetime->setTimestamp($date_doc);
-  
-      // Format the date using the desired format.
-      $formatted_date = $datetime->format('d.m.Y');
-      $allInfoDocs['date_doc'] = $formatted_date;
-
-
-      $all_other_document[$title_doc][] = [
-        'fileType' => $this->getFileType($mediaObject),
-        'fileurl' => '',
-        'size' => $this->getFileSize ($mediaObject),
-        'fileId' => $this->getFile ($mediaObject)->id(),
-        'type_document' => $custom_service->getTypeDocument ($mediaObject),
-        'description' => $title_doc,
-        'created_at' => $this->getFormattedDate($mediaObject),
-        'paragraph_id' => null,
-        'media_id' => $mediaObject->id(),
-        'filiere' => $custom_service->getFiliereLabels($mediaObject)
-
-      ]; 
-      
+          // Format the date using the desired format.
+          $formatted_date = $datetime->format('d.m.Y');
+          $allInfoDocs['date_doc'] = $formatted_date;
+          
+          
+          $all_other_document[$title_doc][] = [
+            'fileType' => $this->getFileType($mediaObject),
+            'fileurl' => '',
+            'size' => $this->getFileSize ($mediaObject),
+            'fileId' => $this->getFile ($mediaObject)->id(),
+            'type_document' => $custom_service->getTypeDocument ($mediaObject),
+            'description' => $title_doc,
+            'created_at' => $this->getFormattedDate($mediaObject),
+            'paragraph_id' => null,
+            'media_id' => $mediaObject->id(),
+            'filiere' => $custom_service->getFiliereLabels($mediaObject)
+          ]; 
+        }
+      }
     }
 
    
@@ -85,7 +89,7 @@ class DocumentDetailGroupBlock  extends BlockBase  {
       '#theme' => 'doc_detail_group',
       '#cache' => ['max-age' => 0],
       '#content' => [
-        'there_is_a_doc' => !empty($allOtherDocs) ? true : false,
+        'there_is_a_doc' => !empty($allDocuments) ? true : false,
         'data' => $all_other_document,
         'first_title' => 'Documents',
         'first_type_de_document' => $allDocuments['first_type_de_document'],
@@ -119,9 +123,10 @@ class DocumentDetailGroupBlock  extends BlockBase  {
 
     $res = $custom_service->skipDocSocial($res);
 
-    // dump($res_doc_group, $res_linked_doc);
     if ($isFirstElement) {
-      unset($res[0]);
+      // unset($res[0]);
+      $res = array_slice($res, 0, 1);//remove all element except the first one
+
     }
     return $res;
   }
