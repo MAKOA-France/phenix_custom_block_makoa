@@ -810,6 +810,11 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
     $form['actions']['#suffix'] = '</div>';
     $form['actions']['submit']['#value'] = '';
   }
+
+  $query = \Drupal::request()->query;
+  if ($req = $query->get('group_id')) {
+    $form['field_groupes']['widget']['#default_value'] = [$req];
+  }
   
   //Page d'authentification
   if ($form['#form_id'] == 'user_login_form') {
