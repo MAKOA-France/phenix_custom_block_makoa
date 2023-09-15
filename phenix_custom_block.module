@@ -1030,13 +1030,16 @@ function phenix_custom_block_preprocess_views_view(array &$variables) {
   // Check if the view is the one you want to target.
   $view = $variables['view'];
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
+  if ($variables['view']->id() == 'rechercher' && $variables['view']->current_display == 'page_1') {
+    $custom_service->addTitleToViewSearch($variables);
+  }
+
   if (isset($variables['field'])) {
 
     $field = $variables['field'];
     $requests = \Drupal::request();
     $row = $variables['row'];
     
-    $custom_service->addTitleToViewSearch($variables);
 
 
     if ($variables['view']->id() == 'civi_groupe_evenements') {
