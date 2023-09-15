@@ -484,7 +484,7 @@ class CustomBlockServices {
         $all_doc_info[$file_id]['created_at'] = $date_doc;
       }
     }
-
+    $has_document = !empty($all_doc_info);
     $var['last_doc'] = [
       '#theme' => 'phenix_custom_block_last_doc_txt_img',
       '#cache' => ['max-age' => 0],
