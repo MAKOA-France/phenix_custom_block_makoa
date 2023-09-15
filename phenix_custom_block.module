@@ -755,6 +755,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                 'display_see_other_doc' => $display_see_other_doc,
                 'is_page_last_doc' => true,
                 'can_edit_doc' => $allowToEdit,
+                'term_id' => $term_object_id,
                 'filiere' => $custom_service->getFiliereLabels($media)
               ]
             ]; 
@@ -815,7 +816,9 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
   if ($req = $query->get('group_id')) {
     $form['field_groupes']['widget']['#default_value'] = [$req];
   }
-  
+  if ($tag = $query->get('term_id')) {
+    $form['field_tag']['widget']['#default_value'] = [$tag];
+  }
   //Page d'authentification
   if ($form['#form_id'] == 'user_login_form') {
     $form['pass']['#title_display'] = 'invisible';

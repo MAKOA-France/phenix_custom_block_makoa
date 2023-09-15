@@ -730,6 +730,7 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
           'there_is_a_document' => true,
           'can_edit_doc' => $allowToEdit,
           'filiere' => $filieres,
+          'term_id' => $term_object_id,
         ], 
         'there_is_a_doc' => true,
       ];

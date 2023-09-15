@@ -5,7 +5,7 @@
       <div class="last-doc-title">
         
         <h2 class="main-title-last-doc"><i class="fas fa-file"></i>{{ content.first_title }}</h2>
-      </div>
+             </div>
     {% else %}  
         <h2 class="main-title-last-doc">{{ content.first_title }}</h2>
     {% endif %}
@@ -20,6 +20,9 @@
               {{ content.first_element_title }}
             </a>
           </h2>
+           <a class="btn-add-meeting" style="width: fit-content" href="/media/add/document?term_id={{ content.term_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+
+
           {% if (content.resume) %}
             <div class="extrait-resume">{{ content.resume|raw }}</div>
           {% endif %}
