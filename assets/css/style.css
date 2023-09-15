@@ -113,7 +113,7 @@ tr:has(td > p.row-to-hide) {
     align-items: center;
 }
 .detail-title-resume-first-doc {
-    gap: 325px;
+    gap: 155px;
     display: flex;
 }
 .custom-placeholder-overlay {
