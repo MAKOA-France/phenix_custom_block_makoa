@@ -324,7 +324,7 @@ function redirectTerm ($term_chil , $term) {
   $path = reset($child_terms)->toUrl()->toString(); 
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
   $term_parent = Term::load($custom_service->getNodeFieldValue($term, 'parent'));
-  if ($custom_service->getNodeFieldValue($term_parent, 'name') == 'Accueil') {
+  if ($term_parent && $custom_service->getNodeFieldValue($term_parent, 'name') == 'Accueil') {
     // Redirect the user to the specified URL.
     $response = new TrustedRedirectResponse($path);
     $response->send();
