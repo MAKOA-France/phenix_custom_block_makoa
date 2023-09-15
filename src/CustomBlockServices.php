@@ -455,7 +455,7 @@ class CustomBlockServices {
     $documents_ids = array_column($documents, 'target_id');
     $all_doc_info = [];
     $paragraphId = $paragraph->id();
-    
+    $has_document = !empty($documents);
     foreach ($documents_ids as $document_id) {
       $media = Media::load($document_id);
       if ($media) {
@@ -491,6 +491,7 @@ class CustomBlockServices {
       '#content' => [
         'data' => $all_doc_info,
         'paragraph_id' => $paragraphId,
+        'has_document' => $has_document,
       ]
     ]; 
     $data .= render($var['last_doc']);
@@ -896,12 +897,14 @@ public function customResultSearchDoc (&$var) {
         $termObj = Term::load($queryGetTermId);
         if ($termObj) {
 
-          $isTermSocial = $this->getNodeFieldValue($termObj, 'field_social');
+          // $isTermSocial = $this->getNodeFieldValue($termObj, 'field_social');  TODO AFTER
+          //Checker d'abord si le document est social
+          $isDocSocial = $this->isDocSocial ($entity->id());
           
           $current_timestamp = \Drupal::time()->getRequestTime();
           $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
           $created_at = $this->getNodeFieldValue($entity, 'created');
-          if (($created_at <= $two_years_ago_timestamp) && !$isTermSocial) {
+          if (($created_at <= $two_years_ago_timestamp) || $isDocSocial/* && !$isTermSocial */) {
             $doc_info = [
               '#theme' => 'phenix_custom_bloc_search',
               '#cache' => ['max-age' => 0],
@@ -959,6 +962,14 @@ public function customResultSearchDoc (&$var) {
     }
     // return $var;
   }
+}
+
+public function isDocSocial ($idDoc) {
+  $docObj = Media::load($idDoc);
+  if ($docObj) {
+    return $this->getNodeFieldValue($docObj, 'field_social');
+  }
+  return false;
 }
 
 public function accessRubriqueSocial ($idDoc) {
