@@ -1,6 +1,12 @@
 {# '#theme' => 'phenix_custom_block_custom_last_doc' est dans le fichier .module #}
 <div class="medium-12">
   
+    {% if content.accroche  %}
+      {{ content.accroche | raw}}
+    {% endif %}
+    {% if content.contenu  %}
+      {{ content.contenu | raw}}
+    {% endif %}
     {% if not content.is_page_last_doc  %}
       <div class="last-doc-title">
         
@@ -74,6 +80,8 @@
     {% set id_para = '' %}
     {% set tmp = '' %}
     {% for each_data in elm %}
+      {{ each_data['current_paragraph_accroche'] | raw }}
+      {{ each_data['current_paragraph_contenu'] | raw }}
         {% set id_para = each_data['paragraph_id'] %}
       <div class="section-document custom-section-doc">
         <a href="/media/{{ each_data['media_id'] }}/download" class="custom-icon-document each-img-link">

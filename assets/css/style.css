@@ -72,7 +72,9 @@ tr:has(td > p.row-to-hide) {
     content: initial !important;
 }
 /**** end***/
-
+.taxo-second-niveau {
+    padding-top: 25px;
+}
 
 /* Page mes commission */
 .section-civicrm-group .views-element-container h2:before {

@@ -627,11 +627,14 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
           if ($there_is_no_document) {
             return '';
           }
+          $firstParagraph = $documents[0]['#paragraph'];
+          $accroche = $custom_service->getNodeFieldValue($firstParagraph, 'field_texte_formate');
+          $contenu = $custom_service->getNodeFieldValue($firstParagraph, 'field_contenu');
           foreach ($documents as $index => $value) {
             if (is_numeric($index)) {
               $title_doc = $value['#paragraph'] ? ($value['#paragraph']->hasField('field_titre') ? $value['#paragraph']->get('field_titre')->getValue()[0]['value'] : '') : '';  //maybe need a condition if existe
               $id_document = $value['#paragraph'] ? ($value['#paragraph']->hasField('field_document') ? $value['#paragraph']->get('field_document')->getValue() : '') : '';  //maybe need a condition if existe
-
+              
 
               if (!$id_document) {
 
@@ -658,6 +661,12 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
               $id_document = $custom_service->sortTermIdByDateCreation($id_document, $is_term_social);
               //load file 
               $paragraph_id = $value['#paragraph']->id();
+              
+              $current_paragraph = $value['#paragraph'];
+              $firstParagraph = $documents[0]['#paragraph'];
+              $current_paragraph_accroche = $custom_service->getNodeFieldValue($current_paragraph, 'field_texte_formate');
+              $current_paragraph_contenu = $custom_service->getNodeFieldValue($current_paragraph, 'field_contenu');
+
               $files = File::loadMultiple($id_document);
               $all_info = [];
               foreach ($files as $file) {
@@ -695,8 +704,12 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                     'created_at' => $created_at,
                     'paragraph_id' => $paragraph_id, 
                     'media_id' => $media->id(), 
-                    'filiere' => $filiere_label
+                    'filiere' => $filiere_label,
+                    'filiere' => $filiere_label,
                   ];
+
+                  $all_documents[$title_doc][0]['current_paragraph_accroche'] = $current_paragraph_accroche;
+                  $all_documents[$title_doc][0]['current_paragraph_contenu'] = $current_paragraph_contenu;
               }
                 
 
@@ -738,6 +751,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             $file_size_readable = $custom_service->getFileSize($file0bj);
             // $display_see_other_doc = ($counted_doc > 1); TODO 
             $display_see_other_doc = (count($all_documents) > 2);
+            
             $variables['content'] = [
               '#theme' => 'phenix_custom_block_custom_last_doc',
               '#cache' => ['max-age' => 0],
@@ -756,7 +770,9 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                 'is_page_last_doc' => true,
                 'can_edit_doc' => $allowToEdit,
                 'term_id' => $term_object_id,
-                'filiere' => $custom_service->getFiliereLabels($media)
+                'filiere' => $custom_service->getFiliereLabels($media),
+                'accroche' => $accroche,
+                'contenu' => $contenu,
               ]
             ]; 
           }
