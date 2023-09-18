@@ -32,7 +32,9 @@ class AskingQuestionHomeBlock  extends BlockBase  {
     // Get the current user.
     $current_user = \Drupal::currentUser();
     $user_id = $current_user->id();
-    $link_ask_question = '/form/poser-une-question?cid2=' . $user_id;
+    $link_ask_question = '/webform/poser_une_question?cid=2' . $user_id;
+    
+    // $webformUrl = $urlGenerator->generateFromRoute($url);
     // Get the current user's name.
     $current_user_name = $current_user->getAccountName();
     $service_block = \Drupal::service('phenix_custom_block.view_services');
