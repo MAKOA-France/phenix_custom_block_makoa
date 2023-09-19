@@ -126,7 +126,7 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     $res = $custom_service->skipDocSocial($res);
     
     //Si adherent n'afficher que les documents de type compte rendu
-    $isAdherent = $this->isAdherent();
+    $isAdherent = $custom_service->isAdherent();
     if ($isAdherent) {
       $res = $custom_service->getOnlyDocCompteRendu($res);
     }
