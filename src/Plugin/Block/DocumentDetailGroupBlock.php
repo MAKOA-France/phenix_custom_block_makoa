@@ -102,11 +102,13 @@ class DocumentDetailGroupBlock  extends BlockBase  {
         'display_see_other_doc' => count($allOtherDocs),
         'is_page_last_doc' => false,
         'group_id' => $group_id,
+        'is_adherent' => $custom_service->isAdherent(),
         'can_edit_doc' => $allowToEdit,
         'filiere' => $allDocuments['filiere'],
       ],
     ];
   }
+
 
   private function getAllDocs ($groupId, $isFirstElement) {
     $db = \Drupal::database();
@@ -116,12 +118,19 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     
     $res_doc_group = $db->query('select * from civicrm_group__field_documents_groupe where entity_id = ' . $groupId)->fetchAll();
     $res_doc_group = array_column($res_doc_group, 'field_documents_groupe_target_id');
-
+    
     $res = array_merge($res_linked_doc, $res_doc_group);
-
+    
     $res = $custom_service->sortTermIdByDateCreation($res);
-
+    
     $res = $custom_service->skipDocSocial($res);
+    
+    //Si adherent n'afficher que les documents de type compte rendu
+    $isAdherent = $this->isAdherent();
+    if ($isAdherent) {
+      $res = $custom_service->getOnlyDocCompteRendu($res);
+    }
+
 
     if ($isFirstElement) {
       $res = array_slice($res, 0, 1);//remove all element except the first one

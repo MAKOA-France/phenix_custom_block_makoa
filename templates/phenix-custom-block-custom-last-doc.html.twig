@@ -26,7 +26,13 @@
               {{ content.first_element_title }}
             </a>
           </h2>
-           <a class="btn-add-meeting" style="width: fit-content" href="/media/add/document?term_id={{ content.term_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+          {% if not content.is_adherent %}
+            {% if content.group_id %}
+              <a class="btn-add-meeting" style="width: fit-content" href="/media/add/document?group_id={{ content.group_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+            {% else %}
+              <a class="btn-add-meeting" style="width: fit-content" href="/media/add/document?term_id={{ content.term_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+            {% endif %}
+          {% endif %}
 
 
           {% if (content.resume) %}

@@ -773,6 +773,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                 'filiere' => $custom_service->getFiliereLabels($media),
                 'accroche' => $accroche,
                 'contenu' => $contenu,
+                'is_adherent' => $custom_service->isAdherent(),
               ]
             ]; 
           }

@@ -731,6 +731,7 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
           'can_edit_doc' => $allowToEdit,
           'filiere' => $filieres,
           'term_id' => $term_object_id,
+          'is_adherent' => $this->isAdherent(),
         ], 
         'there_is_a_doc' => true,
       ];
@@ -959,6 +960,17 @@ public function customResultSearchDoc (&$var) {
     }
     // return $var;
   }
+}
+
+
+public function isAdherent () {
+  $current_user = \Drupal::currentUser();
+  $user_roles = $current_user->getRoles();
+  $isAdherent = false;
+  if (in_array('adherent', $user_roles) && (!in_array('super_utilisateur', $user_roles) || !in_array('administrator', $user_roles))) {
+    $isAdherent = true;
+  }
+  return $isAdherent;
 }
 
 ///CHeck si le document est lié avec une rubrique social VIA PARAGRAPHES
@@ -1303,7 +1315,6 @@ public function checkIfUserCanEditDoc () {
   // Get an array of role IDs for the current user.
   $user_roles = $current_user->getRoles();
   $whiteListRole = ['administrator', 'super_utilisateur', 'permanent'];
-  // dump($user_roles);
   $allowToEdit = false;
   if (in_array('administrator', $user_roles) || in_array('super_utilisateur', $user_roles) || in_array('permanent', $user_roles)) {
     $allowToEdit = true;
@@ -1355,6 +1366,30 @@ public function skipDocSocial ($currentIdDocs) {
 
     return $currentIdDocs;
   }
+  return $currentIdDocs;
+}
+
+
+/**
+ * 
+ */
+public function getOnlyDocCompteRendu ($currentIdDocs) {
+  $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($currentIdDocs);
+  //si l'utilisateur n'est pas social
+  uasort($docs, function($a, $b) {
+    $timestampA = $a->get('created')->value;
+    $timestampB = $b->get('created')->value;
+    return $timestampB - $timestampA;
+  });
+    $currentIdDocs = [];
+
+    foreach($docs as $doc) {
+      $typeDocComteRendu = $this->getNodeFieldValue($doc, 'field_type_de_document');
+      if ($typeDocComteRendu == 1) {
+        $currentIdDocs[] =  $doc->id();
+      }
+    }
+
   return $currentIdDocs;
 }
 
