@@ -775,6 +775,8 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                 'is_adherent' => $custom_service->isAdherent(),
               ]
             ]; 
+          }else {
+            $variables['content']['field_dossier'][0]['#suffix'] = '';
           }
         }
       }
