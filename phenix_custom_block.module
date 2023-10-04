@@ -750,8 +750,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             $file0bj = File::load($file_id);
             $file_size_readable = $custom_service->getFileSize($file0bj);
             // $display_see_other_doc = ($counted_doc > 1); TODO 
-            $display_see_other_doc = (count($all_documents) > 2);
-            
+            $display_see_other_doc = (count($all_documents) > 1 || count(reset($all_documents)));
             $variables['content'] = [
               '#theme' => 'phenix_custom_block_custom_last_doc',
               '#cache' => ['max-age' => 0],
@@ -937,6 +936,12 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
 
   if ($form['#form_id'] == 'taxonomy_term_rubrique_form') {
     
+  }
+
+  if ($form['#form_id'] == 'civicrm_event_reunion_add_form') {
+    $group_id = $query->get('group_id');
+    $form['#access'] = true;
+    $form['custom_179']['widget']['#default_value'] = $group_id;
   }
  
 }

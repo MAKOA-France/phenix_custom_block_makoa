@@ -3,6 +3,17 @@
     display: flex !important;
     margin-top: 22px !important;
 }
+.webform-submission-poser-une-question-form [id*="ajax-wrapper"] ,.webform-submission-poser-une-question-form .form-item-civicrm-1-activity-1-cg30-custom-164,
+.webform-submission-poser-une-question-form .form-item-civicrm-2-contact-1-email-email, 
+.webform-submission-poser-une-question-form .form-item-civicrm-2-contact-1-contact-job-title,.webform-submission-poser-une-question-form  .form-item-civicrm-2-contact-1-phone-phone,
+.webform-submission-poser-une-question-form .js-form-item-civicrm-2-contact-1-contact-first-name, .webform-submission-poser-une-question-form .form-item-civicrm-2-contact-1-contact-last-name{
+    display: inline-block;
+    width: 20%;
+    margin-right: 10px;
+}
+.webform-submission-poser-une-question-form .form-item-civicrm-1-activity-1-activity-subject {
+    margin-left: 3.5% !important;
+}
 
 /* breadcrumb */
 .page-form-poser-une-question .js-form-item-civicrm-1-activity-1-cg30-custom-166, .page-form-poser-une-question .js-form-item-civicrm-1-activity-1-activity-subject {
