@@ -723,11 +723,15 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             $first_title = array_keys($all_documents)[0];
             $first_element_id = $get_first_element[0]['fileId'];
             $media = Drupal\media\Entity\Media::load($first_element_id);
+            $file_type = 'application/pdf';//default
             if ($media) {
               $media_extrait = getNodeFieldValue ($media, 'field_resume');
               $title = getNodeFieldValue($media, 'field_titre_public') ? getNodeFieldValue($media, 'field_titre_public') : getNodeFieldValue($media, 'name');
+              $first_element_file_id = getNodeFieldValue($media, 'field_media_document');
+              $first_file_document = File::load($first_element_file_id);
+              $first_file_extension = getNodeFieldValue($first_file_document, 'filemime');
+              $file_type = $custom_service->getFileTypeExtension($first_file_extension);
             }
-            $file_type = $custom_service->getFileTypeExtension($get_first_element[0]['fileType']);//todo mettre switch et ajouter tous les types de fichiers
             $file_size = $get_first_element[0]['size'];
 
             // // Get the file size in bytes

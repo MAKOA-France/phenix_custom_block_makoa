@@ -647,7 +647,26 @@ public function getCreatedDocument ($file) {
 }
 
 public function getFileTypeExtension ($file_type) {
-  return $file_type == 'application/pdf' ? 'pdf-3.png' : 'pdf-2.png';
+  $img = '';
+  
+  switch($file_type) {
+    case 'application/pdf':
+      $img = 'pdf-3.png';
+      break;
+    case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+    case 'application/vnd.ms-excel':
+      $img = 'pdf.png';
+      break;
+    case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+    case 'application/msword':
+      $img = 'pdf-2.png';
+      break;
+    case 'application/rtf':
+      $img = 'Icon metro-file-zip.png';
+      break;
+  }
+
+  return $img;
 }
 
 /**
