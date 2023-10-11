@@ -382,6 +382,14 @@ function phenix_custom_block_form_display(array &$form, FormStateInterface $form
  */
 function phenix_custom_block_preprocess_page(&$variables)
 {
+  $custom_service = \Drupal::service('phenix_custom_block.view_services');
+  
+  $current_path = \Drupal::service('path.current')->getPath();
+  if (strpos($current_path, '/civicrm-group/') !== false) {
+
+    $custom_service->customizeDetailPageGroupIfUserDoesntBelongToGroup($variables);
+  }
+
   $variables['#attached']['library'][] = 'phenix_custom_block/phenix_custom_block';
 }
 
