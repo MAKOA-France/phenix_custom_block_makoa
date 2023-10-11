@@ -8,12 +8,77 @@
 .webform-submission-poser-une-question-form .form-item-civicrm-2-contact-1-contact-job-title,.webform-submission-poser-une-question-form  .form-item-civicrm-2-contact-1-phone-phone,
 .webform-submission-poser-une-question-form .js-form-item-civicrm-2-contact-1-contact-first-name, .webform-submission-poser-une-question-form .form-item-civicrm-2-contact-1-contact-last-name{
     display: inline-block;
-    width: 20%;
+    width: 19%;
     margin-right: 10px;
 }
 .webform-submission-poser-une-question-form .form-item-civicrm-1-activity-1-activity-subject {
     margin-left: 3.5% !important;
 }
+
+.content-sub-menu-burger a.dropdown-item-burger {
+    text-wrap: initial
+}
+.role--permanent .js-form-item-civicrm-1-activity-1-activity-details-value + .js-filter-wrapper.js-form-wrapper.form-wrapper {
+    display: none;
+}
+.role--permanent [data-drupal-selector="edit-civicrm-1-contact-1-fieldset-fieldset"] legend {
+    display: none;
+}
+.role--permanent [data-drupal-selector="edit-civicrm-1-contact-1-fieldset-fieldset"] {
+    padding-bottom: 20px;
+}
+
+/** Page modification term */
+.role--permanent .layout__region.layout__region--content .js-media-library-selection.js-form-wrapper.form-wrapper{
+    display: flex;
+    justify-content: space-between;
+    align-content: stretch;
+    flex-wrap: wrap;
+}
+.role--permanent .field--name-field-taxonomy-views-integrator-, .role--permanent [id^="edit-tvi"] {
+    display: none;
+}
+.role--permanent .paragraphs-subform .field--type-text-long.field--name-field-texte-formate,.role--permanent  .field--type-text-long.field--name-field-contenu {
+    display: inline-flex;
+    width: 47%;
+}
+
+.role--permanent .field--name-status {
+    display: inline-flex;
+}
+.role--permanent .field--name-created.field--widget-datetime-timestamp  {
+    display: inline-flex;
+    flex-direction: column;
+}
+.role--permanent .layout__region.layout__region--content .js-media-library-selection.js-form-wrapper.form-wrapper .js-media-library-item {
+    text-align: center;
+}
+
+.role--permanent .layout__region.layout__region--content {
+    padding-top: 3%;
+}
+.role--permanent .layout__region.layout__region--content .field--name-field-social,
+.role--permanent .layout__region.layout__region--content .field--name-status,
+.role--permanent .layout__region.layout__region--content .field--name-field-gabarit-texte-et-images {
+    display: inline-flex;
+    width: 5%;
+    float: right;
+}
+.role--permanent .layout__region.layout__region--content .field--name-field-social {
+    padding-right: 20%;
+}
+.role--permanent .layout__region.layout__region--content .field--name-field-image {
+    display: inline-block;
+    width: 33%;
+}
+
+.role--permanent .layout__region.layout__region--content .field--name-name {
+    display: inline-flex;
+    width: 33%;
+    float: left;
+    padding-right: 22px;
+}
+
 
 /* breadcrumb */
 .page-form-poser-une-question .js-form-item-civicrm-1-activity-1-cg30-custom-166, .page-form-poser-une-question .js-form-item-civicrm-1-activity-1-activity-subject {
