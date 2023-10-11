@@ -18,13 +18,16 @@
 .content-sub-menu-burger a.dropdown-item-burger {
     text-wrap: initial
 }
-.role--permanent .js-form-item-civicrm-1-activity-1-activity-details-value + .js-filter-wrapper.js-form-wrapper.form-wrapper {
+.role--permanent .js-form-item-civicrm-1-activity-1-activity-details-value + .js-filter-wrapper.js-form-wrapper.form-wrapper, 
+.role--adherent .js-form-item-civicrm-1-activity-1-activity-details-value + .js-filter-wrapper.js-form-wrapper.form-wrapper {
     display: none;
 }
-.role--permanent [data-drupal-selector="edit-civicrm-1-contact-1-fieldset-fieldset"] legend {
+.role--permanent [data-drupal-selector="edit-civicrm-1-contact-1-fieldset-fieldset"] legend, 
+.role--adherent  [data-drupal-selector="edit-civicrm-1-contact-1-fieldset-fieldset"] legend {
     display: none;
 }
-.role--permanent [data-drupal-selector="edit-civicrm-1-contact-1-fieldset-fieldset"] {
+.role--permanent [data-drupal-selector="edit-civicrm-1-contact-1-fieldset-fieldset"], 
+.role--adherent [data-drupal-selector="edit-civicrm-1-contact-1-fieldset-fieldset"] {
     padding-bottom: 20px;
 }
 
