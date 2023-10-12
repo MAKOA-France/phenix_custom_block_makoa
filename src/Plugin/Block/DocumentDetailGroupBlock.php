@@ -34,6 +34,7 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
     $data = [];
     \Drupal::service('cache.render')->invalidateAll();
+    \Drupal::service('page_cache_kill_switch')->trigger();
     \Drupal::service('civicrm')->initialize();
     $group_id = \Drupal::request()->attributes->get('civicrm_group')->id->getValue()[0]['value'];
     $isUserSocial = $custom_service->checkIfUserIsAdminOrSocial();
@@ -44,7 +45,8 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     $allDocuments = $this->getAllDocuments ($group_id, true);//Pour  le Premier element du document
     
     $allOtherDocs = $this->getAllDocs($group_id, false);//Pour Les autres documents
-    
+
+
     $all_other_document = [];
 
     if ($allOtherDocs) {
@@ -176,6 +178,9 @@ class DocumentDetailGroupBlock  extends BlockBase  {
 
     $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($res);
     
+    $new_res = $this->filterIfUserNotMemberOfGroupGetOnlyTypeDocCompteRendu($docs);
+    
+    $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($new_res);
     
     $firstDoc = reset($docs);
     if ($firstDoc) {
@@ -208,6 +213,17 @@ class DocumentDetailGroupBlock  extends BlockBase  {
       
       return $allInfoDocs;
     }
+  }
+
+  private function filterIfUserNotMemberOfGroupGetOnlyTypeDocCompteRendu ($documents) {
+    $newWhitelistIdDoc = [];
+    foreach ($documents as $document) {
+      $isMemberOfGroup = $this->ifUserIsNotMembreOfGroupAndTypeDocIsNotCompteRendu($document->id());
+      if(!$isMemberOfGroup) {
+        $newWhitelistIdDoc = [$document->id()];
+      }
+    }
+    return $newWhitelistIdDoc;
   }
 
   private function getFile ($media) {

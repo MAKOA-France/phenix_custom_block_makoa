@@ -33,7 +33,8 @@ class DetailGroupBlock  extends BlockBase  {
     $current_user = \Drupal::currentUser();
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
     $data = [];
-
+    \Drupal::service('cache.render')->invalidateAll();
+    \Drupal::service('page_cache_kill_switch')->trigger();
     \Drupal::service('civicrm')->initialize();
     $group_id = \Drupal::request()->attributes->get('civicrm_group')->id->getValue()[0]['value'];
 
