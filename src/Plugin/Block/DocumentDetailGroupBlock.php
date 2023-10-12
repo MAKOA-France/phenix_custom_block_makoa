@@ -51,6 +51,12 @@ class DocumentDetailGroupBlock  extends BlockBase  {
 
       foreach ($allOtherDocs as $docId) {
         $mediaObject = \Drupal::service('entity_type.manager')->getStorage('media')->load($docId);
+
+        if($this->ifUserIsNotMembreOfGroupAndTypeDocIsNotCompteRendu($docId)) {
+          continue;
+        }
+
+        
         if ($mediaObject) {
 
           $title_doc = $custom_service->getNodeFieldValue($mediaObject, 'field_titre_public') ? $custom_service->getNodeFieldValue($mediaObject, 'field_titre_public') : $custom_service->getNodeFieldValue($mediaObject, 'name') ? $custom_service->getNodeFieldValue($mediaObject, 'name') : '';
@@ -99,14 +105,34 @@ class DocumentDetailGroupBlock  extends BlockBase  {
         'date_doc' => $allDocuments['date_doc'],
         'first_element_id' => $allDocuments['first_element_id'],
         'first_element_title' => $allDocuments['first_title'],
-        'display_see_other_doc' => count($allOtherDocs),
+        'display_see_other_doc' => count($all_other_document),
         'is_page_last_doc' => false,
         'group_id' => $group_id,
         'is_adherent' => $custom_service->isAdherent(),
         'can_edit_doc' => $allowToEdit,
         'filiere' => $allDocuments['filiere'],
+        'is_user_member_of_group' => $this->isUserMembreOfTheGroup()
       ],
     ];
+  }
+
+  /**
+   * 
+   */
+  private function isUserMembreOfTheGroup () {
+    $custom_service = \Drupal::service('phenix_custom_block.view_services');
+    $isMemberOfGroup = $custom_service->checkIfUserIsMembreOfCurrentGroup();
+    return $isMemberOfGroup;
+  }
+
+  private function ifUserIsNotMembreOfGroupAndTypeDocIsNotCompteRendu ($docId) {
+    $custom_service = \Drupal::service('phenix_custom_block.view_services');
+    $mediaObject = \Drupal::service('entity_type.manager')->getStorage('media')->load($docId);
+
+    $isMemberOfTheGroup = $this->isUserMembreOfTheGroup();
+    $typeDoc = $custom_service->getNodeFieldValue($mediaObject, 'field_type_de_document');
+
+    return (!$isMemberOfTheGroup && ($typeDoc != 1));
   }
 
 

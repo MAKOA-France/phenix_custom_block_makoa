@@ -1,4 +1,4 @@
-{% if content.group_id %}
+{% if content.group_id and content.is_user_member_of_group %}
 <a class="btn-add-meeting" style="width: fit-content" href="/media/add/document?group_id={{ content.group_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
  {% endif %} 
 {% if content.there_is_a_doc %}

@@ -673,6 +673,13 @@ public function getFileTypeExtension ($file_type) {
  * 
  */
 public function customizeDetailPageGroupIfUserDoesntBelongToGroup (&$var) {
+
+  if (!$this->checkIfUserIsMembreOfCurrentGroup()) {
+    unset($var['page']['content']['b_zf_content']);
+  }
+}
+
+public function checkIfUserIsMembreOfCurrentGroup() {
   //Tdoo check if user appartient au current group sinon on n'affiche que le dernier doc de type compte rendu
   $req = \Drupal::request();
   $current_group_id = $this->getNodeFieldValue($req->get('civicrm_group'), 'id');
@@ -687,15 +694,11 @@ public function customizeDetailPageGroupIfUserDoesntBelongToGroup (&$var) {
     ->addWhere('group_id', '=', $current_group_id)
     ->addWhere('status', '=', 'Added')
     ->execute()->getIterator();
-
+  
 
   $groupContacts = iterator_to_array($groupContacts); 
   $groupContacts = array_column($groupContacts, 'contact_id'); 
-
-  if (!in_array($cid, $groupContacts)) {
-    unset($var['page']['content']['b_zf_content']);
-  }
-
+  return in_array($cid, $groupContacts);
 }
 
 /**
