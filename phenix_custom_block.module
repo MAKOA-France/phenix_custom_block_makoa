@@ -927,6 +927,10 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
     
     $form['field_media_document']['widget'][0]['#description'] = '<span class="only-one-file">1 seul fichier </span> | <span class="size-limit">Max 80 Mo</span>';
     $default_value_tags = $form['field_tag']['widget']['#default_value'];
+
+    //remove commission from list 
+    unset($all_option['6270']);
+    
     $form['field_groupes']['#prefix'] = convertToNestedULWithCheckboxes($all_option, $default_value_tags);
     
     $curr_description = $form['field_media_document']['widget'][0]['#description'];
