@@ -31,6 +31,10 @@
     padding-bottom: 20px;
 }
 
+.section-taxonomy .paragraphs-dropdown.open .paragraphs-dropdown-actions{
+    background-color: gainsboro;
+}
+
 /** Page modification term */
 .role--permanent .layout__region.layout__region--content .js-media-library-selection.js-form-wrapper.form-wrapper{
     display: flex;
@@ -697,7 +701,11 @@ body.page-civicrm h1, body.page-civicrmh3,  body.page-civicrm p,  body.page-civi
     text-transform: uppercase;
     text-decoration: initial;
     color: #fff;
+    position: absolute;
 }
+.custom-add-and-edit-form #edit-actions {
+    position: fixed !important;
+} 
 .custom-add-and-edit-form .div-parent-save i,
 .custom-add-and-edit-form .div-parent-delete i{
     position: relative;
