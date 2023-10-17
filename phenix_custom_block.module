@@ -587,6 +587,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
   // Load the current node or entity.
   $db = \Drupal::database();
 
+
   $term_object = $variables['elements']['#taxonomy_term'];
   
   $term_object_id = $custom_service->getNodeFieldValue($term_object, 'tid');
@@ -836,6 +837,7 @@ function getNodeFieldValue ($node, $field) {
 
 // Implements hook_form_alter().
 function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  $custom_service = \Drupal::service('phenix_custom_block.view_services');
   //Page mot de passe oublié
   if ($form['#form_id'] == 'user_pass') {
     $form['actions']['#prefix'] = '<div class="btn-custom-submit">';
@@ -930,6 +932,8 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
 
     //remove commission from list 
     unset($all_option['6270']);
+    $custom_service->NePasAfficherDansOption($all_option);
+    
     
     $form['field_groupes']['#prefix'] = convertToNestedULWithCheckboxes($all_option, $default_value_tags);
     
@@ -1119,6 +1123,27 @@ function phenix_custom_block_views_pre_view(\Drupal\views\ViewExecutable $view, 
   }
 }
 
+
+
+/**
+ * 
+ */
+function phenix_custom_block_civicrm_group_access($entity, $operation, $account) {
+  $current_path = \Drupal::service('path.current')->getPath();
+  
+  if ($entity->getEntityType()->get('id') == 'civicrm_group' && (strpos($current_path, '/civicrm-group/') !== false)) {
+    return Drupal\Core\Access\AccessResult::allowed();
+  }
+  // return Drupal\Core\Access\AccessResult::allowed();
+  // if ($entity->getEntityType() === 'node' && $operation === 'view') {
+  //   // Implement your custom access logic here.
+  //   if ($account->hasPermission('custom_permission')) {
+  //   }
+  // }
+
+  // // Return appropriate access results.
+  // return AccessResult::neutral();
+}
 
 
 
