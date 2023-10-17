@@ -682,23 +682,26 @@ public function customizeDetailPageGroupIfUserDoesntBelongToGroup (&$var) {
 public function checkIfUserIsMembreOfCurrentGroup() {
   //Tdoo check if user appartient au current group sinon on n'affiche que le dernier doc de type compte rendu
   $req = \Drupal::request();
-  $current_group_id = $this->getNodeFieldValue($req->get('civicrm_group'), 'id');
-  // Get the current user account object.
-  $user = \Drupal::currentUser();
+  if ($req->get('civicrm_group')) {
 
-  // Get the email address of the current user.
-  $email = $user->getEmail();
-  $cid = $this->getContactIdByEmail($email);
-  $groupContacts = \Civi\Api4\GroupContact::get(FALSE)
+    $current_group_id = $this->getNodeFieldValue($req->get('civicrm_group'), 'id');
+    // Get the current user account object.
+    $user = \Drupal::currentUser();
+    
+    // Get the email address of the current user.
+    $email = $user->getEmail();
+    $cid = $this->getContactIdByEmail($email);
+    $groupContacts = \Civi\Api4\GroupContact::get(FALSE)
     ->addSelect('contact_id')
     ->addWhere('group_id', '=', $current_group_id)
     ->addWhere('status', '=', 'Added')
     ->execute()->getIterator();
-  
-
-  $groupContacts = iterator_to_array($groupContacts); 
-  $groupContacts = array_column($groupContacts, 'contact_id'); 
-  return in_array($cid, $groupContacts);
+    
+    
+    $groupContacts = iterator_to_array($groupContacts); 
+    $groupContacts = array_column($groupContacts, 'contact_id'); 
+    return in_array($cid, $groupContacts);
+  }
 }
 
 /**
@@ -1442,6 +1445,30 @@ public function getOnlyDocCompteRendu ($currentIdDocs) {
     }
 
   return $currentIdDocs;
+}
+
+public function NePasAfficherDansOption (&$options) {
+    // Load the parent term by its ID.
+  $parent_term_id = 5569; // Replace with the ID of your parent term.
+  $parent_term = Term::load($parent_term_id);
+
+  $allChild = [];
+  if ($parent_term) {
+    // Load all child terms of the parent term.
+    $child_tree_objects = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('rubrique', $parent_term_id);
+
+    foreach ($child_tree_objects as $child_term) {
+      // Access the child term's properties.
+      $term_name = $child_term->name->value;
+      // $allChild[] = $child_term->tid;
+      unset($options[$child_term->tid]);
+    } 
+  }
+
+  unset($options[$parent_term_id]);
+
+  return $options;
+
 }
 
 public function sortTermIdByDateCreation ($res, $isTermSocial = false) {
