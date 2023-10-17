@@ -89,7 +89,12 @@ class DocumentDetailGroupBlock  extends BlockBase  {
       }
     }
 
-   
+
+    $allRoles = $this->userRole();
+    $authorizedToAddDoc = true;
+    if (in_array('social', $allRoles) && (sizeof($allRoles) < 3)) {
+      $authorizedToAddDoc = false;
+    }
 
     $allowToEdit = $custom_service->checkIfUserCanEditDoc ();
     
@@ -113,9 +118,20 @@ class DocumentDetailGroupBlock  extends BlockBase  {
         'is_adherent' => $custom_service->isAdherent(),
         'can_edit_doc' => $allowToEdit,
         'filiere' => $allDocuments['filiere'],
-        'is_user_member_of_group' => $this->isUserMembreOfTheGroup()
+        'is_user_member_of_group' => $this->isUserMembreOfTheGroup() && $authorizedToAddDoc
       ],
     ];
+  }
+
+  private function userRole () {
+    // Get the current user object.
+    $current_user = \Drupal::currentUser();
+
+    $user = \Drupal\user\Entity\User::load($current_user->id());
+
+    // Get an array of role IDs for the current user.
+    $user_roles = $current_user->getRoles();
+    return $user_roles;
   }
 
   /**
@@ -132,7 +148,10 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     $mediaObject = \Drupal::service('entity_type.manager')->getStorage('media')->load($docId);
 
     $isMemberOfTheGroup = $this->isUserMembreOfTheGroup();
-    $typeDoc = $custom_service->getNodeFieldValue($mediaObject, 'field_type_de_document');
+    $typeDoc = 0;
+    if ($mediaObject) {
+      $typeDoc = $custom_service->getNodeFieldValue($mediaObject, 'field_type_de_document');
+    }
 
     return (!$isMemberOfTheGroup && ($typeDoc != 1));
   }
