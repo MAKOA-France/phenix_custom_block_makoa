@@ -26,7 +26,7 @@
               {{ content.first_element_title }}
             </a>
           </h2>
-          {% if not content.is_adherent %}
+          {% if content.not_adherent_or_social %}
             {% if content.group_id %}
               <a class="btn-add-meeting" style="width: fit-content" href="/media/add/document?group_id={{ content.group_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
             {% else %}
