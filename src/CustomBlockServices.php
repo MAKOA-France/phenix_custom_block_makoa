@@ -227,6 +227,44 @@ class CustomBlockServices {
     });
   }
 
+  /**
+   * Filtrer la vue "Mes commissions" par groupes auxquels le contact appartient
+   */
+  public function filterByGroupAdded ($query, $cid) {
+    $query->where[] =  array(
+      'conditions' => array(
+        array(
+          'field' => 'civicrm_group_contact.status',
+          'value' => 'Added',
+          'operator' => '=',
+        ),
+      ),
+      'type' => 'AND',
+    );
+    
+    return $query;
+  }
+  
+  public function filterByContactId ($query, $cid) {
+    $query->where[] =  array(
+      'conditions' => array(
+        array(
+          'field' => 'civicrm_group_contact.status',
+          'value' => 'Added',
+          'operator' => '=',
+        ),
+        array(
+          'field' => 'civicrm_group_contact.contact_id',
+          'value' => $cid,
+          'operator' => '=',
+        ),
+      ),
+      'type' => 'AND',
+    );
+    
+    return $query;
+  }
+
     
   public function getContactIdByEmail ($email) {
     $db = \Drupal::database();
@@ -786,6 +824,7 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
           'filiere' => $filieres,
           'term_id' => $term_object_id,
           'is_adherent' => $this->isAdherent(),
+          'not_adherent_or_social' => $this->notAdherentOrSocial(),
         ], 
         'there_is_a_doc' => true,
       ];
@@ -1530,6 +1569,19 @@ public function getFiliereLabels ($media) {
     $filiere_label = rtrim($filiere_label, ', ');
   }
   return $filiere_label;
+}
+
+public function notAdherentOrSocial  () {
+   // Get the current user object.
+   $current_user = \Drupal::currentUser();
+   $user = \Drupal\user\Entity\User::load($current_user->id());
+  $notAdherentOrSocial = true;
+   // Get an array of role IDs for the current user.
+   $user_roles = $current_user->getRoles();
+   if (sizeof($user_roles) < 3 && (in_array('social', $user_roles) || in_array('adherent', $user_roles))) {
+    $notAdherentOrSocial = false;
+   }
+   return $notAdherentOrSocial;
 }
 
 
