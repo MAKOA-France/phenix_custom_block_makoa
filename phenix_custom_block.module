@@ -608,6 +608,18 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
         ];  
       
     }else {
+
+       // Get the current user object.
+      $current_user = \Drupal::currentUser();
+      $user = \Drupal\user\Entity\User::load($current_user->id());
+
+      // Get an array of role IDs for the current user.
+      $user_roles = $current_user->getRoles();
+      $current_paths = \Drupal::service('path.current')->getPath();
+
+      if (strpos($current_paths, '4992') !== false  /* && (in_array('social', $user_roles) ) */) {
+        
+      }
       
       /**** Affichage dans la page dernier doc les doc lié aux tags (si ce n'est pas vide on retourne sinon on affiche les paragraphes ****/
       if(!empty($custom_service->getAllLinkedDocByTags ($variables))) {
@@ -787,6 +799,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                 'accroche' => $accroche,
                 'contenu' => $contenu,
                 'is_adherent' => $custom_service->isAdherent(),
+                'not_adherent_or_social' => $custom_service->notAdherentOrSocial(),
               ]
             ]; 
           }else {
@@ -1145,5 +1158,32 @@ function phenix_custom_block_civicrm_group_access($entity, $operation, $account)
   // return AccessResult::neutral();
 }
 
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $view, \Drupal\views\Plugin\views\query\QueryPluginBase $query) {
+  $custom_service = \Drupal::service('phenix_custom_block.view_services');
+  if ($view->storage->get('id') == 'civievents_base_sur_le_contact_' && $view->current_display == 'block_5') {
+    $current_user = \Drupal::currentUser();
+    $user_roles = $current_user->getRoles();
+
+    $current_user = \Drupal::currentUser();
+      // Check if the user is authenticated (logged in).
+    if ($current_user->isAuthenticated()) {
+        // Get the email address of the current user.
+        $email = $current_user->getEmail();
+        // You can now use $email for further processing.
+        $cid = $custom_service->getContactIdByEmail($email);
+        
+        if ((in_array('super_utilisateur', $user_roles) || in_array('admin_client', $user_roles) || in_array('permanent', $user_roles) || in_array('administrator', $user_roles))
+          ) {
+            $custom_service->filterByGroupAdded ($query, $cid);
+          }else if (in_array('adherent', $user_roles) || in_array('animateur', $user_roles) || in_array('social', $user_roles) || in_array('adherent_sans_communications', $user_roles)) {
+            $custom_service->filterByContactId ($query, $cid);
+        }
+    }
+  }
+}
 
 
