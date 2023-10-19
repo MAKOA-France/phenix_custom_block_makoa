@@ -118,7 +118,8 @@ class DocumentDetailGroupBlock  extends BlockBase  {
         'is_adherent' => $custom_service->isAdherent(),
         'can_edit_doc' => $allowToEdit,
         'filiere' => $allDocuments['filiere'],
-        'is_user_member_of_group' => $this->isUserMembreOfTheGroup() && $authorizedToAddDoc
+        'is_user_member_of_group' => $this->isUserMembreOfTheGroup() && $authorizedToAddDoc,
+        'not_adherent_or_social' => $custom_service->notAdherentOrSocial(),
       ],
     ];
   }
