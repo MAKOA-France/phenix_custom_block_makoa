@@ -594,6 +594,8 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
   // Alter the term page variables here.
   $term = $variables['elements']['#taxonomy_term'];
   if( $variables['theme_hook_original'] == 'taxonomy_term' && $variables['elements']['#view_mode'] == 'full') {
+
+    $variables['attributes']['class'][] = 'this-is-taxo-page';//Pour identifier que c'est une page de taxonomie, utile pour le js du menu
     
     //check si la page de term en question est lié a une vue ou pas (en se servant du champ field_taxonomy_views_integrator_)
     //Donc ça va être les gabarits textes + images
@@ -617,9 +619,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
       $user_roles = $current_user->getRoles();
       $current_paths = \Drupal::service('path.current')->getPath();
 
-      if (strpos($current_paths, '4992') !== false  /* && (in_array('social', $user_roles) ) */) {
-        
-      }
+
       
       /**** Affichage dans la page dernier doc les doc lié aux tags (si ce n'est pas vide on retourne sinon on affiche les paragraphes ****/
       if(!empty($custom_service->getAllLinkedDocByTags ($variables))) {
@@ -639,7 +639,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
           $date_format = 'Y-m-d';
           $formatted_date = date($date_format, $date_changed[0]['value']);
           
-          $variables['content']['field_dossier'][0]['#suffix'] = '<div class="date-doc">' . $formatted_date . '</p>';
+          // $variables['content']['field_dossier'][0]['#suffix'] = '<div class="date-doc">' . $formatted_date . '</p>';
           $documents = $variables['content']['field_dossier'];
 
           $all_documents = [];
@@ -647,11 +647,14 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
           //S'il n'y a pas de document on return 
           $there_is_no_document = count($documents)  < 4;
           if ($there_is_no_document) {
-            return '';
+            if ($custom_service->notAdherentOrSocial()) {
+              return $variables['content']['field_dossier'][0]['#suffix'] = '<a class="btn-add-meeting-empty" style="width: fit-content" href="/media/add/document?term_id=' . $term->id() . '"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+              ';
+            }
           }
           $firstParagraph = $documents[0]['#paragraph'];
-          $accroche = $custom_service->getNodeFieldValue($firstParagraph, 'field_texte_formate');
-          $contenu = $custom_service->getNodeFieldValue($firstParagraph, 'field_contenu');
+          $accroche = $firstParagraph ? $custom_service->getNodeFieldValue($firstParagraph, 'field_texte_formate') : '';
+          $contenu = $firstParagraph ? $custom_service->getNodeFieldValue($firstParagraph, 'field_contenu') : '';
           foreach ($documents as $index => $value) {
             if (is_numeric($index)) {
               $title_doc = $value['#paragraph'] ? ($value['#paragraph']->hasField('field_titre') ? $value['#paragraph']->get('field_titre')->getValue()[0]['value'] : '') : '';  //maybe need a condition if existe
@@ -803,7 +806,10 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
               ]
             ]; 
           }else {
-            $variables['content']['field_dossier'][0]['#suffix'] = '';
+            if ($custom_service->notAdherentOrSocial()) {
+              return $variables['content']['field_dossier'][0]['#suffix'] = '<a class="btn-add-meeting-empty" style="width: fit-content" href="/media/add/document?term_id=' . $term->id() . '"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+              ';
+            }
           }
         }
       }
