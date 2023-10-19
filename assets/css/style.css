@@ -196,6 +196,10 @@ tr:has(td > p.row-to-hide) {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    max-height: 50px;
+    min-width: 210px;
+
 }
 .detail-title-resume-first-doc {
     gap: 155px;
@@ -681,6 +685,27 @@ body.page-civicrm h1, body.page-civicrmh3,  body.page-civicrm p,  body.page-civi
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.btn-add-meeting.groupes {
+    margin-top: 20px;
+}
+.btn-add-meeting-empty {
+    text-transform: uppercase;
+    font-size: .75rem;
+    color: #3e7269;
+    padding: 10px 15px;
+    font-weight: 600;
+    background-color: #f7f5f3;
+    border-radius: 20px 0;
+    line-height: initial;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    width: 15%;
+}
+.btn-add-meeting-empty .fa-plus-circle {
+    margin-right: 1rem;
+    font-size: 20px;
 }
 .custom-add-and-edit-form .div-parent-save {
     background-color: #140d3d;
