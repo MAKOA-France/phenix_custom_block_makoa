@@ -1,8 +1,8 @@
-{% if content.group_id and content.is_user_member_of_group %}
-<a class="btn-add-meeting" style="width: fit-content" href="/media/add/document?group_id={{ content.group_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+{% if content.group_id and content.not_adherent_or_social  %}
+<a class="btn-add-meeting groupes" style="width: fit-content" href="/media/add/document?group_id={{ content.group_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
  {% endif %} 
 {% if content.there_is_a_doc %}
     {% include 'phenix-custom-block-custom-last-doc.html.twig' %}
 {% else %}
-    <p class="no-doc">Aucun document pour l'instant</p>
+    <p class="no-doc" data-groupid="{{ content.group_id }}" data-ss="{{ content.not_adherent_or_social }}">Aucun document pour l'instant.</p>
 {% endif %}    
