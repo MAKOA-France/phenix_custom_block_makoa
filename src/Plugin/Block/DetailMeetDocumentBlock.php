@@ -98,7 +98,7 @@ class DetailMeetDocumentBlock  extends BlockBase  {
         'is_page_last_doc' => false,
         'event_id' => 991,
         'can_edit_doc' => $allowToEdit,
-        'filiere' => $custom_service->getFiliereLabels($mediaObject)
+        'filiere' => $custom_service->getFiliereLabels($mediaObject),
       ],
     ];
   }
