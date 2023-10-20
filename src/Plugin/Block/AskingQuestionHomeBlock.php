@@ -35,7 +35,15 @@ class AskingQuestionHomeBlock  extends BlockBase  {
     $user_id = $current_user->id();
     $email = $current_user->getEmail();
     $cid = $custom_service->getContactIdByEmail($email);
-    $link_ask_question = '/webform/poser_une_question?cid=' . $cid;
+
+    $idHash = \Civi\Api4\Contact::get(FALSE)
+    ->selectRowCount()
+    ->addSelect('hash')
+    ->addWhere('id', '=', $cid)
+    ->execute()->first()['hash'];
+
+
+    $link_ask_question = '/webform/poser_une_question?cid2=' . $cid . '&token=' . $idHash;
     
     // $webformUrl = $urlGenerator->generateFromRoute($url);
     // Get the current user's name.
