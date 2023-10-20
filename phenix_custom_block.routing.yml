@@ -1,0 +1,8 @@
+
+phenix_custom_block.get_back_to_form:
+  path: '/form/poser-une-question/confirmation/back_link'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\WebformController::backToForm'
+    _title: 'Lien de retour'
+  requirements:
+    _permission: 'access content'

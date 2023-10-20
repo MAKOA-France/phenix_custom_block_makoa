@@ -185,6 +185,22 @@ class CustomBlockServices {
       return $results;
     }
 
+
+    public function createActivity ($infos) {
+      return \Civi\Api4\Activity::create(FALSE)
+        ->addValue('activity_type_id', 60)
+        ->addValue('subject', $infos['subject'])
+        ->addValue('details', $infos['the_question'])
+        ->addValue('target_contact_id', [
+          $infos['employer'],
+        ])
+        ->addValue('source_contact_id', $infos['employer'])
+        ->addValue('assignee_contact_id', [
+          $infos['assignee_to'],
+        ])
+        ->execute();
+    }
+
     /**
      * 
      */

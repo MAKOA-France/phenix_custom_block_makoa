@@ -1,6 +1,28 @@
 (function($) {
     $(document).ready(function() {
 
+
+        //Page de confirmation poser question 
+        const urlParams = new URLSearchParams(window.location.search);
+            // Get a specific parameter by name.
+            let  getCid = urlParams.get('cid');
+            if (window.location.href.includes('/poser-une-question/confirmation')) {
+                if (window.location.href.includes('poser-une-question')) {
+                    $.ajax({
+                        url: '/form/poser-une-question/confirmation/back_link',
+                        success: (successResult, val, ee) => {
+                            console.log('back liank ', successResult)
+                            $('.webform-confirmation__back a').attr('href', successResult.back_link)
+                        },
+                        error: function(error) {
+                            console.log(error, 'ERROR')
+                        }
+                    });
+                    
+                }
+            }
+
+
         $(window).on('load', function () {
             //Menu lors du chargement de la page
             //TODO condition si C une page taxo : tip ajout attribut pour permettre d'identifier la page

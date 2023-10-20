@@ -857,6 +857,12 @@ function getNodeFieldValue ($node, $field) {
 // Implements hook_form_alter().
 function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
+
+  if ($form['#form_id'] == 'webform_submission_poser_une_question_add_form') {
+    $token = \Drupal::request()->query->get('token');
+    \Drupal::service('session')->set('current_token', $token);
+  }
+
   //Page mot de passe oublié
   if ($form['#form_id'] == 'user_pass') {
     $form['actions']['#prefix'] = '<div class="btn-custom-submit">';
@@ -1094,6 +1100,14 @@ function phenix_custom_block_views_pre_render(\Drupal\views\ViewExecutable $view
   if ($view->id() == 'civi_groupe_membres') {
     $view->build_info['title'] = '<p class="test">Référents</div>';
   }
+
+  if ($view->id() == 'civievents_base_sur_le_contact_' && $view->current_display == 'block_5') {
+    $notAdherentOrSocial = $custom_service->notAdherentOrSocial();
+    if (!$notAdherentOrSocial) {
+      $new_title = 'Tous mes groupes';
+      $view->setTitle($new_title);
+    }
+  }
 }
 
 
@@ -1173,9 +1187,9 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
   if ($view->storage->get('id') == 'civievents_base_sur_le_contact_' && $view->current_display == 'block_5') {
     $current_user = \Drupal::currentUser();
     $user_roles = $current_user->getRoles();
-
+    
     $current_user = \Drupal::currentUser();
-      // Check if the user is authenticated (logged in).
+    // Check if the user is authenticated (logged in).
     if ($current_user->isAuthenticated()) {
         // Get the email address of the current user.
         $email = $current_user->getEmail();
@@ -1183,13 +1197,47 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
         $cid = $custom_service->getContactIdByEmail($email);
         
         if ((in_array('super_utilisateur', $user_roles) || in_array('admin_client', $user_roles) || in_array('permanent', $user_roles) || in_array('administrator', $user_roles))
-          ) {
-            $custom_service->filterByGroupAdded ($query, $cid);
-          }else if (in_array('adherent', $user_roles) || in_array('animateur', $user_roles) || in_array('social', $user_roles) || in_array('adherent_sans_communications', $user_roles)) {
-            $custom_service->filterByContactId ($query, $cid);
+        ) {
+          $custom_service->filterByGroupAdded ($query, $cid);
+        }else if (in_array('adherent', $user_roles) || in_array('animateur', $user_roles) || in_array('social', $user_roles) || in_array('adherent_sans_communications', $user_roles)) {
+          $custom_service->filterByContactId ($query, $cid);
         }
-    }
+      }
   }
 }
 
 
+/**
+ * Implements hook_webform_submission_presave().
+ */
+function phenix_custom_block_webform_submission_presave(Drupal\webform\WebformSubmissionInterface $webform_submission) {
+  $custom_service = \Drupal::service('phenix_custom_block.view_services');
+  // Perform actions or manipulate data before the webform submission is saved.
+  // For example, you can access and modify the submission values using:
+  // $webform_submission->setDataValue('field_name', 'new value');
+  $webform = $webform_submission->getWebform();
+  
+  $data = $webform_submission->getData();
+  if ($webform->id() == 'poser_une_question') {
+    $question_category = $data['civicrm_1_activity_1_cg30_custom_166'];
+    $current_contact = \Drupal::request()->query->get('cid2');
+    $assignee_to = 3602;
+    $employer_id = \Civi\Api4\Contact::get(FALSE)
+      ->selectRowCount()
+      ->addSelect('employer_id')
+      ->addWhere('id', '=', $current_contact)
+      ->execute()->first()['employer_id'];
+    $subject = $data['civicrm_1_activity_1_activity_subject'];
+    $the_question = $data['civicrm_1_activity_1_activity_details']['value'];
+    $infos = [
+      'employer' => $employer_id ? $employer_id : $current_contact,
+      'subject' => $subject,
+      'the_question' => $the_question,
+      'assignee_to' => $assignee_to,
+      'question_category' => $question_category,
+      
+    ];
+
+    // $custom_service->createActivity($infos);
+  }
+}

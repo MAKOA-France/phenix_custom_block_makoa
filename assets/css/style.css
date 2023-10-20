@@ -14,6 +14,12 @@
 .webform-submission-poser-une-question-form .form-item-civicrm-1-activity-1-activity-subject {
     margin-left: 3.5% !important;
 }
+#edit-civicrm-1-activity-1-activity-details-format-help {
+    display: none;
+}
+#edit-civicrm-1-contact-1-fieldset-fieldset .fieldset-legend {
+    display:none;
+}
 
 .content-sub-menu-burger a.dropdown-item-burger {
     text-wrap: initial
@@ -672,10 +678,14 @@ body.page-civicrm h1, body.page-civicrmh3,  body.page-civicrm p,  body.page-civi
     gap: 20px;
     padding-bottom: 10px;
     left: 0;
+    z-index: 8;
 }
 .custom-add-and-edit-form.media-document-add-form.media-form #edit-actions.fixed-button,
 .custom-add-and-edit-form.media-document-edit-form.media-form #edit-actions.fixed-button {
     position: fixed;
+}
+.custom-add-and-edit-form .div-parent-save #edit-submit.button--primary {
+    width: 20%;
 }
 .custom-add-and-edit-form .div-parent-save,
 .custom-add-and-edit-form .div-parent-delete {
@@ -713,6 +723,9 @@ body.page-civicrm h1, body.page-civicrmh3,  body.page-civicrm p,  body.page-civi
 .custom-add-and-edit-form .div-parent-delete {
     background-color: #e52329;
 }
+.custom-add-and-edit-form .div-parent-delete #edit-delete.button--danger{
+    width: 20%;
+}    
 .custom-add-and-edit-form .div-parent-save #edit-submit,
 .custom-add-and-edit-form .div-parent-delete #edit-delete{    
     width: 100%;
