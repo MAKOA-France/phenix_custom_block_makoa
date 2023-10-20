@@ -772,6 +772,8 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
   $string_query = 'select entity_id from media__field_tag where field_tag_target_id = ' . $term_object_id;
   $all_linked_doc = $db->query($string_query)->fetchAll();
   $is_term_social = $this->getNodeFieldValue($term_object, 'field_social') ? true : false;
+  \Drupal::service('page_cache_kill_switch')->trigger();
+  \Drupal::cache()->invalidateAll();
   if ($all_linked_doc) {
     $all_linked_doc = array_column($all_linked_doc, 'entity_id');
 
