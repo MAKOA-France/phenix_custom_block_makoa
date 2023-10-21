@@ -726,6 +726,13 @@ body.page-civicrm h1, body.page-civicrmh3,  body.page-civicrm p,  body.page-civi
 .custom-add-and-edit-form .div-parent-delete #edit-delete.button--danger{
     width: 20%;
 }    
+
+.section-civicrm-event .medium-9.cell {
+    width: 100%;
+}
+.section-civicrm-event #sidebar_left {
+    display: none;
+}
 .custom-add-and-edit-form .div-parent-save #edit-submit,
 .custom-add-and-edit-form .div-parent-delete #edit-delete{    
     width: 100%;
