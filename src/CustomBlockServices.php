@@ -261,6 +261,14 @@ class CustomBlockServices {
     return $query;
   }
   
+
+  public function getEventAdherent ($cid) {
+    $query = "select event_id, contact_id from civicrm_participant where contact_id = " . $cid; 
+
+    $results =  \Drupal::database()->query($query)->fetchAll();
+    return $results;
+  }
+
   public function filterByContactId ($query, $cid) {
     $query->where[] =  array(
       'conditions' => array(
@@ -273,6 +281,25 @@ class CustomBlockServices {
           'field' => 'civicrm_group_contact.contact_id',
           'value' => $cid,
           'operator' => '=',
+        ),
+      ),
+      'type' => 'AND',
+    );
+    
+    return $query;
+  }
+
+  public function filterMeetByContactId ($query, $cid) {
+    $whiteListEvent = $this->getEventAdherent ($cid);
+    if ($whiteListEvent) {
+      $whiteListEvent = array_column($whiteListEvent, 'event_id');
+    }
+    $query->where[] =  array(
+      'conditions' => array(
+        array(
+          'field' => 'created_id_civicrm_contact.id',
+          'value' => $whiteListEvent,
+          'operator' => 'IN',
         ),
       ),
       'type' => 'AND',
@@ -1442,11 +1469,11 @@ public function checkIfUserIsAdminOrSocial () {
 
   // Get an array of role IDs for the current user.
   $user_roles = $current_user->getRoles();
-  $whiteListRole = ['administrator', 'social'];
+  $whiteListRole = ['administrator', 'social', 'super_utilisateur'];
   // dump($user_roles);
   $allowToEdit = false;
   
-  if (in_array('administrator', $user_roles) || in_array('social', $user_roles)) {
+  if (in_array('administrator', $user_roles) || in_array('social', $user_roles) || in_array('super_utilisateur', $user_roles)) {
     $allowToEdit = true;
   }
 
