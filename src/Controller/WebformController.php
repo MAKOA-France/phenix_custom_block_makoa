@@ -20,17 +20,22 @@ class WebformController extends ControllerBase
 {
   
   public function backToForm() {
- /*    die('qmldkf');
     $req = \Drupal::request();
-    $getId = $req->query->get('id');
+   
+    $getId = $req->query->get('cid');
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
 
-    $hashContactViaDatabase = $custom_service->checkIfHashContactIsGood($getId);
-    
-    $urlBackLink = '/form/poser-une-question?cid2=' . $getId . '?&token=' . $hashContactViaDatabase;
-dump('here'); */
+    \Drupal::service('civicrm')->initialize();
+    $idHash = \Civi\Api4\Contact::get(FALSE)
+    ->selectRowCount()
+    ->addSelect('hash')
+    ->addWhere('id', '=', $getId)
+    ->execute()->first()['hash'];
 
-    return new JsonResponse(['back_link' => 'noooooo']);
+    
+    $urlBackLink = '/form/poser-une-question?cid2=' . $getId . '?&token=' . $idHash;
+
+    return new JsonResponse(['back_link' => $urlBackLink]);
   }
 
 
