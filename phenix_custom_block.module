@@ -405,9 +405,19 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
   $view = $variables['view'];
 	$field = $variables['field'];
 	$requests = \Drupal::request();
+  
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
 	$row = $variables['row'];
-	
+	$current_user = \Drupal::currentUser();
+  $user_roles = $current_user->getRoles();
+  $email = $current_user->getEmail();
+  // You can now use $email for further processing.
+	if ($view->storage->id() == 'civievents_base_sur_le_contact_' &&  $view->current_display == 'block_7') {
+    // $variables['view']->header['area']->options['content'] = [];
+    if ((!in_array('super_utilisateur', $user_roles) && !in_array('admin_client', $user_roles) && !in_array('permanent', $user_roles) && !in_array('administrator', $user_roles))) {
+      $variables['view']->header['area']->options['content']['value'] = '<h2><i class="far fa-calendar-alt"></i> [view:title] </h2>';
+    }    
+  }
 	if ($view->storage->id() == 'home_caroussel' &&  $view->current_display == 'block_1') {
     if ($field->field == 'field_slide') {
       $field_slide = $field->getValue($row);
@@ -583,13 +593,16 @@ function phenix_custom_block_preprocess_menu(&$variables) {
  * Implements hook_preprocess_HOOK() for taxonomy term templates.
  */
 function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
+  
+  $variables['#cache']['max-age'] = 0;
+
+
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
   // Load the current node or entity.
   $db = \Drupal::database();
 
-
   $term_object = $variables['elements']['#taxonomy_term'];
-  
+
   $term_object_id = $custom_service->getNodeFieldValue($term_object, 'tid');
   // Alter the term page variables here.
   $term = $variables['elements']['#taxonomy_term'];
@@ -620,7 +633,6 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
       $current_paths = \Drupal::service('path.current')->getPath();
 
 
-      
       /**** Affichage dans la page dernier doc les doc lié aux tags (si ce n'est pas vide on retourne sinon on affiche les paragraphes ****/
       if(!empty($custom_service->getAllLinkedDocByTags ($variables))) {
         return $custom_service->getAllDataForDocumentLieAuxTermeFirstElement($variables);
@@ -861,6 +873,7 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
   if ($form['#form_id'] == 'webform_submission_poser_une_question_add_form') {
     $token = \Drupal::request()->query->get('token');
     \Drupal::service('session')->set('current_token', $token);
+    $form['elements']['civicrm_1_activity_1_fieldset_fieldset']['civicrm_1_activity_1_activity_subject']['#attributes']['required'] = true;
   }
 
   //Page mot de passe oublié
@@ -869,6 +882,11 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
     $form['actions']['#suffix'] = '</div>';
     $form['actions']['submit']['#value'] = '';
   }
+
+  $form['elements']['civicrm_1_activity_1_fieldset_fieldset']['civicrm_1_activity_1_activity_assignee_contact_id']['#options'] = [
+    '3602' => 'Vanessa', 
+    '3554' => 'Thomas Fayet', 
+  ];
 
   $query = \Drupal::request()->query;
   if ($req = $query->get('group_id')) {
@@ -887,6 +905,8 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
   }
   
   if (in_array($form['#id'], ['media-document-add-form', 'media-document-edit-form'])) {
+    \Drupal::messenger()->addMessage('Custom message after adding a document.');
+
     $form['name']['widget'][0]['value']['#title'] = 'Nom (titre interne)';
     $form['#attributes']['class'][] = 'custom-add-and-edit-form';
     $form['status']['#prefix'] = '<div class="wrapper-status-and-author">';
@@ -896,7 +916,7 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
     $form['field_source']['widget']['#description'] = '';
     $form['field_filieres']['widget'][0]['value']['#group'] = 'first';
 
-
+    // dump($form['field_social']['widget']);
     /** Debut config filière */
     $menu_tree_service = \Drupal::service('menu.link_tree');
 		$menu_parameters = new \Drupal\Core\Menu\MenuTreeParameters();
@@ -922,12 +942,19 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
 		  $option[$filiere['id']] = $filiere['label'];
 		}
 		asort($option);
+    $defaultValue = '';
+    if ($form['field_filieres']['widget'][0]['value']['#default_value']) {
+      $defaultValue = $form['field_filieres']['widget'][0]['value']['#default_value'];
+      $defaultValue = json_decode($defaultValue);
+      $defaultValue = array_column($defaultValue, 'id');
+    }
 		$form['filiere'] = [
       '#type' => 'container',
       'widget' => [
         '#type' => 'checkboxes',
         '#options' => $option,
         '#title' => 'Filières',
+        '#default_value' => $defaultValue,
         '#attributes' => ['class' => ['all-menu-checkboxes']]
       ],
       '#weight' => 6,
@@ -1101,6 +1128,14 @@ function phenix_custom_block_views_pre_render(\Drupal\views\ViewExecutable $view
     $view->build_info['title'] = '<p class="test">Référents</div>';
   }
 
+  if ($view->id() == 'civievents_base_sur_le_contact_' && $view->current_display == 'block_7') {
+    $notAdherentOrSocial = $custom_service->notAdherentOrSocial();
+    if (!$notAdherentOrSocial) {
+      $new_title = 'Les réunions';
+      $view->setTitle($new_title);
+      
+    }
+  }
   if ($view->id() == 'civievents_base_sur_le_contact_' && $view->current_display == 'block_5') {
     $notAdherentOrSocial = $custom_service->notAdherentOrSocial();
     if (!$notAdherentOrSocial) {
@@ -1184,28 +1219,41 @@ function phenix_custom_block_civicrm_group_access($entity, $operation, $account)
  */
 function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $view, \Drupal\views\Plugin\views\query\QueryPluginBase $query) {
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
-  if ($view->storage->get('id') == 'civievents_base_sur_le_contact_' && $view->current_display == 'block_5') {
-    $current_user = \Drupal::currentUser();
-    $user_roles = $current_user->getRoles();
-    
-    $current_user = \Drupal::currentUser();
-    // Check if the user is authenticated (logged in).
-    if ($current_user->isAuthenticated()) {
-        // Get the email address of the current user.
-        $email = $current_user->getEmail();
-        // You can now use $email for further processing.
-        $cid = $custom_service->getContactIdByEmail($email);
-        
-        if ((in_array('super_utilisateur', $user_roles) || in_array('admin_client', $user_roles) || in_array('permanent', $user_roles) || in_array('administrator', $user_roles))
-        ) {
-          $custom_service->filterByGroupAdded ($query, $cid);
-        }else if (in_array('adherent', $user_roles) || in_array('animateur', $user_roles) || in_array('social', $user_roles) || in_array('adherent_sans_communications', $user_roles)) {
-          $custom_service->filterByContactId ($query, $cid);
-        }
-      }
+  $current_user = \Drupal::currentUser();
+  $user_roles = $current_user->getRoles();
+  $email = $current_user->getEmail();
+  // You can now use $email for further processing.
+  $cid = $custom_service->getContactIdByEmail($email);
+  
+  
+  if ($view->storage->get('id') == 'civievents_base_sur_le_contact_' && $view->current_display == 'block_7') {//VUE REUNION
+    if ((!in_array('super_utilisateur', $user_roles) && !in_array('admin_client', $user_roles) && !in_array('permanent', $user_roles) && !in_array('administrator', $user_roles))) {
+      $custom_service->filterMeetByContactId ($query, $cid);
+    }
   }
-}
+  
+    if ($view->storage->get('id') == 'civievents_base_sur_le_contact_' && $view->current_display == 'block_5') {//VUE MES GROUPES
+      // Check if the user is authenticated (logged in).
+      if ($current_user->isAuthenticated()) {
+          // Get the email address of the current user.
+          
+          if ((in_array('super_utilisateur', $user_roles) || in_array('admin_client', $user_roles) || in_array('permanent', $user_roles) || in_array('administrator', $user_roles))
+          ) {
+            $custom_service->filterByGroupAdded ($query, $cid);
+          }else if (in_array('adherent', $user_roles) || in_array('animateur', $user_roles) || in_array('social', $user_roles) || in_array('adherent_sans_communications', $user_roles)) {
+            $custom_service->filterByContactId ($query, $cid);
+          }
+        }
+    }
+    }
 
+/**
+ * Implements hook_webform_submission_insert().
+ */
+function phenix_custom_block_webform_submission_insert($webform_submission) {
+  // Perform custom actions here after the submission is inserted into the database.
+  // You can access submission data using $webform_submission->getData().
+}
 
 /**
  * Implements hook_webform_submission_presave().
@@ -1241,3 +1289,4 @@ function phenix_custom_block_webform_submission_presave(Drupal\webform\WebformSu
     // $custom_service->createActivity($infos);
   }
 }
+
