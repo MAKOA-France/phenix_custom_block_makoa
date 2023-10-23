@@ -70,7 +70,7 @@ class DetailMeetDocumentBlock  extends BlockBase  {
           'description' => $title_doc,
           'created_at' => $this->getFormattedDate($mediaObject),
           'paragraph_id' => null,
-          'filiere' => $custom_service->getFiliereLabels($mediaObject)
+          'filiere' => $mediaObject ? $custom_service->getFiliereLabels($mediaObject) : ''
         ]; 
       }
     
@@ -98,7 +98,7 @@ class DetailMeetDocumentBlock  extends BlockBase  {
         'is_page_last_doc' => false,
         'event_id' => 991,
         'can_edit_doc' => $allowToEdit,
-        'filiere' => $custom_service->getFiliereLabels($mediaObject),
+        'filiere' => $mediaObject ? $custom_service->getFiliereLabels($mediaObject) : '',
       ],
     ];
   }
