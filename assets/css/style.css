@@ -177,7 +177,30 @@ tr:has(td > p.row-to-hide) {
     display: none;
 }
 /**********/
+.menu-to-be-hide {
+    /* display: none !important; */
+}
+.menu-to-be-showed {
+    /* display: block !important; */
+}
 
+/* .page-taxonomys #block-menuprincipal {
+    display:block !important;
+}
+
+.page-taxonomys#main-menu.top-bar.menu-sidebar-open .content-sub-menu-burger {
+
+    display: block !important;
+    position: relative !important;
+    top: 40px !important;
+    padding-top: initial !important;
+    margin-left: -23px !important;
+    margin-right: -23px !important;
+    width: calc(100% + 46PX) !important;
+}
+.page-taxonomys#main-menu.top-bar {
+    width: 223px;
+} */
 /* ajout doc => tag & arborescence */ 
 .layout__region--second ul.custom-tag-dropdown > ul {
     display: block !important;
