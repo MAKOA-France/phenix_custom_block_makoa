@@ -1,37 +1,39 @@
 {# '#theme' => 'phenix_custom_block_custom_last_doc' est dans le fichier .module #}
 {% if content.there_is_a_document %}
 <div class="medium-12">
-    {% if not content.is_page_last_doc  %}
-      <div class="last-doc-title">
+    
+      {% if not content.is_page_last_doc  %}
+        <div class="last-doc-title">
+          
+          <h2 class="main-title-last-doc"><i class="fas fa-file"></i>{{ content.first_title }}</h2>
         
-        <h2 class="main-title-last-doc"><i class="fas fa-file"></i>{{ content.first_title }}</h2>
-       
-      </div>
-    {% else %}  
-        <h2 class="main-title-last-doc">{{ content.term_name ~  ' - ' ~ content.document_year }}</h2>
-    {% endif %}
+        </div>
+      {% else %}  
+          <h2 class="main-title-last-doc">{{ content.term_name ~  ' - ' ~ content.document_year }}</h2>
+      {% endif %}
     <div class="first-element-doc">
       <a href="/media/{{ content.first_element_id }}/download" class="custom-icon-first-element">
         <img src="/files/assets/{{ content.file_type }}">
       </a>  
       <div class="content-frist-doc">
         <div class="detail-title-resume-first-doc">
-          <h2 class="title-first-doc">
-            <a href="/media/{{ content.first_element_id }}/download">
-              {{ content.first_element_title }}
-            </a>
-          </h2>
-           {% if content.not_adherent_or_social %}
-            {% if content.group_id %}
-              <a class="btn-add-meeting" style="width: fit-content" href="/media/add/document?group_id={{ content.group_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
-            {% else %}
-              <a class="btn-add-meeting" style="width: fit-content" href="/media/add/document?term_id={{ content.term_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+           
+          <div class="extrait-resume blo">
+            <h2 class="title-first-doc">
+              <a href="/media/{{ content.first_element_id }}/download">
+                {{ content.first_element_title }}
+              </a>
+            </h2>
+            {% if (content.resume) %}
+              {{ content.resume|raw }}
             {% endif %}
-          {% endif %}
-
-          
-          {% if (content.resume) %}
-            <div class="extrait-resume">{{ content.resume|raw }}</div>
+          </div>
+          {% if content.not_adherent_or_social %}
+            {% if content.group_id %}
+              <a class="btn-add-meeting " style="width: fit-content" href="/media/add/document?group_id={{ content.group_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+            {% else %}
+              <a class="btn-add-meeting " style="width: fit-content" href="/media/add/document?term_id={{ content.term_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+            {% endif %}
           {% endif %}
         </div>
 

@@ -1,4 +1,25 @@
 (function($) {
+    $(window).on('load', function () {
+        //Menu lors du chargement de la page
+        //TODO condition si C une page taxo : tip ajout attribut pour permettre d'identifier la page
+        //TODO condition s'il y a du paramettre dans l'url (peut etre la condition du dessus suffira)
+        let currentURL = window.location.pathname + window.location.search;
+        if ($('.this-is-taxo-page').length){
+
+            if (jQuery('[href="' + currentURL + '"]').closest('ul').parent('li').hasClass('premier-niv')) {
+                jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').show()
+                //TODO mettre l'icone - pour le menu deplié (ajout classe)
+                jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').addClass('first-level-click');
+            }
+
+            if (jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').hasClass('second-niv')) {
+                jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').closest('ul').show();
+                jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').closest('ul').parent('li').addClass('first-level-click');
+            }
+            //TODO Ouvrir le menu prinicpal
+            jQuery('.fa.fa-bars').click()
+        }
+    })
     $(document).ready(function() {
 
 
@@ -24,28 +45,6 @@
             }
 
 
-        $(window).on('load', function () {
-            //Menu lors du chargement de la page
-            //TODO condition si C une page taxo : tip ajout attribut pour permettre d'identifier la page
-            //TODO condition s'il y a du paramettre dans l'url (peut etre la condition du dessus suffira)
-            let currentURL = window.location.pathname + window.location.search;
-            console.log(jQuery('[href="' + currentURL + '"]').closest('ul'));
-            if ($('.this-is-taxo-page').length){
-
-                if (jQuery('[href="' + currentURL + '"]').closest('ul').parent('li').hasClass('premier-niv')) {
-                    jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').show()
-                    //TODO mettre l'icone - pour le menu deplié (ajout classe)
-                    jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').addClass('first-level-click');
-                }
-
-                if (jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').hasClass('second-niv')) {
-                    jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').closest('ul').show();
-                    jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').closest('ul').parent('li').addClass('first-level-click');
-                }
-                //TODO Ouvrir le menu prinicpal
-                jQuery('.fa.fa-bars').click()
-            }
-        })
 
         //page recherche
         jQuery('.page-recherche .views-element-container table > tbody > tr').has('p.row-to-hide').hide();

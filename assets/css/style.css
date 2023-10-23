@@ -725,7 +725,10 @@ body.page-civicrm h1, body.page-civicrmh3,  body.page-civicrm p,  body.page-civi
 }
 .custom-add-and-edit-form .div-parent-delete #edit-delete.button--danger{
     width: 20%;
-}    
+}  
+.content-resume-doc p {
+    font-size: 100% !important;
+}  
 
 .section-civicrm-event .medium-9.cell {
     width: 100%;
