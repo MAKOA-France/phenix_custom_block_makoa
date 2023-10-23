@@ -29,13 +29,15 @@
               </a>
             </h2>
             {% if (content.resume) %}
+             <div class="content-resume-doc">
               {{ content.resume|raw }}
+              </div>
             {% endif %}
           </div>
 
           {% if content.not_adherent_or_social %}
             {% if content.group_id %}
-              <a class="btn-add-meeting" style="width: fit-content" href="/media/add/document?group_id={{ content.group_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+              {# <a class="btn-add-meeting" style="width: fit-content" href="/media/add/document?group_id={{ content.group_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a> #}
             {% else %}
               <a class="btn-add-meeting" style="width: fit-content" href="/media/add/document?term_id={{ content.term_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
             {% endif %}
