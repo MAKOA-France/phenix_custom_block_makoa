@@ -177,14 +177,123 @@ tr:has(td > p.row-to-hide) {
     display: none;
 }
 /**********/
-.menu-to-be-hide {
-    /* display: none !important; */
+
+
+/******* Liste des documents *****/
+.page-admin-content-media #view-changed-table-column {
+    padding-top: 20px;
+    padding-bottom: 2px;
 }
-.menu-to-be-showed {
-    /* display: block !important; */
+#views-form-media-media-page-list .select-all.views-field {
+    padding-left: 18px;
 }
 
-/* .page-taxonomys #block-menuprincipal {
+#views-form-media-media-page-list .js-form-type-select.js-form-item-action {
+    padding-left: 0;
+}
+#views-form-media-media-page-list td img {
+    width: 40%;
+}
+/******* End Liste des documents *****/
+
+/*******MENU BURGER TAXO*****/
+.path-civicrm-participant .civicrm-participant-form .custom_delete_participant {
+    height: 2.8rem;
+    width: 20%;
+    border-radius: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e52329;
+    display: inline-flex;
+    margin-left: 21px;
+}
+.path-civicrm-participant .civicrm-participant-form .custom_save_participant {
+    height: 2.8rem;
+    width: 20%;
+    border-radius: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #140d3d;
+    display: inline-flex;
+}
+
+.path-civicrm-participant .js-form-item-field-message {
+    font-family: "new-order", sans-serif !important;
+    font-style: normal;
+}
+
+.path-civicrm-participant .civicrm-participant-form [name="custom_170[0][value]"] {
+    height: 35px;
+    border-radius: 5px;
+    background-color: transparent;
+    line-height: initial;
+    border: 1px solid #b8b8b8;
+    width: 42%;
+}
+
+.path-civicrm-participant .civicrm-participant-form [name="role_id"] {
+    height: 35px;
+    border-radius: 5px;
+    background-color: transparent;
+    line-height: initial;
+    border: 1px solid #b8b8b8;
+    width: 42%;
+    background-image: url(/files/arrows-chevron-down-select.png);
+}
+
+.path-civicrm-participant .civicrm-participant-form [name="op"]:hover {
+    background-image: none;
+    color: white;
+    background-color: #140d3d;
+    text-decoration: none;
+    width: auto;
+}
+.custom_delete_participant .button--danger:hover{
+        /* background-color: #FFFFFF; */
+    /* border-color: #008ee6; */
+    background-image: none;
+    color: white;
+    background-color: #e52329 !important;
+    text-decoration: none;
+}
+
+.path-civicrm-participant .civicrm-participant-form [name="op"], .custom_delete_participant .button--danger{
+    width: 100%;
+    height: auto;
+    outline: none;
+    border: initial;
+    font-weight: 400;
+    font-size: 0.8rem;
+    background: initial;
+    border-color: initial;
+    text-transform: uppercase;
+    text-decoration: initial;
+    color: #fff;
+    /* position: absolute; */
+    line-height: 1.25em;
+}
+/******* END CONFIRMER PRESENCE *****/
+
+/* .menu-to-be-hide { */
+    /* display: none !important; */
+/*}*/
+ .menu-to-be-showed {
+     display: block !important; 
+}
+
+[src="/files/assets/Icon metro-file-zip@2x.png"] {
+    background-color: #cc4b4c;
+    border: #cc4b4c 1px solid;
+}
+
+.page-media-add-document div#edit-status-wrapper {
+    padding-left: 11px;
+}
+
+/*
+ .page-taxonomys #block-menuprincipal {
     display:block !important;
 }
 
@@ -198,9 +307,37 @@ tr:has(td > p.row-to-hide) {
     margin-right: -23px !important;
     width: calc(100% + 46PX) !important;
 }
+
+
+.page-taxonomys#main-menu.top-bar.menu-sidebar-open .content-sub-menu-burger {
+    display: block;
+    position: relative;
+    top: 40px;
+    padding-top: initial;
+    margin-left: -23px;
+    margin-right: -23px;
+    width: calc(100% + 46PX);
+}
+
 .page-taxonomys#main-menu.top-bar {
     width: 223px;
+} 
+.page-taxonomys #main-menu.top-bar.menu-sidebar-open .content-sub-menu-burger {
+    display: block;
+    position: relative;
+    top: 40px;
+    padding-top: initial;
+    margin-left: -23px;
+    margin-right: -23px;
+    width: calc(100% + 46PX);
+}
+    
+.page-taxonomys#main-menu.top-bar .content-sub-menu-burger .item-sub-menu-burger .span-title-burger {
+    display: block;
 } */
+/******** BURGER END TAXO ********/
+
+
 /* ajout doc => tag & arborescence */ 
 .layout__region--second ul.custom-tag-dropdown > ul {
     display: block !important;
