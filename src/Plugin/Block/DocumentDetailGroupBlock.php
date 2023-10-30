@@ -293,7 +293,27 @@ class DocumentDetailGroupBlock  extends BlockBase  {
     $fileValue = $custom_service->getNodeFieldValue($media, 'field_media_document');
     $file = File::load($fileValue);
     $fileType = $custom_service->getNodeFieldValue($file, 'filemime');
-    $fileType = $fileType =='application/pdf' ? 'pdf-3.png' : 'pdf-2.png';//todo mettre switch et ajouter tous les types de fichiers
+    switch($fileType) {
+      case 'application/pdf':
+        $fileType = 'pdf-3.png';
+        break;
+      case 'application/zip':
+        $fileType = 'Icon metro-file-zip.png';
+        break;  
+      case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+      case 'application/vnd.ms-excel':
+        $fileType = 'pdf.png';
+        break;
+      case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+      case 'application/msword':
+        $fileType = 'pdf-2.png';
+        break;
+      case 'application/rtf':
+        $fileType = 'Icon metro-file-zip.png';
+        break;
+
+    }
+    // $fileType = $fileType =='application/pdf' ? 'pdf-3.png' : 'pdf-2.png';//todo mettre switch et ajouter tous les types de fichiers
     return $fileType;
   }
 
