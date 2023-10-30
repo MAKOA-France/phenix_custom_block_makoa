@@ -411,6 +411,40 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
 	$current_user = \Drupal::currentUser();
   $user_roles = $current_user->getRoles();
   $email = $current_user->getEmail();
+
+  
+  if ($view->storage->id() == 'media' &&  $view->current_display == 'media_page_list') {
+    if ($field->field == 'thumbnail__target_id') {
+      $title = $field->getValue($row);
+      $file = $custom_service->getNodeFieldValue($row->_entity, 'field_media_document');
+      $file = \Drupal\file\Entity\File::load($file);
+      $filememe = $custom_service->getNodeFieldValue($file, 'filemime');
+      $file_type = 'pdf-3.png';
+      switch($filememe) {
+        case 'application/pdf':
+          $file_type = 'pdf-3.png';
+          break;
+        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+          $file_type = 'pdf-2.png';
+          break;
+        case 'application/msword':
+          $file_type = 'pdf-2.png';
+          break;
+        case 'application/rtf':
+          $txt_file = '.rtf';
+          break;
+        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+          $file_type = 'pdf.png';
+          break;
+        case 'application/vnd.ms-excel':
+          $file_type = 'pdf.png';
+          break;
+      }
+
+      $variables['output'] = ['#markup' => '<img loading="lazy" src="/files/assets/'. $file_type .'">'];
+    }
+  }
+
   // You can now use $email for further processing.
 	if ($view->storage->id() == 'civievents_base_sur_le_contact_' &&  $view->current_display == 'block_7') {
     // $variables['view']->header['area']->options['content'] = [];
@@ -665,6 +699,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             }
           }
           $firstParagraph = $documents[0]['#paragraph'];
+          
           $accroche = $firstParagraph ? $custom_service->getNodeFieldValue($firstParagraph, 'field_texte_formate') : '';
           $contenu = $firstParagraph ? $custom_service->getNodeFieldValue($firstParagraph, 'field_contenu') : '';
           foreach ($documents as $index => $value) {
@@ -792,6 +827,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             $file_size_readable = $custom_service->getFileSize($file0bj);
             // $display_see_other_doc = ($counted_doc > 1); TODO 
             $display_see_other_doc = (count($all_documents) > 1 || count(reset($all_documents)));
+            
             $variables['content'] = [
               '#theme' => 'phenix_custom_block_custom_last_doc',
               '#cache' => ['max-age' => 0],
@@ -866,9 +902,32 @@ function getNodeFieldValue ($node, $field) {
 }
 
 
+use Drupal\Core\Url;
+use Drupal\Core\Routing\UrlGeneratorInterface;
+use Symfony\Component\HttpFoundation\Request;
+
 // Implements hook_form_alter().
 function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
+  
+  if ($form['#form_id'] == 'taxonomy_term_rubrique_form') {
+    if (isset ($form['field_dossier']['widget'][0]['subform']['field_document']['widget']['selection'])) {
+
+    }
+  }
+  //Formulaire confirmation presence
+  if (in_array($form['#form_id'], ['civicrm_participant_add_form', 'civicrm_participant_edit_form'])) {
+
+
+
+
+    $form['actions']['submit']['#prefix'] = '<div class="custom_save_participant">';
+    $form['actions']['submit']['#suffix'] = '</div>';
+    if ($form['#form_id'] == 'civicrm_participant_edit_form') {
+      $form['actions']['delete']['#prefix'] = '<div class="custom_delete_participant">';
+      $form['actions']['delete']['#suffix'] = '</div>';
+    }
+  }
 
   if ($form['#form_id'] == 'webform_submission_poser_une_question_add_form') {
     $token = \Drupal::request()->query->get('token');
@@ -903,9 +962,18 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
     $form['name']['#placeholder'] = 'Identifiant';
     $form['name']['#attributes']['placeholder'] = 'Identifiant';
   }
+
+
+
+  if ($form['#id'] == 'views-exposed-form-media-media-page-list') {
+    $form['name']['#attributes']['data-session'] = \Drupal::service('session')->get('previous_url');
+  }
   
   if (in_array($form['#id'], ['media-document-add-form', 'media-document-edit-form'])) {
-    \Drupal::messenger()->addMessage('Custom message after adding a document.');
+
+    $previous_url = \Drupal::service('session')->set('previous_url', $_SERVER['HTTP_REFERER']);
+
+    $form['#submit'][] = 'custom_media_alert_media_document_submit';
 
     $form['name']['widget'][0]['value']['#title'] = 'Nom (titre interne)';
     $form['#attributes']['class'][] = 'custom-add-and-edit-form';
@@ -915,7 +983,8 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
     $form['field_source']['#suffix'] = '</div>';
     $form['field_source']['widget']['#description'] = '';
     $form['field_filieres']['widget'][0]['value']['#group'] = 'first';
-
+    // dump($form);
+    $form['field_groupes']['widget']['#title'] = "Commissions";
     // dump($form['field_social']['widget']);
     /** Debut config filière */
     $menu_tree_service = \Drupal::service('menu.link_tree');
@@ -1020,6 +1089,8 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
   }
  
 }
+
+
 
 /**
  * Implements hook_taxonomy_term_presave().
