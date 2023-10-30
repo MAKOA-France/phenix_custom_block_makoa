@@ -4,7 +4,8 @@
         //TODO condition si C une page taxo : tip ajout attribut pour permettre d'identifier la page
         //TODO condition s'il y a du paramettre dans l'url (peut etre la condition du dessus suffira)
         let currentURL = window.location.pathname + window.location.search;
-        if ($('.this-is-taxo-page').length){
+        console.log($('.this-is-taxo-page .content-menu-burger').length, 'll',$('body').find('.content-menu-burger').length)
+        if ($('.page-taxonomys').length){
 
             if (jQuery('[href="' + currentURL + '"]').closest('ul').parent('li').hasClass('premier-niv')) {
                 jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').show()
@@ -16,8 +17,12 @@
                 jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').closest('ul').show();
                 jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').closest('ul').parent('li').addClass('first-level-click');
             }
-            //TODO Ouvrir le menu prinicpal
-            jQuery('.fa.fa-bars').click()
+        }
+        let zip = jQuery('.first-element-doc a img').attr('src');
+        console.log(zip, 'ii')
+        if (zip == '/files/assets/Icon metro-file-zip.png') {
+            jQuery('.first-element-doc a img').css('background-color', '#cc4b4c')
+            jQuery('.first-element-doc a img').css('border', '#cc4b4c solid 1px')
         }
     })
     $(document).ready(function() {
