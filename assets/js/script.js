@@ -1,5 +1,19 @@
 (function($) {
     $(window).on('load', function () {
+
+         //Après ajout doc
+         let messageAddDoc = jQuery('.page-admin-content-media .messages.messages--status').text().includes('Document');
+         let messageAddDocCreate = jQuery('.page-admin-content-media .messages.messages--status').text().includes('a été créé');
+ console.log('has m', messageAddDoc)
+ 
+         if (messageAddDoc && messageAddDocCreate) {
+             let previousUrl = $('.page-admin-content-media  [name="name"]').attr('data-session');
+             let pre = jQuery('.page-admin-content-media .messages.messages--status').html();
+             jQuery('.page-admin-content-media .messages.messages--status').html(pre + ' Pour revenir à la page précedente cliquez ici <a href="' + previousUrl + '" > Retour </a>');
+ 
+             console.log('zz m', pre)
+         }
+ 
         //Menu lors du chargement de la page
         //TODO condition si C une page taxo : tip ajout attribut pour permettre d'identifier la page
         //TODO condition s'il y a du paramettre dans l'url (peut etre la condition du dessus suffira)
@@ -27,7 +41,7 @@
     })
     $(document).ready(function() {
 
-
+       
         //Page de confirmation poser question 
         const urlParams = new URLSearchParams(window.location.search);
             // Get a specific parameter by name.
