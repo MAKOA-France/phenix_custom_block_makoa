@@ -414,24 +414,26 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
 
   
   if ($view->storage->id() == 'media' &&  $view->current_display == 'media_page_list') {
-    if ($field->field == 'thumbnail__target_id') {
+     if ($field->field == 'thumbnail__target_id') {
       $title = $field->getValue($row);
-      $file = $custom_service->getNodeFieldValue($row->_entity, 'field_media_document');
-      $file = \Drupal\file\Entity\File::load($file);
-      $filememe = $custom_service->getNodeFieldValue($file, 'filemime');
-      $file_type = 'pdf-3.png';
-      switch($filememe) {
+      if ($row->_entity->hasField('field_media_document')) {
+
+        $file = $custom_service->getNodeFieldValue($row->_entity, 'field_media_document');
+        $file = \Drupal\file\Entity\File::load($file);
+        $filememe = $custom_service->getNodeFieldValue($file, 'filemime');
+        $file_type = 'pdf-3.png';
+        switch($filememe) {
         case 'application/pdf':
           $file_type = 'pdf-3.png';
           break;
         case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
           $file_type = 'pdf-2.png';
           break;
-        case 'application/msword':
+          case 'application/msword':
           $file_type = 'pdf-2.png';
           break;
-        case 'application/rtf':
-          $txt_file = '.rtf';
+          case 'application/rtf':
+            $txt_file = '.rtf';
           break;
         case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
           $file_type = 'pdf.png';
@@ -439,10 +441,11 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
         case 'application/vnd.ms-excel':
           $file_type = 'pdf.png';
           break;
+        }
+        
+        $variables['output'] = ['#markup' => '<img loading="lazy" src="/files/assets/'. $file_type .'">'];
       }
-
-      $variables['output'] = ['#markup' => '<img loading="lazy" src="/files/assets/'. $file_type .'">'];
-    }
+    } 
   }
 
   // You can now use $email for further processing.
