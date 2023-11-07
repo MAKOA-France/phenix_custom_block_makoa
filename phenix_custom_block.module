@@ -906,10 +906,26 @@ use Drupal\Core\Url;
 use Drupal\Core\Routing\UrlGeneratorInterface;
 use Symfony\Component\HttpFoundation\Request;
 
+use Drupal\Core\StreamWrapper\PublicStream;
+use Drupal\Core\StreamWrapper\StreamWrapperManager;
+use Drupal\Component\Utility\Html;
+
 // Implements hook_form_alter().
 function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
   
+  if (in_array($form['#form_id'], ['user_form', 'civicrm_user_profile'])) {
+    $config = \Drupal::configFactory()->getEditable('phenix_custom_block.settings');
+    $image_id = $config->get('image_field');
+    if ($image_id) {
+      $file = File::load($image_id);
+      $file_uri = $file->getFileUri();
+      $form['#attributes']['class'][] = 'user-form';
+      $form['#attributes']['data-img-illustration'] = file_create_url($file_uri);
+    }
+  }
+  // dump($form['#form_id']);
+
   if ($form['#form_id'] == 'taxonomy_term_rubrique_form') {
     if (isset ($form['field_dossier']['widget'][0]['subform']['field_document']['widget']['selection'])) {
 
@@ -1224,7 +1240,18 @@ function phenix_custom_block_views_pre_render(\Drupal\views\ViewExecutable $view
 function phenix_custom_block_preprocess_views_view(array &$variables) {
   // Check if the view is the one you want to target.
   $view = $variables['view'];
+  $current_user = \Drupal::currentUser();
+  $user_roles = $current_user->getRoles();
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
+  if ($variables['view']->id() == 'civievents_base_sur_le_contact_' && $variables['view']->current_display == 'block_5') {
+
+    if (!empty($variables['header'])) {
+      if (!in_array('admin_client', $user_roles) && (!in_array('super_utilisateur', $user_roles) && !in_array('permanent', $user_roles) && !in_array('administrator', $user_roles))) {
+        $isAdherent = true;
+        $variables['header']['area']['#text'] = '<h2><i class="fas fa-users-cog"></i> Tous Les groupes </h2>';
+      }
+    }
+  }
   if ($variables['view']->id() == 'rechercher' && $variables['view']->current_display == 'page_1') {
     $custom_service->addTitleToViewSearch($variables);
   }
@@ -1297,6 +1324,28 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
   $cid = $custom_service->getContactIdByEmail($email);
   
   
+  //Search API
+  if ($view->storage->get('id') == 'rechercher' && $view->current_display == 'page_1') {
+    $index = \Drupal::entityTypeManager()->getStorage('search_api_index')->load('contenu');
+    
+    //Recuperation des groupes auxquel l'user est membre 
+    $groupContacts = \Civi\Api4\GroupContact::get(FALSE)
+    ->addSelect('group_id')
+    ->addWhere('contact_id', '=', $cid)
+    ->addWhere('group_id.group_type', 'LIKE', '%3%')
+    ->addWhere('group_id.is_active', '=', TRUE)
+    ->execute()->getIterator();
+    
+    $groupContacts = iterator_to_array($groupContacts);
+    $groupContacts = array_column($groupContacts, 'group_id'); 
+    
+    if (in_array('adherent', $user_roles)) {
+      $blackListGroupId = $custom_service-> getAllGroupIdWhereUserDoesntBelongAndGroupIsAfficherSurExtranet ($cid, $groupContacts);
+      $query->addCondition('field_groupes',  $blackListGroupId,"NOT IN");
+      //$fields = $index->getFields();
+    }
+  }
+
   if ($view->storage->get('id') == 'civievents_base_sur_le_contact_' && $view->current_display == 'block_7') {//VUE REUNION
     if ((!in_array('super_utilisateur', $user_roles) && !in_array('admin_client', $user_roles) && !in_array('permanent', $user_roles) && !in_array('administrator', $user_roles))) {
       $custom_service->filterMeetByContactId ($query, $cid);
@@ -1317,6 +1366,9 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
         }
     }
     }
+
+
+
 
 /**
  * Implements hook_webform_submission_insert().
