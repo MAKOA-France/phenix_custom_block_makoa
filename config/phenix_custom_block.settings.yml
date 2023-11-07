@@ -1,0 +1,8 @@
+# modules/custom/my_module/config/schema/my_module.settings.yml
+phenix_custom_block.settings:
+  type: config_object
+  label: 'Image d'illustration mon compte settings'
+  mapping:
+    my_setting:
+      type: string
+      label: 'My Setting'

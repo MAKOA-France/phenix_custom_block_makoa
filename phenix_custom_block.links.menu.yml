@@ -1,0 +1,7 @@
+# modules/custom/custom_form_example/custom_form_example.links.menu.yml
+custom_form_account.submenu:
+  title: 'Image mon compte'
+  description: 'account.'
+  parent: 'system.admin_structure' 
+  route_name: phenix_custom_block.account_form
+  menu_name: custom-menu
