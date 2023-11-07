@@ -41,6 +41,10 @@
     })
     $(document).ready(function() {
 
+
+
+        let illustrationImgMyAccount = jQuery('.section-user .user-form').attr('data-img-illustration')
+        jQuery('.section-user .grid-container.hero.communication').css('background-image', 'url( ' + illustrationImgMyAccount + ')')
        
         //Page de confirmation poser question 
         const urlParams = new URLSearchParams(window.location.search);
