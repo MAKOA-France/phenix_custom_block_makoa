@@ -6,3 +6,13 @@ phenix_custom_block.get_back_to_form:
     _title: 'Lien de retour'
   requirements:
     _permission: 'access content'
+
+
+# modules/custom/custom_form_example/custom_form_example.routing.yml
+phenix_custom_block.account_form:
+  path: '/form-image-illustration'
+  defaults:
+    _form: 'Drupal\phenix_custom_block\Form\CustomFormAccountForm'
+    _title: 'Ajout image d illustration '
+  requirements:
+    _permission: 'access content'
