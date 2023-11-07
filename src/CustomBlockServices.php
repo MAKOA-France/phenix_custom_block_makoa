@@ -308,6 +308,25 @@ class CustomBlockServices {
     return $query;
   }
 
+  /**
+   * ('group_id.group_type', 'LIKE', '%3%') veut dire = group afficher sur extranet
+   */
+  public function getAllGroupIdWhereUserDoesntBelongAndGroupIsAfficherSurExtranet ($cid, $groupIds) {
+    $groupContacts = \Civi\Api4\GroupContact::get(FALSE)
+      ->addSelect('group_id')
+      ->addWhere('group_id.group_type', 'LIKE', '%3%')
+      ->addWhere('group_id.is_active', '=', TRUE)
+      ->addWhere('contact_id', '!=', $cid)
+      ->addWhere('status', '=', 'Added')
+      ->addGroupBy('group_id')
+      ->addWhere('group_id', 'NOT IN', $groupIds)
+      ->execute()->getIterator();
+
+    $groupContacts = iterator_to_array($groupContacts);   
+    $groupContacts = array_column($groupContacts, 'group_id');   
+    return $groupContacts;
+  }
+
     
   public function getContactIdByEmail ($email) {
     $db = \Drupal::database();
@@ -949,6 +968,8 @@ public function customResultSearchDoc (&$var) {
 	$row = $var['row'];
   $value = $field->getValue($row);
   $entity = $var['row']->_entity;
+  $current_user = \Drupal::currentUser();
+  $user_roles = $current_user->getRoles();
 
   if ($field->field == 'rendered_item') {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
@@ -1036,12 +1057,26 @@ public function customResultSearchDoc (&$var) {
 
       //Checker d'abord si le document est social
       $isDocSocial = $this->isDocSocial ($entity->id());
+
+      //Si l'utilisateur est admin ou SU ou permanent
+      if ((!in_array('administrator', $user_roles) && !in_array('super_utilisateur', $user_roles) && !in_array('permanent', $user_roles)) && $isDocSocial) {
+        $doc_info = [
+          '#theme' => 'phenix_custom_bloc_search',
+          '#cache' => ['max-age' => 0],
+          '#content' => [
+            'has_result' => false
+            ]
+          ];
+          $var['output'] = ['#markup' => '<p class="row-to-hide"></p>'];
+        return $doc_info;
+      }
       
       $current_timestamp = \Drupal::time()->getRequestTime();
       $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
       $created_at = $this->getNodeFieldValue($entity, 'created');
+      $isDocSocial = false;
       //Si le document date d'il y a + de 2ans      OU document social   OU  Lié à un terme social
-      if (($created_at <= $two_years_ago_timestamp) || $isDocSocial || $isLinkedWithTermSocial || $isLinkedWithTermSocialByTags) {
+      if (($created_at <= $two_years_ago_timestamp) || $isLinkedWithTermSocial || $isLinkedWithTermSocialByTags) {
         $doc_info = [
           '#theme' => 'phenix_custom_bloc_search',
           '#cache' => ['max-age' => 0],
@@ -1053,11 +1088,31 @@ public function customResultSearchDoc (&$var) {
         return $doc_info;
       }
 
+      $linked_term = $entity->get('field_tag')->getValue();
+      if ($linked_term) {
+        $linked_term = array_column($linked_term, 'target_id');
+        $curr_term = Term::loadmultiple($linked_term);
+        $allnames = '';
+        if(count($curr_term) > 1) {
+          foreach($curr_term as $key => $value_term) {
+            // dump($this->getNodeFieldValue($value_term, 'name'));
+            $allnames .= $this->getNodeFieldValue($value_term, 'name') . ', ';
+          }
+          $allnames = rtrim($allnames, ', ');
+        }else {
+          $allnames = (reset($curr_term))->get('name')->getValue()[0]['value'];
+        }
+        
+        
+      }
       $type_doc = $entity->get('field_type_de_document')->getValue()[0]['value'];
       $libelle = $this->getTypeDocumentWithAutre($entity);
       $allowToEdit = $this->checkIfUserCanEditDoc ();
+
+
       
       if ($libelle) {
+        $libelle = $libelle == 'Autre' ? false : $libelle;
         $doc_info = [
           '#theme' => 'phenix_custom_bloc_search',
           '#cache' => ['max-age' => 0],
@@ -1069,7 +1124,8 @@ public function customResultSearchDoc (&$var) {
             'published_on' => $convertedDate,
             'media_id' => $entity->id(),
             'can_edit_doc' => $allowToEdit,
-            'has_result' => true
+            'has_result' => true, 
+            'linked_term_name' => $allnames
             ]
         ];
         $var['output'] = $doc_info;
