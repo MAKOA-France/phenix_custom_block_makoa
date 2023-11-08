@@ -73,7 +73,7 @@
         jQuery('.page-recherche .views-element-container table > tbody > tr').has('p.row-to-hide').hide();
         
         //Page ajout document 
-        if (jQuery('.field--name-field-tag').length) {
+        if (jQuery('.field--name-field-tag').length &&  jQuery('.field--name-field-tag').attr('data-default-value')) {
 
             let allDefaultValue = jQuery('.field--name-field-tag').attr('data-default-value').split(',');
             allDefaultValue.forEach(function (el, index) {
