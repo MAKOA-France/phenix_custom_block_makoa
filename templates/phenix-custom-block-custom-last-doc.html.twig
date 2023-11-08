@@ -1,12 +1,6 @@
 {# '#theme' => 'phenix_custom_block_custom_last_doc' est dans le fichier .module #}
 <div class="medium-12">
   
-    {% if content.accroche  %}
-      {{ content.accroche | raw}}
-    {% endif %}
-    {% if content.contenu  %}
-      {{ content.contenu | raw}}
-    {% endif %}
       {% if not content.is_page_last_doc  %}
         <div class="last-doc-title">
           
@@ -15,6 +9,14 @@
       {% else %}  
           <h2 class="main-title-last-doc">{{ content.first_title }}</h2>
       {% endif %}
+
+    {% if content.accroche  %}
+      {{ content.accroche | raw}}
+    {% endif %}
+    {% if content.contenu  %}
+      {{ content.contenu | raw}}
+    {% endif %}
+
       <a href="/media/{{ content.first_element_id }}/download" class="custom-icon-first-element">
     <div class="first-element-doc">
         <img src="/files/assets/{{ content.file_type }}">
