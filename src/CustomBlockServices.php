@@ -762,6 +762,7 @@ public function getFileTypeExtension ($file_type) {
       $img = 'pdf-2.png';
       break;
     case 'application/rtf':
+    case 'application/zip':
       $img = 'Icon metro-file-zip.png';
       break;
   }
