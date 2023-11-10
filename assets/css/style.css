@@ -995,6 +995,10 @@ ul.chosen-results li {
     text-align: left;
 }
 
+#taxonomy .taxonomy-term-preview {
+    display: none;
+}
+
 
 .section-taxonomy .field--name-field-document article .js-media-library-item-preview > div {
     margin-left: -7px;
