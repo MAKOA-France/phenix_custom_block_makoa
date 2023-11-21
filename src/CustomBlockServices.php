@@ -83,7 +83,7 @@ class CustomBlockServices {
         WHERE
             (civicrm_group_civicrm_group_contact.group_type LIKE '%3%')
             AND (civicrm_group_civicrm_group_contact.is_active = '1')
-            -- AND civicrm_contact.id = $cid
+            AND civicrm_contact.id = $cid
         GROUP BY
             civicrm_group_civicrm_group_contact_id,
             civicrm_group_civicrm_group_contact_title,
