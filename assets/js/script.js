@@ -40,7 +40,20 @@
         }
     })
     $(document).ready(function() {
-
+        let elem = $('.page-social-rh-formations p a:contains("S\'inscrire")');
+        elem.css({
+            'margin-top': '10px',
+            'padding': '15px 42px',
+            'background-color': '#3e7269',
+            'color': 'white',
+            'width': 'fit-content',
+            'border-radius': '15px 0 15px',
+            'text-transform': 'uppercase',
+            'font-size': '0.8em',
+            'font-weight': '600',
+            'margin-left': '46%'
+        });
+        
 
 
         let illustrationImgMyAccount = jQuery('.section-user .user-form').attr('data-img-illustration')

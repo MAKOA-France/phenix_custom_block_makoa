@@ -12,6 +12,8 @@ use Drupal\taxonomy\Entity\Term;
 use Drupal\file\Entity\File;
 use Drupal\Component\Utility\Unicode;
 
+use Drupal\Core\Routing\TrustedRedirectResponse;
+
 /**
  * Class PubliciteService
  * @package Drupal\phenix_custom_block\Services
@@ -775,9 +777,18 @@ public function getFileTypeExtension ($file_type) {
  */
 public function customizeDetailPageGroupIfUserDoesntBelongToGroup (&$var) {
 
-  if (!$this->checkIfUserIsMembreOfCurrentGroup()) {
-    unset($var['page']['content']['b_zf_content']);
+  // Get the current user.
+  $current_user = \Drupal::currentUser();
+
+  // Get the user roles.
+  $user_roles = $current_user->getRoles();
+  if ((!in_array('administrator', $user_roles) && !in_array('super_utilisateur', $user_roles) && !in_array('permanent', $user_roles)) && (!$this->checkIfUserIsMembreOfCurrentGroup())) {
+    $response = new TrustedRedirectResponse('/');
+    $response->send();
   }
+  // if (!$this->checkIfUserIsMembreOfCurrentGroup()) {  //Si l'user n'est pas membre du groupe on redirige veres la page d'accueil
+  //   unset($var['page']['content']['b_zf_content']);
+  // }
 }
 
 public function checkIfUserIsMembreOfCurrentGroup() {
