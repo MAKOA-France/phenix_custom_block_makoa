@@ -40,6 +40,11 @@
         }
     })
     $(document).ready(function() {
+
+        $('tr:has(td span.tohide)').remove();
+        if (!jQuery('.page-recherche table tbody tr').length) {
+            $('nav.pager').hide();
+        }
         let elem = $('.page-social-rh-formations p a:contains("S\'inscrire")');
         elem.css({
             'margin-top': '10px',
