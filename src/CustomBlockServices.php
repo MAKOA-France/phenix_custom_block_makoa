@@ -1409,6 +1409,18 @@ public function customResultSearchTerm(&$var){
   $value = $field->getValue($row);
   $view = $var['view'];
   $entity = $var['row']->_entity;
+
+    //raha toa ka document dia filtrena par, document manana menu
+  //raha tsy manan menu izy de soit cachena soit unsetena
+
+  $isTheTermHasLinkedMenu = \Drupal::database()->query("select link__uri from menu_link_content_data where link__uri like '%internal:/taxonomy/term/5561%'")->fetch();
+  // $query = \Drupal::database()->query("select REVERSE(SUBSTRING_INDEX(REVERSE(link__uri), '/', 1)) AS term_id from menu_link_content_data where link__uri like '%/taxonomy/term/%';")->fetchAll();
+    // dump($value, $row->_entity->get('mid'));
+    if (!$isTheTermHasLinkedMenu) {
+      unset($var['row']);
+      unset($var['view']);
+      $var['output'] =  ['#markup' => '<span class="tohide"></span>'];
+    }
   
   if ($field->field == 'body') {
     $var['output'] = '';
