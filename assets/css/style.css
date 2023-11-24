@@ -147,7 +147,17 @@ tr:has(td > p.row-to-hide) {
 /************/
 
 /**** Page formation ***/
-
+.page-social-rh-formations table tbody tr {
+    border-radius: 20px;
+}
+.page-social-rh-formations table tbody > tr td:nth-child(2) {
+    border-bottom-right-radius: 20px;
+    border-top-right-radius: 20px;
+}
+.page-social-rh-formations table tbody tr td:nth-child(1) {
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
 .page-social-rh-formations .img-html-bloc {
     width: 50%;
     margin: 0;
