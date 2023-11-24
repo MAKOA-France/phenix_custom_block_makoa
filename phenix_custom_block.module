@@ -916,6 +916,9 @@ use Drupal\Component\Utility\Html;
 function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
   
+  if ($form['#form_id'] == 'civicrm_participant_edit_form') {
+
+  }
   if ($form['#form_id'] == 'taxonomy_overview_terms') {
     // Set the number of terms to display per page.
     $items_per_page = 10; // Adjust as needed.
@@ -1377,6 +1380,8 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
   $cid = $custom_service->getContactIdByEmail($email);
   
   
+
+  //TODO  select * from menu_link_content_data where description like '%kkk%';
   //Search API recherche de document, recherche de termes, recherche de contenu aussi
   if ($view->storage->get('id') == 'rechercher' && $view->current_display == 'page_1') {
     $index = \Drupal::entityTypeManager()->getStorage('search_api_index')->load('contenu');
@@ -1395,8 +1400,17 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
     if (in_array('adherent', $user_roles)) {
       $blackListGroupId = $custom_service-> getAllGroupIdWhereUserDoesntBelongAndGroupIsAfficherSurExtranet ($cid, $groupContacts);
       $query->addCondition('field_groupes',  $blackListGroupId,"NOT IN");
-      //$fields = $index->getFields();
+      $fields = $index->getFields();
     }
+    $whitelist = getTermWhoDontHaveLinkMenu();//unused pour le moment
+
+
+
+    // Create a condition with OR conjunction.
+    // $query->addCondition('tid',  $whitelist, "IN");
+
+// Ajouter le groupe OR à la requête principale.
+// $query->conditionGroup('AND')->addGroup($or_group);
   }
 
   if ($view->storage->get('id') == 'civievents_base_sur_le_contact_' && $view->current_display == 'block_7') {//VUE REUNION
@@ -1420,6 +1434,19 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
     }
     }
 
+    
+    use Drupal\Core\Database\Connection;
+    use Drupal\Core\Database\Database;
+
+    function getTermWhoDontHaveLinkMenu () {
+      $white_list_term_id = [];
+      $query = \Drupal::database()->query("select REVERSE(SUBSTRING_INDEX(REVERSE(link__uri), '/', 1)) AS term_id from menu_link_content_data where link__uri like '%/taxonomy/term/%';")->fetchAll();
+      if ($query) {
+        $white_list_term_id = array_column($query, 'term_id');
+        return $white_list_term_id;
+      }
+      return $white_list_term_id;
+    }
 
 
 
