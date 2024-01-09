@@ -146,6 +146,388 @@ tr:has(td > p.row-to-hide) {
 
 /************/
 
+#progressbar {
+    margin-bottom: 30px;
+    overflow: hidden;
+    counter-reset: step;
+  }
+  
+  #progressbar li {
+    
+    cursor: pointer;
+    list-style-type: none;
+    color: #679b9b;
+    text-transform: uppercase;
+    font-size: 9px;
+    width: 10.33%;
+    float: left;
+    text-align: center;
+    position: relative;
+  }
+  
+  #progressbar li:before {
+    content: counter(step);
+    counter-increment: step;
+    width: 25px;
+    line-height: 20px;
+    display: block;
+    font-weight: bold;
+    height: 21px;
+    font-size: 17px;
+    color: #fff;
+    background: #679b9b;
+    border-radius: 3px;
+    margin: 0 auto 5px auto;
+  }
+  
+  #progressbar li:after {
+    content: "";
+    width: 100%;
+    height: 2px;
+    background: #679b9b;
+    position: absolute;
+    left: -50%;
+    top: 9px;
+    z-index: -1;
+  }
+  
+  #progressbar li:first-child:after {
+    content: none;
+  }
+  
+  #progressbar li.active {
+    color: #ffc22c;
+  }
+
+  .active .progress-bar-link {
+    color: #ffc22c;
+  }
+  .progress-bar-link {
+    color: #679b9b;
+  }
+  
+  #progressbar li.active:before,
+  #progressbar li.active:after {
+    background: #ffc22c;
+    color: white;
+  }
+  
+
+  /* bouton action   */
+[class*="page-civicrm-doonee-eco"] .dropdown-toggle.ng-binding, [class*="page-civicrm-donnee-eoc"] .dropdown-toggle.ng-binding {
+    height: fit-content;
+    border-radius: 15px 0 !important;
+    font-weight: 500 !important;
+    margin: 1rem 0rem 1rem 0 !important;
+}
+
+.page-civicrm page-civicrm-donnees-economique-entreprise-abattages .crm-hover-button.crm-clear-link {
+  display: none;
+}
+.page-civicrm page-civicrm-donnees-economique-entreprise-abattages .btn-xs.af-repeat-remove-btn.ng-scope {
+  left: 103%;
+  top: 37% !important;
+}
+/*Cotisation formulaire*/
+[class*="page-civicrm-bulletin-de-cotisation"] [ng-repeat="item in getItems()"] {
+  width: 20%;
+  padding-right: 8px;
+  display: inline-flex;
+}
+
+[class*="page-civicrm-bulletin-de-cotisation"] [af-join="Address"] {
+  padding-bottom: 25px;
+}
+[class*="page-civicrm-bulletin-de-cotisation"] .af-repeat-add-btn,[class*="page-civicrm-bulletin-de-cotisation"] .af-repeat-copy-btn {
+  margin-top: 22px !important;
+  color: white !important;
+  background-color: #70716b;
+  border-color: #70716b !important;
+  height: fit-content;
+  color: #f7f5f3 !important;
+  border-radius: 15px 0 !important;
+  font-weight: 500 !important;
+  margin: 1rem 0rem 1rem 0 !important;
+}
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire .ng-isolate-scope [ng-repeat="item in getItems()"] {
+  display: inline-flex;
+  padding-right: 54px;
+}
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire [name="agrsan_type"] {
+}
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire .select2-container.form-control.ng-pristine {
+  width: 194px;
+}
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire .crm-af-field.ng-scope  {
+  /* width: 20%; */
+}
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire .af-container.af-layout-cols .ng-isolate-scope {
+  padding-bottom : 0;
+}
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire .af-repeat-copy-btn.ng-binding.ng-scope {
+  margin: 0.5rem 0rem 1rem 0 !important;
+}
+
+[class*="page-civicrm-bulletin-de-cotisation"] [af-join="Address"] [ng-repeat="item in getItems()"] {
+  width: 32%;
+  display: contents;
+}
+
+[af-join="Address"] .ng-scope.ng-isolate-scope {
+  display: inline-flex;
+}
+/* tous les boutons actions envoyer   */
+[class*="page-civicrm-donnees-economique-entreprise"] .af-button.btn-primary, [class*="page-civicrm-bulletin-de-cotisation"] .af-button.btn-primary, [class*="page-civicrm-donnee-eoc"] .af-button.btn-primary {
+  height: fit-content;
+  padding: 12px 30px !important;
+  background-color: #140d3d !important;
+  color: #f7f5f3 !important;
+  border-radius: 20px 0 !important;
+  font-weight: 500 !important;
+  margin: 1rem 0rem 1rem 0 !important;
+}
+.page-civicrm-donnees-economique-entreprise-info  .ng-isolate-scope.ng-valid-email {
+  display: inline-flex;
+} 
+.page-civicrm-donnees-economique-entreprise-info .ng-pristine.ng-isolate-scope.ng-valid-email fieldset {
+  width : 45%;
+}
+.page-civicrm-donnees-economique-entreprise-info .ng-pristine.ng-isolate-scope.ng-valid-email .btn-primary {
+  height: fit-content;
+}
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire form {
+  padding: 22px !important;
+}
+
+.page-civicrm page-civicrm-donnees-economique-entreprise-abattages .af-container.af-layout-inline .ng-isolate-scope {
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire .af-container.af-layout-cols .ng-scope {
+  margin-bottom: 0px !important;
+}
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire .af-repeat-copy-btn {
+  margin-top: 36px !important;
+}
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire .af-repeat-remove-btn {
+  padding-top: 31px !important;
+  padding-right: 26px !important;
+}
+.page-civicrm-donnees-economique-entreprise-info .select2-container.form-control.ng-pristine.ng-untouched {
+  width: auto !important;
+}
+.page-civicrm-donnees-economique-entreprise-info fieldset.af-container {
+  padding: 22px !important;
+}
+.page-civicrm-donnees-economique-entreprise-info h1{
+  padding: 22px !important;
+}
+
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire .btn-sm.af-repeat-add-btn, .page-civicrm-donnees-economique-entreprise-agrement-sanitaire .btn-sm.af-repeat-copy-btn.ng-binding {
+  margin-bottom: 22px !important;
+  color: white !important;
+  background-color: #70716b;
+  border-color: #70716b !important;
+}
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire button.btn.btn-sm.af-repeat-copy-btn.ng-binding.ng-scope {
+  margin-top: 30px !important;
+  border-radius: 15px 0 !important;
+}
+
+.progress-bar-link {
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.page-civicrm-bulletin-de-cotisation [af-join="Phone"] .af-repeat-add-btn.ng-binding, .page-civicrm-bulletin-de-cotisation [af-join="Phone"] .af-repeat-copy-btn{
+  margin-top: 73px !important;
+}
+.page-civicrm-bulletin-de-cotisation .af-container.af-layout-inline[af-title="Adresses"] {
+  padding-top: 36px;
+}
+.page-civicrm-bulletin-de-cotisation .af-container.af-layout-cols[af-title="Agréments sanitaires"] {
+  padding-top: 36px;
+  
+  padding-bottom: 44px;
+} 
+#crm-communications-preferences-groups > legend {
+  background-color: white;
+  padding: 2px 1px 2px 1px;
+}
+.page-civicrm-bulletin-de-cotisation .crm-checkbox-list.ng-scope {
+  box-shadow: 0 0 10px;
+} 
+.page-civicrm-bulletin-de-cotisation [name="RegionOP.regionDLR"] {
+  display: inline-block !important;
+}
+[class*="page-civicrm-donnees-economique-entreprise"] .messages.status.no-popup.error, 
+[class*="page-civicrm-donnees-economique-entreprise"] .messages.status.no-popup.alert,
+
+.page-civicrm-buttetin-cotisation-contact-entreprise  .messages.status.no-popup.error, 
+.page-civicrm-buttetin-cotisation-contact-entreprise  .messages.status.no-popup.alert
+{
+  display: none;
+}
+
+.page-civicrm-gdpr .conteneur-custom-group {
+  display: inline-table;
+  width: 14%;
+}
+
+.page-civicrm-gdpr .crm-container .crm-section .content {
+  margin-left: 0;
+}
+span.group-description {
+  margin-left: 0;
+  margin-right: 0;
+}
+.page-civicrm-gdpr .turn-right {
+  text-align: right;
+  font-weight: bold;
+}
+.page-civicrm-gdpr .crm-section.form-item .label {
+  text-align: left;
+}
+.page-civicrm-gdpr .crm-form-submit {
+  width: 9%;
+  height: 39px;
+  border-radius: 15px 0 !important;
+  font-weight: 500 !important;
+  margin: 1rem 0rem 1rem 0 !important;
+  background-color: #140d3d !important;
+}
+.page-civicrm-gdpr .crm-section .label {
+  background-color: unset;
+}
+.page-civicrm-gdpr .messages.status.no-popup.error {
+  display: none;
+}
+.page-civicrm-gdpr #crm-communications-preferences-groups {
+  background-color: #fffff8;
+  padding-top: 0;
+  padding-left: 15px;
+  box-shadow: 4px 5px 11px 0px;
+  border-radius: 8px 8px 8px 8px;
+}
+.content.group-channel-div label {
+  font-size: 13px;
+}
+.page-civicrm-gdpr .crm-profile-name-event_registration .crm-section .label {
+  width: 100%;
+}
+.page-civicrm-gdpr .crm-profile-name-event_registration .crm-section {
+  margin-right: 15px !important;
+  width: 100%;
+}
+.page-civicrm-gdpr .crm-section.editrow_job_title-section {
+  padding-left: 15px;
+}
+.page-civicrm-gdpr  .crm-profile-name-event_registration {
+  display: inline-flex;
+}
+.page-civicrm-gdpr  .crm-profile-name-event_registration .crm-select2.crm-form-select {
+  width: -webkit-fill-available;
+}
+.page-civicrm-gdpr  .group-description {
+  color: #140d3d !important;
+  font-weight: 600 !important;
+  font-size: 16px;
+  font-family: "new-order", sans-serif !important;
+  padding: 15px 0 0 !important;
+  text-align: left !important;
+}
+
+#bootstrap-theme .btn:hover, #bootstrap-theme .btn:focus, #bootstrap-theme .btn.focus {
+  color: #999;
+  text-decoration: none;
+}
+.page-civicrm-donnees-economique-entreprise-info #organization-name-0 {
+  pointer-events: none;
+  background-color: #f2f2f2;
+  color: #999 !important;
+}
+[name="activites.activites_details"] .crm-af-field.ng-scope , [name="produits.produits_details"] .crm-af-field.ng-scope, [name="circuits.circuits_details"] .crm-af-field.ng-scope  {
+  box-shadow: 0 0 10px;
+}
+.page-civicrm page-civicrm-donnees-economique-entreprise-abattages [af-join="Custom_prod_approv_abattage"] {
+  display: inline-block !important;
+}
+
+[class*="page-civicrm-donnees-economique"] .af-repeat-add-btn, [class*="page-civicrm-donnees-economique"] .af-repeat-copy-btn {
+  border-radius: 15px 0 !important;
+}
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire .btn-sm.af-repeat-add-btn,
+.page-civicrm-donnees-economique-entreprise-info .btn-sm.af-repeat-add-btn, .page-civicrm-donnees-economique-entreprise-info .btn-sm.af-repeat-copy-btn.ng-binding {
+  margin-top: 22px !important;
+  color: white !important;
+  background-color: #70716b;
+  border-color: #70716b !important;
+  height: fit-content;
+  color: #f7f5f3 !important;
+  border-radius: 15px 0 !important;
+  font-weight: 500 !important;
+  margin: 1rem 0rem 1rem 0 !important;
+}
+[class*="page-civicrm-donnees-economique"]  .messages.status.no-popup.error, [class*="page-civicrm-doonee-economiqu"]  .messages.status.no-popup.error, 
+[class*="page-civicrm-doonee-economiqu"] .messages.status.no-popup.alert, 
+[class*="page-civicrm-bulletin-de-cotisation"] .messages.status.no-popup.alert,[class*="page-civicrm-bulletin-de-cotisation"] .messages.status.no-popup.error
+{
+  display: none;
+}
+[class*="page-civicrm-donnees-economique"] .af-button.btn-warning{
+    border-radius: 20px 0 !important;
+    padding: 12px 30px !important;
+    background-color: #140d3d !important;
+    border-color: #140d3d !important;
+    color: #f7f5f3 !important;
+}
+
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire .af-button.btn-info{
+    border-radius: 20px 0 !important;
+    padding: 12px 30px !important;
+    background-color: #140d3d !important;
+    border-color: #140d3d !important;
+    color: #f7f5f3 !important;
+}
+.c-col-md-4 {
+    width: 30%;
+    display: inline-block;
+}
+
+.c-fieldset {
+    padding-left: 22px;
+}
+
+[class*="page-civicrm-donnees-economique"]  .btn-sm.af-repeat-add-btn, [class*="page-civicrm-donnees-economique"]  .btn-sm.af-repeat-copy-btn.ng-binding {
+      color: white !important;
+  background-color: #70716b;
+  border-color: #70716b !important;
+} 
+
+[class*="page-civicrm-donnees-economique"]  .ng-binding.ng-scope.ng-isolate-scope {
+    display: none !important;
+}
+
+.page-civicrm-donnees-economique-entreprise-formulaire-certification .af-repeat-remove-btn {
+  padding-top: 36px !important;
+}
+.page-civicrm-donnees-economique-entreprise-formulaire-certification .af-container.af-layout-inline.ng-scope {
+  padding-top: 0 !important;
+}
+.page-civicrm-donnees-economique-entreprise-formulaire-certification .crm-hover-button.crm-clear-link {
+  display: none;
+}
+.page-civicrm-donnees-economique-entreprise-formulaire-certification .af-container .af-container.af-layout-inline {
+  padding-top: 35px;
+}
+.page-civicrm-donnees-economique-entreprise-formulaire-certification [af-join="Custom_certifications_mgd"].ng-isolate-scope > [af-repeat-item="item"].ng-scope {
+width: 40%;
+} 
+.page-civicrm-donnees-economique-entreprise-info .af-button.btn.btn-primary {
+  margin: 0px 0px 22px 22px !important;
+}
+
 /**** Page formation ***/
 .page-social-rh-formations table tbody tr {
     border-radius: 20px;
