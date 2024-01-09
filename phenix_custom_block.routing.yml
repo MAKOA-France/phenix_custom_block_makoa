@@ -16,3 +16,67 @@ phenix_custom_block.account_form:
     _title: 'Ajout image d illustration '
   requirements:
     _permission: 'access content'
+
+
+phenix_custom_block.form_donnee_econ_info_entreprise:
+  path: '/formulaire/donnees-economique-entreprise/info'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::infoEntreprise'
+    _title: 'Lien de retour'
+  requirements:
+    _access: 'TRUE'
+
+phenix_custom_block.form_donnee_econ.donnee_generale.activity:
+  path: '/formulaire/donnees-economique-entreprise/donnee-generale-activity'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::donneeGeneraleActivity'
+    _title: 'creation activité donnée generale'
+  requirements:
+    _access: 'TRUE'
+phenix_custom_block.form_donnee_econ.certification.activity:
+  path: '/activity/donnees-economique-entreprise/detail-activity-certification'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::certificationActivity'
+    _title: 'creation activité certification'
+  requirements:
+    _access: 'TRUE'
+
+phenix_custom_block.form_donnee_econ.achat_viande.activity:
+  path: '/formulaire/donnees-economique-entreprise/achat-viande-activity'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::achatViandeActivity'
+    _title: 'creation activité donnée generale'
+  requirements:
+    _access: 'TRUE'
+
+phenix_custom_block.form_donnee_econ.transformation-decoupe.activity:
+  path: '/activity/donnees-economique-entreprise/transformation-decoupe'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::transformationDecoupeActivity'
+    _title: 'creation activité transformation et decoupe'
+  requirements:
+    _access: 'TRUE'
+
+phenix_custom_block.form_donnee_econ.produit-commercialises.activity:
+  path: '/formulaire/donnees-economique-entreprise/produit-commercialises'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::produitCommercialisesActivity'
+    _title: 'creation activité produits commercialisés'
+  requirements:
+    _access: 'TRUE'
+
+phenix_custom_block.form_donnee_econ.agrement-sanitaire.activity:
+  path: '/formulaire/donnees-economique-entreprise/agrement-sanitaire'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::agrementSanitaire'
+    _title: 'creation activité agréments sanitaire'
+  requirements:
+    _access: 'TRUE'
+
+phenix_custom_block.form_donnee_econ.store_in_session_cid:
+  path: '/session/store/cid'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::storeCIDinSession'
+    _title: 'stocker le cid dans la session'
+  requirements:
+    _access: 'TRUE'
