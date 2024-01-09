@@ -1088,7 +1088,10 @@ public function customResultSearchDoc (&$var) {
       $created_at = $this->getNodeFieldValue($entity, 'created');
       $isDocSocial = false;
       //Si le document date d'il y a + de 2ans      OU document social   OU  Lié à un terme social
-      if (($created_at <= $two_years_ago_timestamp) || $isLinkedWithTermSocial || $isLinkedWithTermSocialByTags) {
+      //cette condition if est  dejà remplacé par le hook phenix_custom_block_views_pre_render pour ne pas afficher les doc qui date de plus de 2 ans
+    /*   if (($created_at <= $two_years_ago_timestamp) || $isLinkedWithTermSocial || $isLinkedWithTermSocialByTags) {
+        
+        $var['view']->args['blacklist_field'] = 27405;
         $doc_info = [
           '#theme' => 'phenix_custom_bloc_search',
           '#cache' => ['max-age' => 0],
@@ -1098,7 +1101,7 @@ public function customResultSearchDoc (&$var) {
           ];
           $var['output'] = ['#markup' => '<p class="row-to-hide"></p>'];
         return $doc_info;
-      }
+      } */
 
       $linked_term = $entity->get('field_tag')->getValue();
       if ($linked_term) {
@@ -1165,6 +1168,27 @@ public function customResultSearchDoc (&$var) {
       $var['output'] = $video_info;
     }
     // return $var;
+  }
+}
+
+/**
+ * 
+ */
+public function checkIfMediaShouldNotBeDisplayed ($entity, $view, $key) {
+  $current_timestamp = \Drupal::time()->getRequestTime();
+  $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
+  $created_at = $this->getNodeFieldValue($entity, 'created');
+  $isDocSocial = false;
+   ///CHeck si le document est lié avec une rubrique social VIA PARAGRAPHES
+   $isLinkedWithTermSocial = $this->checkIfDocumentIsLinkedWithTermSocial($entity->id());
+      
+   ///CHeck si le document est lié avec une rubrique social VIA DOCUMENT TAGS
+   $isLinkedWithTermSocialByTags = $this->checkIfDocumentIsLinkedWithTermSocialByTag($entity->id());
+
+  //Si le document date d'il y a + de 2ans      OU document social   OU  Lié à un terme social
+  if (($created_at <= $two_years_ago_timestamp) /* || $isLinkedWithTermSocial || $isLinkedWithTermSocialByTags */) {
+    // dump($key, $element);
+    unset($view->result[$key]);
   }
 }
 
@@ -1416,11 +1440,11 @@ public function customResultSearchTerm(&$var){
   $isTheTermHasLinkedMenu = \Drupal::database()->query("select link__uri from menu_link_content_data where link__uri like '%internal:/taxonomy/term/5561%'")->fetch();
   // $query = \Drupal::database()->query("select REVERSE(SUBSTRING_INDEX(REVERSE(link__uri), '/', 1)) AS term_id from menu_link_content_data where link__uri like '%/taxonomy/term/%';")->fetchAll();
     // dump($value, $row->_entity->get('mid'));
-    if (!$isTheTermHasLinkedMenu) {
-      unset($var['row']);
-      unset($var['view']);
-      $var['output'] =  ['#markup' => '<span class="tohide"></span>'];
-    }
+    // if (!$isTheTermHasLinkedMenu) {
+    //   unset($var['row']);
+    //   unset($var['view']);
+    //   $var['output'] =  ['#markup' => '<span class="tohide"></span>'];
+    // }
   
   if ($field->field == 'body') {
     $var['output'] = '';
@@ -1696,6 +1720,15 @@ public function getFiliereLabels ($media) {
   return $filiere_label;
 }
 
+public function isActive($string) {
+  $class = '';
+  $current_path = \Drupal::service('path.current')->getPath();
+  if (strpos($current_path, $string) !== false) {
+    $class = 'active';
+  }
+  return $class; 
+}
+
 public function notAdherentOrSocial  () {
    // Get the current user object.
    $current_user = \Drupal::currentUser();
@@ -1708,6 +1741,151 @@ public function notAdherentOrSocial  () {
    }
    return $notAdherentOrSocial;
 }
+
+  public function getPreviousOnlyYear() {
+    $today = date('Y-m-d'); // Get the current date (e.g., 2023-12-11)
+    return date('Y-01-01', strtotime('-1 year', strtotime($today)));
+  }
+
+  public function allTypeCommercialViande() {
+    $all_types = \Civi\Api4\OptionValue::get(FALSE)
+      ->addSelect('value')
+      ->addWhere('option_group_id', '=', 162)
+      ->execute()->getIterator();
+      
+      $all_types = iterator_to_array($all_types);
+      $all_types = array_column($all_types, 'value');
+      return $all_types;
+  }
+
+  public function allTypeCertification () {
+    $all_types = \Civi\Api4\OptionValue::get(FALSE)
+    ->addSelect('value')
+    ->addWhere('option_group_id', '=', 101)
+    ->execute()->getIterator();
+      
+    $all_types = iterator_to_array($all_types);
+    $all_types = array_column($all_types, 'value');
+    return $all_types;
+  }
+
+  public function allTypeViande () {
+    $all_types = \Civi\Api4\OptionValue::get(FALSE)
+    ->addSelect('value')
+    ->addWhere('option_group_id', '=', 159)
+    ->execute()->getIterator();
+      
+    $all_types = iterator_to_array($all_types);
+    $all_types = array_column($all_types, 'value');
+    return $all_types;
+  }
+
+  public function allTypeAgrementSanitaire () {
+    $all_types = \Civi\Api4\OptionValue::get(FALSE)
+    ->addSelect('value')
+    ->addWhere('option_group_id', '=', 158)
+    ->execute()->getIterator();
+      
+    $all_types = iterator_to_array($all_types);
+    $all_types = array_column($all_types, 'value');
+    return $all_types;
+  }
+
+  public function allValueCertificationInPreviousYearByContact ($cid) {
+    //todo previous year
+    $custom_service = \Drupal::service('phenix_custom_block.view_services');
+    $get_all_values = \Civi\Api4\Contact::get(FALSE)
+      ->addSelect('custom_certifications_mgd.cert_certif')
+      ->addJoin('Custom_certifications_mgd AS custom_certifications_mgd', 'LEFT')
+      ->addWhere('id', '=', $cid)
+      ->addWhere('custom_certifications_mgd.cert_annee', '=', $this->getPreviousOnlyYear())
+      ->execute();
+    $get_all_values = $get_all_values->getIterator();
+    $get_all_values = iterator_to_array($get_all_values);
+    
+    $get_all_values = array_column($get_all_values, 'custom_certifications_mgd.cert_certif');
+    return $get_all_values;
+  }
+
+  public function getContactNameById ($cid) {
+    return \Civi\Api4\Contact::get(FALSE)
+    ->addSelect('display_name')
+    ->addWhere('id', '=', $cid)
+    ->execute()->first()['display_name'];
+  }
+
+  public function allValueDecoupeInPreviousYearByContact ($cid) {
+    //todo previous year
+    $custom_service = \Drupal::service('phenix_custom_block.view_services');
+    $get_all_values = \Civi\Api4\Contact::get(FALSE)
+      ->addSelect('custom_prod_decoupe.decoupe_type_viandes')
+      ->addJoin('Custom_prod_decoupe AS custom_prod_decoupe', 'LEFT')
+      ->addWhere('id', '=', $cid)
+      ->addWhere('custom_prod_decoupe.decoupe_annee', '=', $this->getPreviousOnlyYear())
+      ->execute();
+    $get_all_values = $get_all_values->getIterator();
+    $get_all_values = iterator_to_array($get_all_values);
+    
+    $get_all_values = array_column($get_all_values, 'custom_prod_decoupe.decoupe_type_viandes');
+    return $get_all_values;
+  }
+
+  public function allValueProduitCommercialiseInPreviousYearByContact ($cid) {
+    //todo previous year
+    $get_all_values = \Civi\Api4\Contact::get(FALSE)
+      ->addSelect( 'custom_commercialisation.com_type_produit_commercial')
+      ->addJoin('Custom_commercialisation AS custom_commercialisation', 'LEFT')
+      ->addWhere('id', '=', $cid)
+      ->addWhere('custom_commercialisation.com_annee', '=', $this->getPreviousOnlyYear())
+      ->execute();
+    $get_all_values = $get_all_values->getIterator();
+    $get_all_values = iterator_to_array($get_all_values);
+    
+    $get_all_values = array_column($get_all_values, 'custom_commercialisation.com_type_produit_commercial');
+    return $get_all_values;
+  }
+
+  public function allValueAchatInPreviousYearByContact ($cid) {
+    //todo previous year
+    $custom_service = \Drupal::service('phenix_custom_block.view_services');
+    $get_all_values = \Civi\Api4\Contact::get(FALSE)
+    ->addSelect('custom_prod_approv_achat.achat_type_viandes')
+    ->addJoin('Custom_prod_approv_achat AS custom_prod_approv_achat', 'LEFT')
+    ->addWhere('contact_type', '=', 'Organization')
+    ->addWhere('id', '=', $cid)
+    ->addWhere('custom_prod_approv_achat.achat_annee', '=', $this->getPreviousOnlyYear())
+    ->execute()->getIterator();
+    $get_all_values = iterator_to_array($get_all_values);
+    $get_all_values = array_column($get_all_values, 'custom_prod_approv_achat.achat_type_viandes');
+    return $get_all_values;
+  }
+  public function allValueAbattageInPreviousYearByContact ($cid) {
+    //todo previous year
+    $custom_service = \Drupal::service('phenix_custom_block.view_services');
+    $prev_year = $this->getPreviousOnlyYear();
+    $get_all_values = \Civi\Api4\Contact::get(FALSE)
+    ->addSelect('custom_prod_approv_abattage.abattage_type_viandes')
+    ->addJoin('Custom_prod_approv_abattage AS custom_prod_approv_abattage', 'LEFT')
+    ->addWhere('id', '=', $cid)
+    ->addWhere('custom_prod_approv_abattage.abattage_annee', '=', $prev_year)
+    ->execute()->getIterator();
+    $get_all_values = iterator_to_array($get_all_values);
+    $get_all_values = array_column($get_all_values, 'custom_prod_approv_abattage.abattage_type_viandes');
+    return $get_all_values;
+  }
+  public function allValueAgrementSanitaireDefaultValue ($cid) {
+    //todo previous year
+    $custom_service = \Drupal::service('phenix_custom_block.view_services');
+    $prev_year = $this->getPreviousOnlyYear();
+    $get_all_values = \Civi\Api4\Contact::get(FALSE)
+      ->addSelect('custom_agrements_sanitaires.agrsan_type')
+      ->addJoin('Custom_agrements_sanitaires AS custom_agrements_sanitaires', 'LEFT')
+      ->addWhere('id', '=', $cid)
+      ->execute()->getIterator();
+    $get_all_values = iterator_to_array($get_all_values);
+    $get_all_values = array_column($get_all_values, 'custom_agrements_sanitaires.agrsan_type');
+    return $get_all_values;
+  }
 
 
 }
