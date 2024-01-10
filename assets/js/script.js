@@ -1,24 +1,210 @@
 (function($) {
     $(window).on('load', function () {
 
+        $('body').on('click', '.af-button.btn-warning',function() {
+            jQuery('li.active').next('li').find('a').click();
+        })
+
+        jQuery('body').on('click', '#progressbar li', function(event) {
+            let link = jQuery(this).attr('href-attribute');
+            location.href=link;
+            // var anchor = jQuery(this).find('a');
+        })
+
+       //Ajax permettant de stocker le cid dans la session
+       let hashFragment = window.location.hash;
+       let idValue = hashFragment.match(/(?:id|Organization1)=(\d+)/);
+       
+       $.ajax({
+            url: '/session/store/cid',
+            data: {contact_id: idValue},
+            success: (successResult, val, ee) => {
+               
+            
+            },
+            error: function(error) {
+                console.log(error, 'ERROR')
+            }
+        });
+
+        // jQuery('#progressbar li a').each(function(id, el) {
+        //     let href = jQuery(el).attr('href');
+        //     if(href.includes('Organization')) {
+        //         let modifiedUrl = href.replace(/(Organization1=)\d+/, '$1' + idValue);
+        //         jQuery(el).attr('href', modifiedUrl);
+        //     }
+
+        //     if (href.includes('id=')) {
+        //         let modifiedUrl = href.replace(/(id=)\d+/, '$1' + idValue);
+        //         jQuery(el).attr('href', modifiedUrl);   
+        //     }
+        // })
+
+
+        //Modification de l'affichage du rgpd (TODO Deplacer dans l'extension civi "ex: makoa_cultureviande")
+        //   jQuery('.group-description').each(function () {
+        //     // Créez un nouveau div ouvrant
+        //     var openingDiv = jQuery('<div class="conteneur-custom-group"></div>');
+        
+        //     // Récupérez l'élément .group-description actuel
+        //     var currentGroupDescription = jQuery(this);
+        
+        //     // Récupérez tous les éléments .crm-section suivants jusqu'au prochain .group-description
+        //     var followingSections = currentGroupDescription.nextUntil('.group-description', '.crm-section');
+        
+        //     // Ajoutez l'élément .group-description actuel et les éléments .crm-section suivants au div ouvrant
+        //     openingDiv.insertAfter(currentGroupDescription);
+        //     currentGroupDescription.add(followingSections).appendTo(openingDiv);
+        // });
+          
+        // Fonction pour vérifier la présence de l'élément
+ // Vérifie toutes les secondes (ajustez au besoin)
+
+        // Pour les search kit ça sert à intervenir aux requetes api4
+        CRM.$(document).on('ajaxSuccess', function(event, xhr, settings) {
+            if (settings.url && settings.url.indexOf('civicrm/ajax') !== -1) {
+                // Parse the response as JSON
+                var responseData = JSON.parse(xhr.responseText);
+                let url = window.location.href;
+               
+                if (responseData.inPlaceEdit && responseData.inPlaceEdit.values) {
+
+                    //Données générales
+                    if (url.includes('achat-viandes')) {
+                        let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                        $.ajax({
+                            url: '/formulaire/donnees-economique-entreprise/achat-viande-activity',
+                            data: {valeur: editedVal},
+                            success: (successResult, val, ee) => {
+                            
+                            
+                            },
+                            error: function(error) {
+                                console.log(error, 'ERROR')
+                            }
+                        });
+                    }
+                    if (url.includes('donnee-generale')) {
+                        let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                        $.ajax({
+                            url: '/formulaire/donnees-economique-entreprise/donnee-generale-activity',
+                            data: {valeur: editedVal},
+                            success: (successResult, val, ee) => {
+                                console.log('activity created', successResult)
+                            
+                            },
+                            error: function(error) {
+                                console.log(error, 'ERROR')
+                            }
+                        });
+                    }
+                    if (url.includes('detail-activity-certification')) {
+                        let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                   
+                        $.ajax({
+                            url: '/activity/donnees-economique-entreprise/detail-activity-certification',
+                            data: {valeur: editedVal},
+                            success: (successResult, val, ee) => {
+                              
+                            
+                            },
+                            error: function(error) {
+                                console.log(error, 'ERROR')
+                            }
+                        });
+                    }
+                    if (url.includes('entreprise-transformation-decoupe')) {
+                        let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                        $.ajax({
+                            url: '/activity/donnees-economique-entreprise/transformation-decoupe',
+                            data: {valeur: editedVal},
+                            success: (successResult, val, ee) => {
+                                
+                            },
+                            error: function(error) {
+                                console.log(error, 'ERROR')
+                            }
+                        });
+                    }
+                    if (url.includes('produit-commercialises')) {
+                        let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                        $.ajax({
+                            url: '/formulaire/donnees-economique-entreprise/produit-commercialises',
+                            data: {valeur: editedVal},
+                            success: (successResult, val, ee) => {
+                                console.log('activity produit commercialises created', successResult)
+                            
+                            },
+                            error: function(error) {
+                                console.log(error, 'ERROR')
+                            }
+                        });
+                    }
+                    if (url.includes('agrement-sanitaire')) {
+                        let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                        $.ajax({
+                            url: '/formulaire/donnees-economique-entreprise/agrement-sanitaire',
+                            data: {valeur: editedVal},
+                            success: (successResult, val, ee) => {
+                              
+                            
+                            },
+                            error: function(error) {
+                                console.log(error, 'ERROR')
+                            }
+                        });
+                    }
+                }
+            }
+        });
+        
+
+        //Info entreprise && Agrément sanitaire
+        $('body').on('click', '.af-button.btn-info', function(e) { 
+            e.preventDefault();
+            let userWhoFilledTheForm = jQuery('.person-who-filled').val()
+
+            if (window.location.href.includes('economique-entreprise-agrement-sanitaire')) {
+                
+                let userMail = jQuery('.person-who-filled-mail').val();
+                if (userMail) {//Form info entreprise
+                    let contactName = $('.form-control.ng-pristine.ng-untouched.ng-valid.ng-scope.ng-not-empty').val();
+                    let cid = window.location.href.split('#?id=')[1];
+
+                    $.ajax({
+                        url: '/formulaire/donnees-economique-entreprise/info',
+                        data: { usermail: userMail, cid: cid, Cname: userWhoFilledTheForm},
+                        success: (successResult, val, ee) => {
+                            
+                        
+                        },
+                        error: function(error) {
+                            console.log(error, 'ERROR')
+                        }
+                    });
+                }
+
+               
+            }
+            
+        });
+
          //Après ajout doc
          let messageAddDoc = jQuery('.page-admin-content-media .messages.messages--status').text().includes('Document');
          let messageAddDocCreate = jQuery('.page-admin-content-media .messages.messages--status').text().includes('a été créé');
- console.log('has m', messageAddDoc)
  
          if (messageAddDoc && messageAddDocCreate) {
              let previousUrl = $('.page-admin-content-media  [name="name"]').attr('data-session');
              let pre = jQuery('.page-admin-content-media .messages.messages--status').html();
              jQuery('.page-admin-content-media .messages.messages--status').html(pre + ' Pour revenir à la page précedente cliquez ici <a href="' + previousUrl + '" > Retour </a>');
  
-             console.log('zz m', pre)
          }
  
         //Menu lors du chargement de la page
         //TODO condition si C une page taxo : tip ajout attribut pour permettre d'identifier la page
         //TODO condition s'il y a du paramettre dans l'url (peut etre la condition du dessus suffira)
         let currentURL = window.location.pathname + window.location.search;
-        console.log($('.this-is-taxo-page .content-menu-burger').length, 'll',$('body').find('.content-menu-burger').length)
+        
         if ($('.page-taxonomys').length){
 
             if (jQuery('[href="' + currentURL + '"]').closest('ul').parent('li').hasClass('premier-niv')) {
@@ -33,7 +219,7 @@
             }
         }
         let zip = jQuery('.first-element-doc a img').attr('src');
-        console.log(zip, 'ii')
+   
         if (zip == '/files/assets/Icon metro-file-zip.png') {
             jQuery('.first-element-doc a img').css('background-color', '#cc4b4c')
             jQuery('.first-element-doc a img').css('border', '#cc4b4c solid 1px')
@@ -41,9 +227,17 @@
     })
     $(document).ready(function() {
 
+        jQuery('.group-description').each(function() {
+            var $groupDescription = jQuery(this);
+            var $closestCrmSection = $groupDescription.closest('.crm-section');
+          
+            // Insert the $groupDescription element before the $closestCrmSection element
+            $groupDescription.insertBefore($closestCrmSection);
+          });
+        // jQuery('.page-civicrm-doonee-economique-entreprise form').append(jQuery('.page-civicrm-doonee-economique-entreprise form .btn-primary'))
         $('tr:has(td span.tohide)').remove();
         if (!jQuery('.page-recherche table tbody tr').length) {
-            $('nav.pager').hide();
+            // $('nav.pager').hide();
         }
         let elem = $('.page-social-rh-formations p a:contains("S\'inscrire")');
         elem.css({
@@ -74,7 +268,7 @@
                         url: '/form/poser-une-question/confirmation/back_link',
                         data: {cid: getCid},
                         success: (successResult, val, ee) => {
-                            console.log('back liank ', successResult)
+                            
                             $('.webform-confirmation__back a').attr('href', successResult.back_link)
                         },
                         error: function(error) {
@@ -88,7 +282,7 @@
 
 
         //page recherche
-        jQuery('.page-recherche .views-element-container table > tbody > tr').has('p.row-to-hide').hide();
+        // jQuery('.page-recherche .views-element-container table > tbody > tr').has('p.row-to-hide').hide();
         
         //Page ajout document 
         if (jQuery('.field--name-field-tag').length &&  jQuery('.field--name-field-tag').attr('data-default-value')) {
@@ -125,7 +319,6 @@
 
         //Ajout document -> tags -> simulation click sur le dropdown ul li
         $('.term-don-t-have-child .fancytree-checkbox').on('click', function () {
-            console.log()
             let curr_val = $(this).closest('li').attr('data-current-id');
 
             // Get the checkbox element using its ID
@@ -208,3 +401,28 @@ function setDefaultQuestion () {
     // Call the function to set the value (you can trigger this event on any action)
     setValueToCKEditorField();
 }
+
+function verifierElement() {
+    var element = jQuery('[class*="page-civicrm page-civicrm-donnee-eoconomique"] .crm-form-date-wrapper [type="number"]');
+    if (element.val()) {
+
+        var currentYear = new Date().getFullYear();
+        // Calculate the last year
+        var lastYear = currentYear - 1;
+
+        // Parcourir les elements 
+        jQuery('[class*="page-civicrm page-civicrm-donnee-eoconomique"] .crm-form-date-wrapper [type="number"]').each(function(id, el){
+            if (lastYear != jQuery(el).val()) {
+                //jQuery(el).closest('[ng-repeat="item in getItems()"]').remove()
+                jQuery(el).closest('[ng-repeat="item in getItems()"]').hide();
+
+            }
+        });
+        
+        // Arrêtez de vérifier l'élément après l'avoir trouvé
+        clearInterval(verifierElementInterval);
+    }
+}
+
+// Vérifiez périodiquement la présence de l'élément
+var verifierElementInterval = setInterval(verifierElement, 50);
