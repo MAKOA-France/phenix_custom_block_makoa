@@ -393,179 +393,186 @@ function phenix_custom_block_preprocess_page(&$variables)
 
 
   $current_path = \Drupal::service('path.current')->getPath();
-  $current_cid = \Drupal::service('session')->get('current_ contact_id');
+  $current_cid = \Drupal::service('session')->get('current_contact_id');
 
 
   $current_cid = is_array($current_cid) ? $current_cid[1] : $current_cid;
-  if ($current_cid && strpos($current_path, 'entreprise-abattage') !== false ) {
-    $all_possibility_type_viande = $custom_service->allTypeViande();
-    $default_value_of_current_cid = $custom_service->allValueAbattageInPreviousYearByContact ($current_cid);
-    foreach($all_possibility_type_viande as $value) {
-      if (!in_array($value, $default_value_of_current_cid)) {
-        //Creer une ligne vide pour chaque value
-        $results = \Civi\Api4\CustomValue::create('prod_approv_abattage', FALSE)
-          ->addValue('abattage_annee', $custom_service->getPreviousOnlyYear())
-          ->addValue('abattage_type_viandes', $value)
-          ->addValue('entity_id', $current_cid)
-          ->execute();
-      }
-    }
-  } 
+  if (strpos($current_path, '/civicrm/') !== false) {
 
-  $current_cid = is_array($current_cid) ? $current_cid[1] : $current_cid;
-  if ($current_cid && strpos($current_path, 'entreprise-agrement-sanitaire') !== false ) {
-    $all_possibility_type_sanitaire = $custom_service->allTypeAgrementSanitaire();
-    $default_value_of_current_cid = $custom_service->allValueAgrementSanitaireDefaultValue ($current_cid);
-    foreach($all_possibility_type_sanitaire as $value) {
-      if (!in_array($value, $default_value_of_current_cid)) {
-        //Creer une ligne vide pour chaque value
-        $results = \Civi\Api4\CustomValue::create('agrements_sanitaires', FALSE)
-          ->addValue('entity_id', $current_cid)
-          ->addValue('agrsan_type', $value)
-          ->execute(); 
-      }
-    }
-  } 
- 
-    //Permet d'afficher des lignes vides s'il n'y a pas de valeur pour certains type de viande
-  if (strpos($current_path, 'achat-viande') !== false ) {
-    if($current_cid) {
+    $current_cid = CRM_Core_Session::singleton()->get('userID');
+    if ($current_cid && strpos($current_path, 'entreprise-abattage') !== false ) {
       $all_possibility_type_viande = $custom_service->allTypeViande();
-      $default_value_of_current_cid = $custom_service->allValueAchatInPreviousYearByContact ($current_cid);
-        foreach($all_possibility_type_viande as $value) {
-          if (!in_array($value, $default_value_of_current_cid)) {
-            //Creer une ligne vide pour chaque value
-            $results = \Civi\Api4\CustomValue::create('prod_approv_achat', FALSE)
-              ->addValue('achat_annee', $custom_service->getPreviousOnlyYear())
-              ->addValue('achat_type_viandes', $value)
-              ->addValue('entity_id', $current_cid)
-              ->execute();
-          }
-          if (!$default_value_of_current_cid) {
-            //Creer une ligne vide pour chaque value
-            $results = \Civi\Api4\CustomValue::create('prod_approv_achat', FALSE)
-              ->addValue('achat_annee', $custom_service->getPreviousOnlyYear())
-              ->addValue('achat_type_viandes', $value)
-              ->addValue('entity_id', $current_cid)
-              ->execute();
-          }
-        }
-    }
-  }
-
-
-  //Permet d'afficher des lignes vides s'il n'y a pas de valeur pour la page transformation et decoupe
-  if ($current_cid && strpos($current_path, 'transformation-decoupe') !== false ) {
-      $all_possibility_type_viande = $custom_service->allTypeViande();
-      $default_value_of_current_cid = $custom_service->allValueDecoupeInPreviousYearByContact ($current_cid);
-        foreach($all_possibility_type_viande as $value) {
-          if (!in_array($value, $default_value_of_current_cid)) {
-            //Creer une ligne vide pour chaque value
-            $results = \Civi\Api4\CustomValue::create('prod_decoupe', FALSE)
-              ->addValue('decoupe_annee', $custom_service->getPreviousOnlyYear())
-              ->addValue('decoupe_type_viandes', $value)
-              ->addValue('entity_id', $current_cid)
-              ->execute();
-          }
-        }
-  }
-
-  //Permet d'afficher des lignes vides s'il n'y a pas de valeur pour la page certification
-  
-  if ($current_cid && strpos($current_path, 'detail-activity-certification') !== false ) {
-      $all_possibility_type_certification = $custom_service->allTypeCertification();
-      $default_value_of_current_cid = $custom_service->allValueCertificationInPreviousYearByContact ($current_cid);
-      foreach($all_possibility_type_certification as $value) {
-          // dump($value, $default_value_of_current_cid);
-          if (!in_array($value, $default_value_of_current_cid)) {
-            //Creer une ligne vide pour chaque value
-            $results = \Civi\Api4\CustomValue::create('certifications_mgd', FALSE)
-              ->addValue('cert_annee',  $custom_service->getPreviousOnlyYear())
-              ->addValue('cert_certif', $value)
-              ->addValue('entity_id', $current_cid)
-              ->execute();
-          }
-        }
-  }
-
-  //Permet d'afficher des lignes vides s'il n'y a pas de valeur pour la page transformation et decoupe
-  if ($current_cid && strpos($current_path, 'produit-commercialises') !== false ) {
-      $all_possibility_type_produit_commercialisee = $custom_service->allTypeCommercialViande();
-      
-      $default_value_of_current_cid = $custom_service->allValueProduitCommercialiseInPreviousYearByContact ($current_cid);
-      foreach($all_possibility_type_produit_commercialisee as $value) {
+      $default_value_of_current_cid = $custom_service->allValueAbattageInPreviousYearByContact ($current_cid);
+      // dump($all_possibility_type_viande, $default_value_of_current_cid, $custom_service->getPreviousOnlyYear());
+      foreach($all_possibility_type_viande as $value) {
         if (!in_array($value, $default_value_of_current_cid)) {
-          
           //Creer une ligne vide pour chaque value
-          $results = \Civi\Api4\CustomValue::create('commercialisation', FALSE)
-            ->addValue('com_annee', $custom_service->getPreviousOnlyYear())
-            ->addValue('com_type_produit_commercial', $value)
+          $results = \Civi\Api4\CustomValue::create('prod_approv_abattage', FALSE)
+            ->addValue('abattage_annee', $custom_service->getPreviousOnlyYear())
+            ->addValue('abattage_type_viandes', $value)
             ->addValue('entity_id', $current_cid)
             ->execute();
         }
       }
-  }
+    } 
 
-  //Formulaire  "Informations Thématiques" (Abonnements)
-  if (strpos($current_path, 'gdpr/comms-prefs/update') !== false ) {
-  //   $variables['page']['content']['#markup'] = '<h1>Bonjour, voici le Formulaire de mise à jour des Informations Thématiques" (Abonnements) de votre entreprise</h1><br><h2 class="turn-right">Informations thématiques diffusées par Culture Viande</h2>
-  //   <p class="listing-category turn-right">(qualité, export, économique, social, etc…)</p>
-  //  <h2 class="turn-right">Désignation des destinataires au titre de votre entreprise</h2>';
-  }
-
-  if (strpos($current_path, 'donnees-economique-entreprise') !== false) {
-    $cid = \Drupal::service('session')->get('current_ contact_id');
-    
-    
-    if (strpos($current_path, 'entreprise-agrement-sanitaire') !== false) {
-      
-      $session = CRM_Core_Session::singleton();
-      $contactId = $session->get('userID');
-      $orgName = $contactId ? $custom_service->getContactNameById($contactId) : '';
-      $variables['page']['highlighted']['info_organisation'] = ['#type' => 'fieldset', '#attributes' => ['class' => ['c-fieldset']]];
-      $variables['page']['highlighted']['info_organisation']['organization_name'] = [
-        '#type' => 'textfield',
-        '#title' => t('Nom de l\'organisation'),
-        '#size' => 20,
-        '#maxlength' => 255,
-        '#value' => $orgName,
-        '#disabled' => 'disabled',
-        '#wrapper_attributes' => ['class' => ['c-col-md-4']],
-        '#attributes' => [ 'disabled' => 'disabled']
-      ];
-      $variables['page']['highlighted']['info_organisation']['organization_name']['#prefix'] = '<h2>Entreprise</h2>';
-      $variables['page']['highlighted']['info_organisation']['who_filled_the_form'] = [
-        '#type' => 'textfield',
-        '#title' => t('Nom de la personne ayant renseigné le formulaire'),
-        '#size' => 20,
-        '#maxlength' => 255,
-        '#wrapper_attributes' => ['class' => ['c-col-md-4']],
-        '#attributes' => ['class' => ['person-who-filled']]
-      ];
-      
-      $variables['page']['highlighted']['info_organisation']['field_email'] = [
-        '#type' => 'email',
-        '#title' => t('Courriel'),
-        '#wrapper_attributes' => ['class' => ['c-col-md-4']],
-        '#attributes' => ['class' => ['person-who-filled-mail']]
-      ];
+    $current_cid = is_array($current_cid) ? $current_cid[1] : $current_cid;
+    if ($current_cid && strpos($current_path, 'entreprise-agrement-sanitaire') !== false ) {
+      $all_possibility_type_sanitaire = $custom_service->allTypeAgrementSanitaire();
+      $default_value_of_current_cid = $custom_service->allValueAgrementSanitaireDefaultValue ($current_cid);
+      foreach($all_possibility_type_sanitaire as $value) {
+        if (!in_array($value, $default_value_of_current_cid)) {
+          //Creer une ligne vide pour chaque value
+          $results = \Civi\Api4\CustomValue::create('agrements_sanitaires', FALSE)
+            ->addValue('entity_id', $current_cid)
+            ->addValue('agrsan_type', $value)
+            ->execute(); 
+        }
+      }
+    } 
+  
+      //Permet d'afficher des lignes vides s'il n'y a pas de valeur pour certains type de viande
+    if (strpos($current_path, 'achat-viande') !== false ) {
+      if($current_cid) {
+        $all_possibility_type_viande = $custom_service->allTypeViande();
+        $default_value_of_current_cid = $custom_service->allValueAchatInPreviousYearByContact ($current_cid);
+          foreach($all_possibility_type_viande as $value) {
+            if (!in_array($value, $default_value_of_current_cid)) {
+              //Creer une ligne vide pour chaque value
+              $results = \Civi\Api4\CustomValue::create('prod_approv_achat', FALSE)
+                ->addValue('achat_annee', $custom_service->getPreviousOnlyYear())
+                ->addValue('achat_type_viandes', $value)
+                ->addValue('entity_id', $current_cid)
+                ->execute();
+            }
+            if (!$default_value_of_current_cid) {
+              //Creer une ligne vide pour chaque value
+              $results = \Civi\Api4\CustomValue::create('prod_approv_achat', FALSE)
+                ->addValue('achat_annee', $custom_service->getPreviousOnlyYear())
+                ->addValue('achat_type_viandes', $value)
+                ->addValue('entity_id', $current_cid)
+                ->execute();
+            }
+          }
+      }
     }
 
-    $variables['page']['highlighted']['#markup'] = '<h2>DONNEES ECONOMIQUES - ' . $custom_service->getContactNameById($cid) . '</h2><br><p>Merci de renseigner les 9 onglets.</p><ul id="progressbar">
-    <li  href-attribute="/civicrm/donnees-economique-entreprise-agrement-sanitaire#?id=675"  class="' . $custom_service->isActive('agrement-sanitaire') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-agrement-sanitaire#?id=675">Agréments sanitaires</a></li>
-    <li  href-attribute="/civicrm/donnees-economique-entreprise-donnee-generale#?id=675" class="' . $custom_service->isActive('donnee-generale') . '" id="donnee-eoconomique-entreprise-donnee-generale"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-donnee-generale#?id=675">Données Générales</a></li>
-    <li  href-attribute="/civicrm/donnees-economique-entreprise-abattages#?id=675" class="' . $custom_service->isActive('abattages') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-abattages#?id=675">Abattages</a></li>
-    <li  href-attribute="/civicrm/donnees-economique-entreprise-achat-viande#?id=675" class="' . $custom_service->isActive('achat-viande') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-achat-viande#?id=675">Achat de viande</a></li>
-    <li  href-attribute="/civicrm/donnees-economique-entreprise-transformation-decoupe#?id=675" class="' . $custom_service->isActive('transformation-decoupe') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-transformation-decoupe#?id=675"> Découpe et Transformation</a></li>
-    <li  href-attribute="/civicrm/donnees-economique-entreprise-produit-commercialises#?id=675" class="' . $custom_service->isActive('produit-commercial') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-produit-commercialises#?id=675">Produits commerciaux</a></li>
-    <li  href-attribute="/civicrm/donnees-economique-entreprise-formulaire-certification#?Organization1=675" class="' . $custom_service->isActive('formulaire-certification') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-formulaire-certification#?Organization1=675">Détail des activités</a></li>
-    <li  href-attribute="/civicrm/donnees-economique-entreprise-detail-activity-certification#?id=675" class="' . $custom_service->isActive('detail-activity-certification') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-detail-activity-certification#?id=675">Certifications</a></li>
-    </ul>
-'
-    
-    
-    ;
 
+    //Permet d'afficher des lignes vides s'il n'y a pas de valeur pour la page transformation et decoupe
+    if ($current_cid && strpos($current_path, 'transformation-decoupe') !== false ) {
+        $all_possibility_type_viande = $custom_service->allTypeViande();
+        $default_value_of_current_cid = $custom_service->allValueDecoupeInPreviousYearByContact ($current_cid);
+          foreach($all_possibility_type_viande as $value) {
+            if (!in_array($value, $default_value_of_current_cid)) {
+              //Creer une ligne vide pour chaque value
+              $results = \Civi\Api4\CustomValue::create('prod_decoupe', FALSE)
+                ->addValue('decoupe_annee', $custom_service->getPreviousOnlyYear())
+                ->addValue('decoupe_type_viandes', $value)
+                ->addValue('entity_id', $current_cid)
+                ->execute();
+            }
+          }
+    }
+
+    //Permet d'afficher des lignes vides s'il n'y a pas de valeur pour la page certification
+    
+    if ($current_cid && strpos($current_path, 'detail-activity-certification') !== false ) {
+        $all_possibility_type_certification = $custom_service->allTypeCertification();
+        $default_value_of_current_cid = $custom_service->allValueCertificationInPreviousYearByContact ($current_cid);
+        foreach($all_possibility_type_certification as $value) {
+            // dump($value, $default_value_of_current_cid);
+            if (!in_array($value, $default_value_of_current_cid)) {
+              //Creer une ligne vide pour chaque value
+              $results = \Civi\Api4\CustomValue::create('certifications_mgd', FALSE)
+                ->addValue('cert_annee',  $custom_service->getPreviousOnlyYear())
+                ->addValue('cert_certif', $value)
+                ->addValue('entity_id', $current_cid)
+                ->execute();
+            }
+          }
+    }
+
+    //Permet d'afficher des lignes vides s'il n'y a pas de valeur pour la page transformation et decoupe
+    if ($current_cid && strpos($current_path, 'produit-commercialises') !== false ) {
+        $all_possibility_type_produit_commercialisee = $custom_service->allTypeCommercialViande();
+        
+        $default_value_of_current_cid = $custom_service->allValueProduitCommercialiseInPreviousYearByContact ($current_cid);
+        foreach($all_possibility_type_produit_commercialisee as $value) {
+          if (!in_array($value, $default_value_of_current_cid)) {
+            
+            //Creer une ligne vide pour chaque value
+            $results = \Civi\Api4\CustomValue::create('commercialisation', FALSE)
+              ->addValue('com_annee', $custom_service->getPreviousOnlyYear())
+              ->addValue('com_type_produit_commercial', $value)
+              ->addValue('entity_id', $current_cid)
+              ->execute();
+          }
+        }
+    }
+
+    //Formulaire  "Informations Thématiques" (Abonnements)
+    if (strpos($current_path, 'gdpr/comms-prefs/update') !== false ) {
+    //   $variables['page']['content']['#markup'] = '<h1>Bonjour, voici le Formulaire de mise à jour des Informations Thématiques" (Abonnements) de votre entreprise</h1><br><h2 class="turn-right">Informations thématiques diffusées par Culture Viande</h2>
+    //   <p class="listing-category turn-right">(qualité, export, économique, social, etc…)</p>
+    //  <h2 class="turn-right">Désignation des destinataires au titre de votre entreprise</h2>';
+    }
+
+    if (strpos($current_path, 'donnees-economique-entreprise') !== false) {
+      $cid = \Drupal::service('session')->get('current_ contact_id');
+      
+      
+      if (strpos($current_path, 'entreprise-agrement-sanitaire') !== false) {
+        
+        $session = CRM_Core_Session::singleton();
+        $contactId = $session->get('userID');
+        $orgName = $contactId ? $custom_service->getContactNameById($contactId) : '';
+        $variables['page']['highlighted']['info_organisation'] = ['#type' => 'fieldset', '#attributes' => ['class' => ['c-fieldset']]];
+        $variables['page']['highlighted']['info_organisation']['organization_name'] = [
+          '#type' => 'textfield',
+          '#title' => t('Nom de l\'organisation'),
+          '#size' => 20,
+          '#maxlength' => 255,
+          '#value' => $orgName,
+          '#disabled' => 'disabled',
+          '#wrapper_attributes' => ['class' => ['c-col-md-4']],
+          '#attributes' => [ 'disabled' => 'disabled']
+        ];
+        $variables['page']['highlighted']['info_organisation']['organization_name']['#prefix'] = '<h2>Entreprise</h2>';
+        $variables['page']['highlighted']['info_organisation']['who_filled_the_form'] = [
+          '#type' => 'textfield',
+          '#title' => t('Nom de la personne ayant renseigné le formulaire'),
+          '#size' => 20,
+          '#maxlength' => 255,
+          '#wrapper_attributes' => ['class' => ['c-col-md-4']],
+          '#attributes' => ['class' => ['person-who-filled']]
+        ];
+        
+        $variables['page']['highlighted']['info_organisation']['field_email'] = [
+          '#type' => 'email',
+          '#title' => t('Courriel'),
+          '#wrapper_attributes' => ['class' => ['c-col-md-4']],
+          '#attributes' => ['class' => ['person-who-filled-mail']]
+        ];
+      }
+
+      $current_cid = CRM_Core_Session::singleton()->get('userID');
+
+      $variables['page']['highlighted']['#markup'] = '<h2>DONNEES ECONOMIQUES - ' . $custom_service->getContactNameById($cid) . '</h2><br><p>Merci de renseigner les 9 onglets.</p><ul id="progressbar">
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-agrement-sanitaire#?id=' . $current_cid . '"  class="' . $custom_service->isActive('agrement-sanitaire') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-agrement-sanitaire#?id=' . $current_cid . '">Agréments sanitaires</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-donnee-generale#?id=' . $current_cid . '" class="' . $custom_service->isActive('donnee-generale') . '" id="donnee-eoconomique-entreprise-donnee-generale"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-donnee-generale#?id=' . $current_cid . '">Données Générales</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-abattages#?id=' . $current_cid . '" class="' . $custom_service->isActive('abattages') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-abattages#?id=' . $current_cid . '">Abattages</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-achat-viande#?id=' . $current_cid . '" class="' . $custom_service->isActive('achat-viande') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-achat-viande#?id=' . $current_cid . '">Achat de viande</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-transformation-decoupe#?id=' . $current_cid . '" class="' . $custom_service->isActive('transformation-decoupe') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-transformation-decoupe#?id=' . $current_cid . '"> Découpe et Transformation</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-produit-commercialises#?id=' . $current_cid . '" class="' . $custom_service->isActive('produit-commercial') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-produit-commercialises#?id=' . $current_cid . '">Produits commerciaux</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-formulaire-certification#?Organization1=675" class="' . $custom_service->isActive('formulaire-certification') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-formulaire-certification#?Organization1=675">Détail des activités</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-detail-activity-certification#?id=' . $current_cid . '" class="' . $custom_service->isActive('detail-activity-certification') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-detail-activity-certification#?id=' . $current_cid . '">Certifications</a></li>
+      </ul>
+  '
+      
+      
+      ;
+
+    }
   }
   
   if (strpos($current_path, '/civicrm/bulletin-de-cotisation') !== false || strpos($current_path, '/buttetin-cotisation-liste-abonnement') !== false  || strpos($current_path, 'buttetin-cotisation-contact-entreprise') !== false || strpos($current_path, 'bulletin-cotisation-contact') !== false ) {
@@ -573,7 +580,7 @@ function phenix_custom_block_preprocess_page(&$variables)
     <li class="' . $custom_service->isActive('bulletin-de-cotisation') . '"  class="active"><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation#?Organization1=675">Informations de l\'entreprise</a></li>
     <li class="' . $custom_service->isActive('cotisation-dirigeants') . '" ><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation-dirigeants#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=675&id=2049">Informations dirigeant</a></li>
     <li class="' . $custom_service->isActive('buttetin-cotisation-liste-abonnement') . '" ><a class="progress-bar-link" href="https://test-culture-viande.dev.makoa.net/civicrm/buttetin-cotisation-liste-abonnement">Abonnements</a></li>
-    <li class="' . $custom_service->isActive('bulletin-cotisation-contact') . '" ><a class="progress-bar-link" href="/civicrm/bulletin-cotisation-contact-entreprise#?id=675">Contact Entreprise</a></li>
+    <li class="' . $custom_service->isActive('bulletin-cotisation-contact') . '" ><a class="progress-bar-link" href="/civicrm/bulletin-cotisation-contact-entreprise#?id=' . $current_cid . '">Contact Entreprise</a></li>
     
     </ul>';
 
