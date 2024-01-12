@@ -1462,7 +1462,7 @@ public function customResultSearchTerm(&$var){
     $published_on = $this->getNodeFieldValue($entity, 'changed');
     $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
     $description =  $this->getNodeFieldValue($entity, 'description');
-    if (!$description) {//
+    if (!$description && $entity->hasField('field_dossier')) {//
       $dossier_id = $this->getNodeFieldValue($entity, 'field_dossier');
       $paragraph = \Drupal\paragraphs\Entity\Paragraph::load($dossier_id);
       if ($paragraph) {
