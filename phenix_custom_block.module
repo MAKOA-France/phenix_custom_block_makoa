@@ -13,6 +13,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\Core\Routing\TrustedRedirectResponse;
+use Drupal\Core\Datetime\DrupalDateTime;
 
 /**
  * Implements hook_theme().
@@ -1440,16 +1441,10 @@ use Drupal\views\Plugin\views\area\Text;
 function phenix_custom_block_views_pre_render(\Drupal\views\ViewExecutable $view) {
   
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
-  // unset($view->result[0]);
-  // dump($view->result);
+  
   if($view->id() == 'rechercher') {
-    foreach ($view->result as $key => $element) {
-      $entity = $element->_entity;
-      if ($entity instanceof \Drupal\media\Entity\Media) {
-        $custom_service->checkIfMediaShouldNotBeDisplayed ($entity, $view, $key);// TODO FILTRER LE RESULTAT ICI
-      }
-
-    }
+    //todo something here
+    // unset($view->result[0]);  ==> this work but to exclude some result but it's a bad idea, the good way to do this is in the query_alter 
   }
   
 
@@ -1594,8 +1589,11 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
       $query->addCondition('field_groupes',  $blackListGroupId,"NOT IN");
       $fields = $index->getFields();
     }
-    $whitelist = getTermWhoDontHaveLinkMenu();//unused pour le moment
-    // $query->addCondition('mid',  [27405],"NOT IN");
+    
+
+    $custom_service->checkIfMediaShouldNotBeDisplayed($query);
+      
+      $whitelist = getTermWhoDontHaveLinkMenu();//unused pour le moment
     // dump(' Qui SECOND');
     // Create a condition with OR conjunction.
     // $query->addCondition('tid',  $whitelist, "IN");
