@@ -1583,17 +1583,23 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
     
     $groupContacts = iterator_to_array($groupContacts);
     $groupContacts = array_column($groupContacts, 'group_id'); 
-    
-    if (in_array('adherent', $user_roles)) {
-      $blackListGroupId = $custom_service-> getAllGroupIdWhereUserDoesntBelongAndGroupIsAfficherSurExtranet ($cid, $groupContacts);
-      $query->addCondition('field_groupes',  $blackListGroupId,"NOT IN");
-      $fields = $index->getFields();
+    if ((!in_array('super_utilisateur', $user_roles)  && !in_array('administrator', $user_roles))) {
+      if (in_array('adherent', $user_roles) || in_array('permanent', $user_roles)) {
+        $blackListGroupId = $custom_service-> getAllGroupIdWhereUserDoesntBelongAndGroupIsAfficherSurExtranet ($cid, $groupContacts);
+        $query->addCondition('field_groupes',  $blackListGroupId,"NOT IN");
+        $fields = $index->getFields();
+
+        //Filtre, pour les adherent, le document doit etre lié aux menu
+        $custom_service->displayOnlyDocLinkedWithMenu($query);
+        
+        //Filter si le document date de plus 2 ans
+        $custom_service->checkIfMediaShouldNotBeDisplayed($query);
+      
+      }
     }
     
-
-    $custom_service->checkIfMediaShouldNotBeDisplayed($query);
       
-      $whitelist = getTermWhoDontHaveLinkMenu();//unused pour le moment
+    // $whitelist = getTermWhoDontHaveLinkMenu();//unused pour le moment
     // Create a condition with OR conjunction.
     // $query->addCondition('tid',  $whitelist, "IN");
 
