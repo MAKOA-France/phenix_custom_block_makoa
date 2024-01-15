@@ -709,8 +709,10 @@ class CustomBlockServices {
 public function isRubriqueWithTxtAndImg ($term_id) {
 
   $term = Term::load($term_id);
-  $isRubriqueWithImgAndTxt = $this->getNodeFieldValue($term, 'field_gabarit_texte_et_images');
-  return $isRubriqueWithImgAndTxt;
+  if ($term->hasField('field_gabarit_texte_et_images')) {
+    $isRubriqueWithImgAndTxt = $this->getNodeFieldValue($term, 'field_gabarit_texte_et_images');
+    return $isRubriqueWithImgAndTxt;
+  }
 }
 
 public function hasChildren ($term_id) {
@@ -1174,22 +1176,51 @@ public function customResultSearchDoc (&$var) {
 /**
  * 
  */
-public function checkIfMediaShouldNotBeDisplayed ($entity, $view, $key) {
-  $current_timestamp = \Drupal::time()->getRequestTime();
-  $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
-  $created_at = $this->getNodeFieldValue($entity, 'created');
-  $isDocSocial = false;
-   ///CHeck si le document est lié avec une rubrique social VIA PARAGRAPHES
-   $isLinkedWithTermSocial = $this->checkIfDocumentIsLinkedWithTermSocial($entity->id());
+public function checkIfMediaShouldNotBeDisplayed ($query) {
+  // $current_timestamp = \Drupal::time()->getRequestTime();
+  // $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
+  // $created_at = $this->getNodeFieldValue($entity, 'created');
+  // $isDocSocial = false;
+  //  ///CHeck si le document est lié avec une rubrique social VIA PARAGRAPHES
+  //  $isLinkedWithTermSocial = $this->checkIfDocumentIsLinkedWithTermSocial($entity->id());
       
-   ///CHeck si le document est lié avec une rubrique social VIA DOCUMENT TAGS
-   $isLinkedWithTermSocialByTags = $this->checkIfDocumentIsLinkedWithTermSocialByTag($entity->id());
+  //  ///CHeck si le document est lié avec une rubrique social VIA DOCUMENT TAGS
+  //  $isLinkedWithTermSocialByTags = $this->checkIfDocumentIsLinkedWithTermSocialByTag($entity->id());
 
-  //Si le document date d'il y a + de 2ans      OU document social   OU  Lié à un terme social
-  if (($created_at <= $two_years_ago_timestamp) /* || $isLinkedWithTermSocial || $isLinkedWithTermSocialByTags */) {
-    // dump($key, $element);
-    unset($view->result[$key]);
-  }
+  // //Si le document date d'il y a + de 2ans      OU document social   OU  Lié à un terme social
+  // if (($created_at <= $two_years_ago_timestamp) /* || $isLinkedWithTermSocial || $isLinkedWithTermSocialByTags */) {
+  //   // dump($key, $element);
+  //   unset($view->result[$key]);
+  // }
+
+   
+  // Get the entity type manager service.
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  // Specify the media type you want to query.
+  $media_type = 'document';
+
+  // Get the media entity type.
+  $media_entity_type = $entity_type_manager->getDefinition('media');
+
+  // Get the current date in the site's timezone.
+  $current_date = new DrupalDateTime('now');
+
+  // Set the current date to the start of the week (Sunday).
+  $current_date->modify('-2 years');
+
+  // Get the timestamp for the start of the current week.
+  $current_week_start_timestamp = $current_date->getTimestamp();
+
+  // Use the entity query to retrieve media entities of the specified type created today.
+  $query_get_document = $entity_type_manager->getStorage($media_entity_type->id())->getQuery();
+  $result = $query_get_document
+    ->condition('bundle', $media_type)
+    ->condition('created', $current_week_start_timestamp, '>')
+    ->execute();
+
+  $query->addCondition('mid',  array_values($result),"IN");
+  return $query;
 }
 
 

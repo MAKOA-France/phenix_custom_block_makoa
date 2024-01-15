@@ -842,7 +842,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
     
     //check si la page de term en question est lié a une vue ou pas (en se servant du champ field_taxonomy_views_integrator_)
     //Donc ça va être les gabarits textes + images
-    if (getNodeFieldValue($term , 'field_gabarit_texte_et_images')) {
+    if ($term->hasField('field_gabarit_texte_et_images') && getNodeFieldValue($term , 'field_gabarit_texte_et_images')) {
       $datas = $custom_service->allDataTxtImg($variables);
       $variables['content'] = [
         '#theme' => 'phenix_custom_block_custom_texte_image',
@@ -1594,7 +1594,6 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
     $custom_service->checkIfMediaShouldNotBeDisplayed($query);
       
       $whitelist = getTermWhoDontHaveLinkMenu();//unused pour le moment
-    // dump(' Qui SECOND');
     // Create a condition with OR conjunction.
     // $query->addCondition('tid',  $whitelist, "IN");
 
