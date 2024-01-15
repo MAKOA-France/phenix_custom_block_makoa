@@ -1223,6 +1223,29 @@ public function checkIfMediaShouldNotBeDisplayed ($query) {
   return $query;
 }
 
+public function displayOnlyDocLinkedWithMenu ($query) {
+  $whiteListeDocumentId = [];
+  //document lié aux termes via ajout document
+  $sql = 'select DISTINCT entity_id from media__field_tag';
+  $sqlQuery = \Drupal::database()->query($sql)->fetchAll();
+  $whiteListeDocumentViaAddDocId = array_column($sqlQuery, 'entity_id');
+  
+  
+  //document lié aux termes via paragraphes
+  $sql = 'SELECT DISTINCT field_document_target_id FROM paragraph__field_document';
+  $sqlQuery = \Drupal::database()->query($sql)->fetchAll();
+  $whiteListeDocumentViaParagrapheId = array_column($sqlQuery, 'field_document_target_id');
+
+  // dump(count($whiteListeDocumentViaParagrapheId));
+  //Merger les deux array après
+  $whiteListeIds = array_merge($whiteListeDocumentViaAddDocId, $whiteListeDocumentViaParagrapheId);
+
+  // dump($whiteListeIds, count($whiteListeIds));
+  $query->addCondition('mid',  array_values($whiteListeIds),"IN");
+  return $query; 
+
+}
+
 
 public function isAdherent () {
   $current_user = \Drupal::currentUser();
