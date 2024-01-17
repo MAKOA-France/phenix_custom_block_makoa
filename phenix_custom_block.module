@@ -889,8 +889,15 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
           $there_is_no_document = count($documents)  < 4;
           if ($there_is_no_document) {
             if ($custom_service->notAdherentOrSocial()) {
-              return $variables['content']['field_dossier'][0]['#suffix'] = '<a class="btn-add-meeting-empty" style="width: fit-content" href="/media/add/document?term_id=' . $term->id() . '"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
-              ';
+              $taxonomyTerm = \Drupal::routeMatch()->getParameter('taxonomy_term');
+              $parent_term = $taxonomyTerm->get('parent')->entity;
+                  // Get the base URL of the Drupal site including the protocol.
+                  $base_url = \Drupal::request()->getSchemeAndHttpHost();
+                  if (strpos($base_url, 'metiers-viande.') === false) {
+
+                    return $variables['content']['field_dossier'][0]['#suffix'] = '<a class="btn-add-meeting-empty" style="width: fit-content" href="/media/add/document?term_id=' . $term->id() . '"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+                    ';
+                  }
             }
           }
           $firstParagraph = $documents[0]['#paragraph'];
@@ -1050,8 +1057,14 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             ]; 
           }else {
             if ($custom_service->notAdherentOrSocial()) {
-              return $variables['content']['field_dossier'][0]['#suffix'] = '<a class="btn-add-meeting-empty" style="width: fit-content" href="/media/add/document?term_id=' . $term->id() . '"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
-              ';
+              $taxonomyTerm = \Drupal::routeMatch()->getParameter('taxonomy_term');
+              $parent_term = $taxonomyTerm->get('parent')->entity;
+                // Get the base URL of the Drupal site including the protocol.
+                $base_url = \Drupal::request()->getSchemeAndHttpHost();
+                if (strpos($base_url, 'metiers-viande.') === false) {
+                  return $variables['content']['field_dossier'][0]['#suffix'] = '<a class="btn-add-meeting-empty" style="width: fit-content" href="/media/add/document?term_id=' . $term->id() . '"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+                  ';
+                }
             }
           }
         }
