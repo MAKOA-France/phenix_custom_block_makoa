@@ -1064,10 +1064,8 @@ public function customResultSearchDoc (&$var) {
 
 
       ///CHeck si le document est lié avec une rubrique social VIA PARAGRAPHES
-      $isLinkedWithTermSocial = $this->checkIfDocumentIsLinkedWithTermSocial($entity->id());
+      // $isLinkedWithTermSocial = $this->checkIfDocumentIsLinkedWithTermSocial($entity->id());
       
-      ///CHeck si le document est lié avec une rubrique social VIA DOCUMENT TAGS
-      $isLinkedWithTermSocialByTags = $this->checkIfDocumentIsLinkedWithTermSocialByTag($entity->id());
 
       //Checker d'abord si le document est social
       $isDocSocial = $this->isDocSocial ($entity->id());
@@ -1089,21 +1087,7 @@ public function customResultSearchDoc (&$var) {
       $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
       $created_at = $this->getNodeFieldValue($entity, 'created');
       $isDocSocial = false;
-      //Si le document date d'il y a + de 2ans      OU document social   OU  Lié à un terme social
-      //cette condition if est  dejà remplacé par le hook phenix_custom_block_views_pre_render pour ne pas afficher les doc qui date de plus de 2 ans
-    /*   if (($created_at <= $two_years_ago_timestamp) || $isLinkedWithTermSocial || $isLinkedWithTermSocialByTags) {
-        
-        $var['view']->args['blacklist_field'] = 27405;
-        $doc_info = [
-          '#theme' => 'phenix_custom_bloc_search',
-          '#cache' => ['max-age' => 0],
-          '#content' => [
-            'has_result' => false
-            ]
-          ];
-          $var['output'] = ['#markup' => '<p class="row-to-hide"></p>'];
-        return $doc_info;
-      } */
+
 
       $linked_term = $entity->get('field_tag')->getValue();
       if ($linked_term) {
@@ -1177,23 +1161,7 @@ public function customResultSearchDoc (&$var) {
  * 
  */
 public function checkIfMediaShouldNotBeDisplayed ($query) {
-  // $current_timestamp = \Drupal::time()->getRequestTime();
-  // $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
-  // $created_at = $this->getNodeFieldValue($entity, 'created');
-  // $isDocSocial = false;
-  //  ///CHeck si le document est lié avec une rubrique social VIA PARAGRAPHES
-  //  $isLinkedWithTermSocial = $this->checkIfDocumentIsLinkedWithTermSocial($entity->id());
-      
-  //  ///CHeck si le document est lié avec une rubrique social VIA DOCUMENT TAGS
-  //  $isLinkedWithTermSocialByTags = $this->checkIfDocumentIsLinkedWithTermSocialByTag($entity->id());
-
-  // //Si le document date d'il y a + de 2ans      OU document social   OU  Lié à un terme social
-  // if (($created_at <= $two_years_ago_timestamp) /* || $isLinkedWithTermSocial || $isLinkedWithTermSocialByTags */) {
-  //   // dump($key, $element);
-  //   unset($view->result[$key]);
-  // }
-
-   
+  
   // Get the entity type manager service.
   $entity_type_manager = \Drupal::entityTypeManager();
 
@@ -1257,26 +1225,49 @@ public function isAdherent () {
   return $isAdherent;
 }
 
-///CHeck si le document est lié avec une rubrique social VIA PARAGRAPHES
-private function checkIfDocumentIsLinkedWithTermSocial ($idDoc) {
-  $queryGetDossierId = \Drupal::database()->query('select entity_id from paragraph__field_document where field_document_target_id = ' . $idDoc);  
-  $queryGetDossierId = $queryGetDossierId->fetch()->entity_id;
-  $isLinkedWithTermSocial = false;
-  if ($queryGetDossierId) {
-    $queryGetTermId = \Drupal::database()->query('select entity_id from taxonomy_term__field_dossier where field_dossier_target_id = ' . $queryGetDossierId);
-    $queryGetTermId = $queryGetTermId->fetch()->entity_id;
-    $termObj = Term::load($queryGetTermId);
-    if ($termObj) {
-      $isTermSocial = $this->getNodeFieldValue($termObj, 'field_social');
-      $isLinkedWithTermSocial = $isTermSocial ? true : false;          
-    }
-  }
+public function filterBysocial($query) {
+  //Lors de l'edition d'un doc "social" est coché
+  $sql = "select  DISTINCT entity_id from media__field_social where field_social_value = 1;";
+  $idDocHasSocialChecked = \Drupal::database()->query($sql)->fetchAll();
+  $idDocHasSocialChecked = array_column($idDocHasSocialChecked, 'entity_id');
   
-  return $isLinkedWithTermSocial;
+  $sqlDocLieParagraph  = "select DISTINCT field_document_target_id from paragraph__field_document as DOC LEFT JOIN taxonomy_term__field_dossier as DOS ON DOC.entity_id = DOS.field_dossier_target_id LEFT JOIN taxonomy_term__field_social as TAX ON DOS.entity_id = TAX.entity_id where TAX.field_social_value = 1";
+  $idDocHasTermSocialChecked = \Drupal::database()->query($sqlDocLieParagraph)->fetchAll();
+  $idDocHasTermSocialChecked = array_column($idDocHasTermSocialChecked, 'field_document_target_id');
+  
+  // Combine the two arrays
+  $combinedArray = array_merge($idDocHasSocialChecked, $idDocHasTermSocialChecked);
+
+  // Get distinct elements
+  $idDocSocial = array_unique($combinedArray);
+
+  $query->addCondition('mid',  $idDocSocial,"NOT IN");
+  return $query;
 }
 
+///CHeck si le document est lié avec une rubrique social VIA PARAGRAPHES
+//TODO Unused function pour le moment
+// private function checkIfDocumentIsLinkedWithTermSocial ($idDoc) {
+//   $queryGetDossierId = \Drupal::database()->query('select entity_id from paragraph__field_document where field_document_target_id = ' . $idDoc);  
+//   $queryGetDossierId = $queryGetDossierId->fetch()->entity_id;
+//   $isLinkedWithTermSocial = false;
+//   if ($queryGetDossierId) {
+//     $queryGetTermId = \Drupal::database()->query('select entity_id from taxonomy_term__field_dossier where field_dossier_target_id = ' . $queryGetDossierId);
+//     $queryGetTermId = $queryGetTermId->fetch()->entity_id;
+//     $termObj = Term::load($queryGetTermId);
+//     if ($termObj) {
+//       $isTermSocial = $this->getNodeFieldValue($termObj, 'field_social');
+//       $isLinkedWithTermSocial = $isTermSocial ? true : false;          
+//     }
+//   }
+  
+//   return $isLinkedWithTermSocial;
+// }
+
+
 ///CHeck si le document est lié avec une rubrique social VIA DOCUMENT TAGS
-private function checkIfDocumentIsLinkedWithTermSocialByTag ($idDoc) {
+//TODO UNUSED function pour le moment 
+/* private function checkIfDocumentIsLinkedWithTermSocialByTag ($idDoc) {
   $queryGetDossierId = \Drupal::database()->query('select field_tag_target_id from media__field_tag where entity_id = ' . $idDoc);  
   $queryTermIds = $queryGetDossierId->fetchAll();
   $isLinkedWithTermSocial = false;
@@ -1293,7 +1284,7 @@ private function checkIfDocumentIsLinkedWithTermSocialByTag ($idDoc) {
   }
 
   return $isLinkedWithTermSocial;
-}
+} */
 
 public function isDocSocial ($idDoc) {
   $docObj = Media::load($idDoc);
