@@ -499,6 +499,11 @@ span.group-description {
     padding-left: 22px;
 }
 
+.paragraph--type--videos.paragraph--view-mode--default {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
 [class*="page-civicrm-donnees-economique"]  .btn-sm.af-repeat-add-btn, [class*="page-civicrm-donnees-economique"]  .btn-sm.af-repeat-copy-btn.ng-binding {
       color: white !important;
   background-color: #70716b;
