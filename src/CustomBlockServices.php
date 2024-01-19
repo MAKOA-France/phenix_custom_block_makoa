@@ -1157,6 +1157,24 @@ public function customResultSearchDoc (&$var) {
   }
 }
 
+public function allDocumentIdSocial () {
+  //Lors de l'edition d'un doc "social" est coché
+  $sql = "select  DISTINCT entity_id from media__field_social where field_social_value = 1;";
+  $idDocHasSocialChecked = \Drupal::database()->query($sql)->fetchAll();
+  $idDocHasSocialChecked = array_column($idDocHasSocialChecked, 'entity_id');
+
+  $sqlDocLieParagraph  = "select DISTINCT field_document_target_id from paragraph__field_document as DOC LEFT JOIN taxonomy_term__field_dossier as DOS ON DOC.entity_id = DOS.field_dossier_target_id LEFT JOIN taxonomy_term__field_social as TAX ON DOS.entity_id = TAX.entity_id where TAX.field_social_value = 1";
+  $idDocHasTermSocialChecked = \Drupal::database()->query($sqlDocLieParagraph)->fetchAll();
+  $idDocHasTermSocialChecked = array_column($idDocHasTermSocialChecked, 'field_document_target_id');
+
+  // Combine the two arrays
+  $combinedArray = array_merge($idDocHasSocialChecked, $idDocHasTermSocialChecked);
+
+  // Get distinct elements
+  $idDocSocial = array_unique($combinedArray);
+  return $idDocSocial;
+}
+
 /**
  * 
  */
@@ -1189,6 +1207,38 @@ public function checkIfMediaShouldNotBeDisplayed ($query) {
 
   $query->addCondition('mid',  array_values($result),"IN");
   return $query;
+}
+
+public function idDocumentMoindeDeuxAnsPlusDocumentsSocial ($query) {
+  // Get the entity type manager service.
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  // Specify the media type you want to query.
+  $media_type = 'document';
+
+  // Get the media entity type.
+  $media_entity_type = $entity_type_manager->getDefinition('media');
+
+  // Get the current date in the site's timezone.
+  $current_date = new DrupalDateTime('now');
+
+  // Set the current date to the start of the week (Sunday).
+  $current_date->modify('-2 years');
+
+  // Get the timestamp for the start of the current week.
+  $current_week_start_timestamp = $current_date->getTimestamp();
+
+  // Use the entity query to retrieve media entities of the specified type created today.
+  $query_get_document = $entity_type_manager->getStorage($media_entity_type->id())->getQuery();
+  $result = $query_get_document
+    ->condition('bundle', $media_type)
+    ->condition('created', $current_week_start_timestamp, '>')
+    ->execute();
+
+    $docMoinsDeDeuxAns = array_values($result);
+    $allIds = array_merge($docMoinsDeDeuxAns, $this->allDocumentIdSocial());
+    
+  $query->addCondition('mid',  $allIds,"IN");
 }
 
 public function displayOnlyDocLinkedWithMenu ($query) {
@@ -1226,24 +1276,12 @@ public function isAdherent () {
 }
 
 public function filterBysocial($query) {
-  //Lors de l'edition d'un doc "social" est coché
-  $sql = "select  DISTINCT entity_id from media__field_social where field_social_value = 1;";
-  $idDocHasSocialChecked = \Drupal::database()->query($sql)->fetchAll();
-  $idDocHasSocialChecked = array_column($idDocHasSocialChecked, 'entity_id');
-  
-  $sqlDocLieParagraph  = "select DISTINCT field_document_target_id from paragraph__field_document as DOC LEFT JOIN taxonomy_term__field_dossier as DOS ON DOC.entity_id = DOS.field_dossier_target_id LEFT JOIN taxonomy_term__field_social as TAX ON DOS.entity_id = TAX.entity_id where TAX.field_social_value = 1";
-  $idDocHasTermSocialChecked = \Drupal::database()->query($sqlDocLieParagraph)->fetchAll();
-  $idDocHasTermSocialChecked = array_column($idDocHasTermSocialChecked, 'field_document_target_id');
-  
-  // Combine the two arrays
-  $combinedArray = array_merge($idDocHasSocialChecked, $idDocHasTermSocialChecked);
-
-  // Get distinct elements
-  $idDocSocial = array_unique($combinedArray);
-
+  $idDocSocial = $this->allDocumentIdSocial();
   $query->addCondition('mid',  $idDocSocial,"NOT IN");
   return $query;
 }
+
+
 
 ///CHeck si le document est lié avec une rubrique social VIA PARAGRAPHES
 //TODO Unused function pour le moment
