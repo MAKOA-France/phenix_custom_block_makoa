@@ -1585,7 +1585,7 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
   //Search API recherche de document, recherche de termes, recherche de contenu aussi
   if ($view->storage->get('id') == 'rechercher' && $view->current_display == 'page_1') {
     $index = \Drupal::entityTypeManager()->getStorage('search_api_index')->load('contenu');
-    
+    // $query->addCondition('mid',  29772);
     //Recuperation des groupes auxquel l'user est membre 
     $groupContacts = \Civi\Api4\GroupContact::get(FALSE)
     ->addSelect('group_id')
@@ -1596,7 +1596,7 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
     
     $groupContacts = iterator_to_array($groupContacts);
     $groupContacts = array_column($groupContacts, 'group_id'); 
-    if ((!in_array('super_utilisateur', $user_roles)  && !in_array('administrator', $user_roles))) {
+    if ((!in_array('super_utilisateur', $user_roles)  && !in_array('administrator', $user_roles)  && !in_array('social', $user_roles))) {
       if (in_array('adherent', $user_roles) || in_array('permanent', $user_roles)) {
         $blackListGroupId = $custom_service-> getAllGroupIdWhereUserDoesntBelongAndGroupIsAfficherSurExtranet ($cid, $groupContacts);
         $query->addCondition('field_groupes',  $blackListGroupId,"NOT IN");
@@ -1607,8 +1607,19 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
         
         //Filter si le document date de plus 2 ans
         $custom_service->checkIfMediaShouldNotBeDisplayed($query);
-      
+
+        //Filtrer les doc par role social (les utilisateurs qui ont le rôle social/admin seulement peuvent voir les documents social )
+        // $custom_service->filterBysocial($query);
+
       }
+    }
+
+    //Si user est social et que user n'est pas admin ou superutilsateur
+    if (((!in_array('super_utilisateur', $user_roles)  || !in_array('administrator', $user_roles)) && in_array('social', $user_roles))) {
+      //Ne pas filtre par date de 2 ans si le document est social et que le role est social
+      $custom_service->idDocumentMoindeDeuxAnsPlusDocumentsSocial ($query);
+      //Filtre, pour les adherent, le document doit etre lié aux menu
+      $custom_service->displayOnlyDocLinkedWithMenu($query);
     }
     
       
@@ -1700,4 +1711,19 @@ function phenix_custom_block_webform_submission_presave(Drupal\webform\WebformSu
 
      $custom_service->createActivity($infos);
   }
+}
+use Drupal\node\NodeInterface;
+use Drupal\Core\Session\AccountInterface;
+/**
+ * Implements hook_node_access().
+ */
+function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterface $account) {
+  $domain = \Drupal::request()->getHost();
+  // Get the requested URL path.
+  $currentUrl = \Drupal::request()->getRequestUri();
+
+  if (($currentUrl == '/') &&  $domain == 'metiers-viande.dev.makoa.net') {
+    $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://metiers-viande.dev.makoa.net/accueil-metier');
+    $response->send();
+  } 
 }
