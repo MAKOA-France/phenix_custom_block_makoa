@@ -1071,17 +1071,17 @@ public function customResultSearchDoc (&$var) {
       $isDocSocial = $this->isDocSocial ($entity->id());
 
       //Si l'utilisateur est admin ou SU ou permanent
-      if ((!in_array('administrator', $user_roles) && !in_array('super_utilisateur', $user_roles) && !in_array('permanent', $user_roles)) && $isDocSocial) {
-        $doc_info = [
-          '#theme' => 'phenix_custom_bloc_search',
-          '#cache' => ['max-age' => 0],
-          '#content' => [
-            'has_result' => false
-            ]
-          ];
-          $var['output'] = ['#markup' => '<p class="row-to-hide"></p>'];
-        return $doc_info;
-      }
+      // if ((!in_array('administrator', $user_roles) && !in_array('super_utilisateur', $user_roles) && !in_array('permanent', $user_roles)) && $isDocSocial) {
+      //   $doc_info = [
+      //     '#theme' => 'phenix_custom_bloc_search',
+      //     '#cache' => ['max-age' => 0],
+      //     '#content' => [
+      //       'has_result' => false
+      //       ]
+      //     ];
+      //     $var['output'] = ['#markup' => '<p class="row-to-hide"></p>'];
+      //   return $doc_info;
+      // }
       
       $current_timestamp = \Drupal::time()->getRequestTime();
       $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
@@ -1157,6 +1157,14 @@ public function customResultSearchDoc (&$var) {
   }
 }
 
+
+/**
+ * Requete de test pour reuperer un document lié par paragraphe
+ * select DISTINCT field_document_target_id, DOC.entity_id , TAX.entity_id from paragraph__field_document as DOC
+ *  LEFT JOIN taxonomy_term__field_dossier as DOS ON DOC.entity_id = DOS.field_dossier_target_id 
+ * LEFT JOIN taxonomy_term__field_social as TAX ON DOS.entity_id = TAX.entity_id
+ *  where TAX.field_social_value = 1 and    field_document_target_id = 29808;
+ */
 public function allDocumentIdSocial () {
   //Lors de l'edition d'un doc "social" est coché
   $sql = "select  DISTINCT entity_id from media__field_social where field_social_value = 1;";
