@@ -61,103 +61,104 @@
  // Vérifie toutes les secondes (ajustez au besoin)
 
         // Pour les search kit ça sert à intervenir aux requetes api4
-        CRM.$(document).on('ajaxSuccess', function(event, xhr, settings) {
-            if (settings.url && settings.url.indexOf('civicrm/ajax') !== -1) {
-                // Parse the response as JSON
-                var responseData = JSON.parse(xhr.responseText);
-                let url = window.location.href;
-               
-                if (responseData.inPlaceEdit && responseData.inPlaceEdit.values) {
+        if (typeof CRM !== 'undefined') {
+            CRM.$(document).on('ajaxSuccess', function(event, xhr, settings) {
+                if (settings.url && settings.url.indexOf('civicrm/ajax') !== -1) {
+                    // Parse the response as JSON
+                    var responseData = JSON.parse(xhr.responseText);
+                    let url = window.location.href;
+                
+                    if (responseData.inPlaceEdit && responseData.inPlaceEdit.values) {
 
-                    //Données générales
-                    if (url.includes('achat-viandes')) {
-                        let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
-                        $.ajax({
-                            url: '/formulaire/donnees-economique-entreprise/achat-viande-activity',
-                            data: {valeur: editedVal},
-                            success: (successResult, val, ee) => {
-                            
-                            
-                            },
-                            error: function(error) {
-                                console.log(error, 'ERROR')
-                            }
-                        });
-                    }
-                    if (url.includes('donnee-generale')) {
-                        let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
-                        $.ajax({
-                            url: '/formulaire/donnees-economique-entreprise/donnee-generale-activity',
-                            data: {valeur: editedVal},
-                            success: (successResult, val, ee) => {
-                                console.log('activity created', successResult)
-                            
-                            },
-                            error: function(error) {
-                                console.log(error, 'ERROR')
-                            }
-                        });
-                    }
-                    if (url.includes('detail-activity-certification')) {
-                        let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
-                   
-                        $.ajax({
-                            url: '/activity/donnees-economique-entreprise/detail-activity-certification',
-                            data: {valeur: editedVal},
-                            success: (successResult, val, ee) => {
-                              
-                            
-                            },
-                            error: function(error) {
-                                console.log(error, 'ERROR')
-                            }
-                        });
-                    }
-                    if (url.includes('entreprise-transformation-decoupe')) {
-                        let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
-                        $.ajax({
-                            url: '/activity/donnees-economique-entreprise/transformation-decoupe',
-                            data: {valeur: editedVal},
-                            success: (successResult, val, ee) => {
+                        //Données générales
+                        if (url.includes('achat-viandes')) {
+                            let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                            $.ajax({
+                                url: '/formulaire/donnees-economique-entreprise/achat-viande-activity',
+                                data: {valeur: editedVal},
+                                success: (successResult, val, ee) => {
                                 
-                            },
-                            error: function(error) {
-                                console.log(error, 'ERROR')
-                            }
-                        });
-                    }
-                    if (url.includes('produit-commercialises')) {
-                        let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
-                        $.ajax({
-                            url: '/formulaire/donnees-economique-entreprise/produit-commercialises',
-                            data: {valeur: editedVal},
-                            success: (successResult, val, ee) => {
-                                console.log('activity produit commercialises created', successResult)
-                            
-                            },
-                            error: function(error) {
-                                console.log(error, 'ERROR')
-                            }
-                        });
-                    }
-                    if (url.includes('agrement-sanitaire')) {
-                        let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
-                        $.ajax({
-                            url: '/formulaire/donnees-economique-entreprise/agrement-sanitaire',
-                            data: {valeur: editedVal},
-                            success: (successResult, val, ee) => {
-                              
-                            
-                            },
-                            error: function(error) {
-                                console.log(error, 'ERROR')
-                            }
-                        });
+                                
+                                },
+                                error: function(error) {
+                                    console.log(error, 'ERROR')
+                                }
+                            });
+                        }
+                        if (url.includes('donnee-generale')) {
+                            let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                            $.ajax({
+                                url: '/formulaire/donnees-economique-entreprise/donnee-generale-activity',
+                                data: {valeur: editedVal},
+                                success: (successResult, val, ee) => {
+                                    console.log('activity created', successResult)
+                                
+                                },
+                                error: function(error) {
+                                    console.log(error, 'ERROR')
+                                }
+                            });
+                        }
+                        if (url.includes('detail-activity-certification')) {
+                            let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                    
+                            $.ajax({
+                                url: '/activity/donnees-economique-entreprise/detail-activity-certification',
+                                data: {valeur: editedVal},
+                                success: (successResult, val, ee) => {
+                                
+                                
+                                },
+                                error: function(error) {
+                                    console.log(error, 'ERROR')
+                                }
+                            });
+                        }
+                        if (url.includes('entreprise-transformation-decoupe')) {
+                            let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                            $.ajax({
+                                url: '/activity/donnees-economique-entreprise/transformation-decoupe',
+                                data: {valeur: editedVal},
+                                success: (successResult, val, ee) => {
+                                    
+                                },
+                                error: function(error) {
+                                    console.log(error, 'ERROR')
+                                }
+                            });
+                        }
+                        if (url.includes('produit-commercialises')) {
+                            let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                            $.ajax({
+                                url: '/formulaire/donnees-economique-entreprise/produit-commercialises',
+                                data: {valeur: editedVal},
+                                success: (successResult, val, ee) => {
+                                    console.log('activity produit commercialises created', successResult)
+                                
+                                },
+                                error: function(error) {
+                                    console.log(error, 'ERROR')
+                                }
+                            });
+                        }
+                        if (url.includes('agrement-sanitaire')) {
+                            let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                            $.ajax({
+                                url: '/formulaire/donnees-economique-entreprise/agrement-sanitaire',
+                                data: {valeur: editedVal},
+                                success: (successResult, val, ee) => {
+                                
+                                
+                                },
+                                error: function(error) {
+                                    console.log(error, 'ERROR')
+                                }
+                            });
+                        }
                     }
                 }
+            });
             }
-        });
-        
 
         //Info entreprise && Agrément sanitaire
         $('body').on('click', '.af-button.btn-info', function(e) { 
