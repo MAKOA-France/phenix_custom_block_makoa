@@ -1727,4 +1727,8 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
     $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://metiers-viande.dev.makoa.net/accueil-metier');
     $response->send();
   } 
+  if (($currentUrl == '/') &&  $domain == 'metiers-viande.makoa4.makoa.net') {
+    $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://metiers-viande.makoa4.makoa.net/accueil-metier');
+    $response->send();
+  } 
 }
