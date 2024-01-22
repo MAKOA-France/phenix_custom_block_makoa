@@ -1613,7 +1613,7 @@ private function getFiliereLabelById ($id) {
 /**
  * Ajoute le titre pour le résultat de recherche ==> "Résultats pour "mot clé"
  */
-public function addTitleToViewSearch(&$var) {
+public function addTitleToViewSearch(&$var, $total) {
   if ($var['view']->id() == 'rechercher') {
     $field_name = 'rendered_item';
 
@@ -1626,7 +1626,7 @@ public function addTitleToViewSearch(&$var) {
     // Replace 'block_1' with your specific display ID.
     if ($var['display_id'] == 'page_1') {
       $field->options['label'] = [
-        '#markup' => '<p class="result-label">Résultat pour <span class="res-keyword">"' . $keyword . '"</span>',
+        '#markup' => '<p class="result-label">' . $total .  ' résultat pour <span class="res-keyword">"' . $keyword . '"</span>',
       ];
     }
 
