@@ -1625,8 +1625,9 @@ public function addTitleToViewSearch(&$var, $total) {
     // If you want to change the label only for a specific display, you can check for the display ID.
     // Replace 'block_1' with your specific display ID.
     if ($var['display_id'] == 'page_1') {
+      $resultat_text = ($total >1) ? ' résultats ' : ' résultat ';
       $field->options['label'] = [
-        '#markup' => '<p class="result-label">' . $total .  ' résultat pour <span class="res-keyword">"' . $keyword . '"</span>',
+        '#markup' => '<p class="result-label">' . $total . $resultat_text . '  pour <span class="res-keyword">"' . $keyword . '"</span>',
       ];
     }
 
