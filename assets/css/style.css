@@ -190,6 +190,14 @@ tr:has(td > p.row-to-hide) {
     top: 9px;
     z-index: -1;
   }
+
+  
+.page-recherche .views-element-container nav.pager .pager__items .pager__item--previous {
+    margin-right: unset !important;
+}
+.page-recherche .views-element-container nav.pager .pager__items .pager__item--next {
+    margin-left: unset !important;
+}
   
   #progressbar li:first-child:after {
     content: none;
