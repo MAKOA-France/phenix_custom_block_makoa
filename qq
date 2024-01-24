@@ -1,0 +1,15 @@
+[1mdiff --git a/assets/css/style.css b/assets/css/style.css[m
+[1mindex 750f878..476d391 100644[m
+[1m--- a/assets/css/style.css[m
+[1m+++ b/assets/css/style.css[m
+[36m@@ -202,7 +202,9 @@[m [mtr:has(td > p.row-to-hide) {[m
+   #progressbar li:first-child:after {[m
+     content: none;[m
+   }[m
+[31m-  [m
+[32m+[m[32m  .grid-container.na-pages [class*="js-view-dom-id"] a.feed-icon {[m
+[32m+[m[32m    display: none;[m
+[32m+[m[32m}[m
+   #progressbar li.active {[m
+     color: #ffc22c;[m
+   }[m

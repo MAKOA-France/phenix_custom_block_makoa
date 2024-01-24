@@ -1202,10 +1202,7 @@ public function customResultSearchDoc (&$var) {
 
 /**
  * Requete de test pour reuperer un document lié par paragraphe
- * select DISTINCT field_document_target_id, DOC.entity_id , TAX.entity_id from paragraph__field_document as DOC
- *  LEFT JOIN taxonomy_term__field_dossier as DOS ON DOC.entity_id = DOS.field_dossier_target_id 
- * LEFT JOIN taxonomy_term__field_social as TAX ON DOS.entity_id = TAX.entity_id
- *  where TAX.field_social_value = 1 and    field_document_target_id = 29808;
+ * sselect DISTINCT field_document_target_id, DOC.entity_id , TAX.entity_id, DOS.entity_id as DOS_entity_id from paragraph__field_document as DOC   LEFT JOIN taxonomy_term__field_dossier as DOS ON DOC.entity_id = DOS.field_dossier_target_id  LEFT JOIN taxonomy_term__field_social as TAX ON DOS.entity_id = TAX.entity_id   where     field_document_target_id = 28906;
  */
 public function allDocumentIdSocial () {
   //Lors de l'edition d'un doc "social" est coché
