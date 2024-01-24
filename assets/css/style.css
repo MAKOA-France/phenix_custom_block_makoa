@@ -202,7 +202,9 @@ tr:has(td > p.row-to-hide) {
   #progressbar li:first-child:after {
     content: none;
   }
-  
+  .grid-container.na-pages [class*="js-view-dom-id"] a.feed-icon {
+    display: none;
+}
   #progressbar li.active {
     color: #ffc22c;
   }
