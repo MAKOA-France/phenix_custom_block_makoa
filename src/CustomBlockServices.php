@@ -984,34 +984,37 @@ public function customSearchTitreDossier (&$var) {
   $current_user = \Drupal::currentUser();
   $user_roles = $current_user->getRoles();
   $entity = $row->_entity;
-  $termId = $this->getNodeFieldValue($entity, 'parent_id');
-  $termObj = Term::load($termId);
+  if ($entity->hasField('parent_id')) {
 
-  $termName = $this->getNodeFieldValue($termObj, 'name');
-
-  // Generate the URL for the taxonomy term.
-  $url = Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $termId]);
-
-  // Create a link using the URL and the term name as the link text.
-  $link = Link::fromTextAndUrl($termName, $url);
-  // dump($link);
-  // Render the link.
-  $output = $link->toRenderable();
-  $linkUrl = \Drupal::service('renderer')->render($output)->__toString();
-  $published_on = $this->getNodeFieldValue($termObj, 'changed');
-  $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
-
-  $info_term = [
-    '#theme' => 'phenix_custom_bloc_search_titre_dossier_paragraph',
-    '#cache' => ['max-age' => 0],
-    '#content' => [
-       'title' => $termName,
-      'resume' => $value,
-      'published_on' => $convertedDate, 
-      'node_id' => $termObj->id(),
-    ]
-  ]; 
-  $var['output'] = $info_term;
+    $termId = $this->getNodeFieldValue($entity, 'parent_id');
+    $termObj = Term::load($termId);
+    
+    $termName = $this->getNodeFieldValue($termObj, 'name');
+    
+    // Generate the URL for the taxonomy term.
+    $url = Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $termId]);
+    
+    // Create a link using the URL and the term name as the link text.
+    $link = Link::fromTextAndUrl($termName, $url);
+    // dump($link);
+    // Render the link.
+    $output = $link->toRenderable();
+    $linkUrl = \Drupal::service('renderer')->render($output)->__toString();
+    $published_on = $this->getNodeFieldValue($termObj, 'changed');
+    $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
+    
+    $info_term = [
+      '#theme' => 'phenix_custom_bloc_search_titre_dossier_paragraph',
+      '#cache' => ['max-age' => 0],
+      '#content' => [
+        'title' => $termName,
+        'resume' => $value,
+        'published_on' => $convertedDate, 
+        'node_id' => $termObj->id(),
+        ]
+      ]; 
+      $var['output'] = $info_term;
+    }
   // $var['output'] = ['#markup' => $linkUrl];
 }
 
