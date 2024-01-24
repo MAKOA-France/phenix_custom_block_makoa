@@ -141,6 +141,14 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
           'path' => $path . '/templates',
           'template' => 'search-term'
         ],
+        'phenix_custom_bloc_search_titre_dossier_paragraph' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'search-titre-dossier-term'
+        ],
         'phenix_custom_bloc_search_media_video' => [
           'variables' => [
           'content' => Null,
@@ -744,6 +752,10 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
     $entity = $variables['row']->_entity;
     if ($entity instanceof  \Drupal\media\Entity\Media) {
       $custom_service->customResultSearchDoc ($variables);
+    }
+    
+    if ($field->field == 'field_titre') {
+      $custom_service->customSearchTitreDossier($variables);
     }
     
     if ($field->field == 'thumbnail') {
