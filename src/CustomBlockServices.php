@@ -11,6 +11,8 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\file\Entity\File;
 use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 
 use Drupal\Core\Routing\TrustedRedirectResponse;
 
@@ -971,6 +973,46 @@ public function getFileSize($file_object) {
   $first_doc_file_url = $this->getNodeFieldValue($file_object, 'uri');
   $first_doc_file_size = filesize($first_doc_file_url);
   return round($first_doc_file_size / 1024, 0);
+}
+
+public function customSearchTitreDossier (&$var) {
+  $field = $var['field'];
+  $view = $var['view'];
+	$row = $var['row'];
+  $value = $field->getValue($row);
+  $entity = $var['row']->_entity;
+  $current_user = \Drupal::currentUser();
+  $user_roles = $current_user->getRoles();
+  $entity = $row->_entity;
+  $termId = $this->getNodeFieldValue($entity, 'parent_id');
+  $termObj = Term::load($termId);
+
+  $termName = $this->getNodeFieldValue($termObj, 'name');
+
+  // Generate the URL for the taxonomy term.
+  $url = Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $termId]);
+
+  // Create a link using the URL and the term name as the link text.
+  $link = Link::fromTextAndUrl($termName, $url);
+  // dump($link);
+  // Render the link.
+  $output = $link->toRenderable();
+  $linkUrl = \Drupal::service('renderer')->render($output)->__toString();
+  $published_on = $this->getNodeFieldValue($termObj, 'changed');
+  $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
+
+  $info_term = [
+    '#theme' => 'phenix_custom_bloc_search_titre_dossier_paragraph',
+    '#cache' => ['max-age' => 0],
+    '#content' => [
+       'title' => $termName,
+      'resume' => $value,
+      'published_on' => $convertedDate, 
+      'node_id' => $termObj->id(),
+    ]
+  ]; 
+  $var['output'] = $info_term;
+  // $var['output'] = ['#markup' => $linkUrl];
 }
 
 /**
