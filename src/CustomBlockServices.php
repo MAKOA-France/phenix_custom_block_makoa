@@ -1006,7 +1006,7 @@ public function customSearchTitreDossier (&$var) {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
   
-  if ($this->getNodeFieldValue($entity, 'type') == 'dossier' && $entity->hasField('parent_id')) {
+  if ($entity->hasField('type') && $this->getNodeFieldValue($entity, 'type') == 'dossier' && $entity->hasField('parent_id')) {
     $termId = $this->getNodeFieldValue($entity, 'parent_id');
     $termObj = Term::load($termId);
     
