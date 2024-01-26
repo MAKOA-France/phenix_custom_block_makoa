@@ -984,8 +984,29 @@ public function customSearchTitreDossier (&$var) {
   $current_user = \Drupal::currentUser();
   $user_roles = $current_user->getRoles();
   $entity = $row->_entity;
-  if ($entity->hasField('parent_id')) {
-
+  if ($field->field == 'rendered_item') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'body') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'title') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'name') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'description') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'name_1') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'title_1') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  
+  if ($this->getNodeFieldValue($entity, 'type') == 'dossier' && $entity->hasField('parent_id')) {
     $termId = $this->getNodeFieldValue($entity, 'parent_id');
     $termObj = Term::load($termId);
     
