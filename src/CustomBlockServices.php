@@ -1287,6 +1287,38 @@ public function checkIfMediaShouldNotBeDisplayed ($query) {
   return $query;
 }
 
+  /**
+   * TODO CHECK TERM IF SOCIAL AND THEN ESCAPE
+   */
+  public function getAllTermRubrique () {
+    // Load the taxonomy vocabulary (replace 'your_vocabulary_name' with your actual vocabulary name).
+    $vid = 'rubrique';
+    $vocabulary = \Drupal\taxonomy\Entity\Vocabulary::load($vid);
+    $alltermId = [];
+    if ($vocabulary) {
+      // Load all terms in the vocabulary.
+      $query = \Drupal::entityTypeManager()
+        ->getStorage('taxonomy_term')
+        ->getQuery();
+      $query->condition('vid', $vid);
+      $tids = $query->execute();
+    
+      // Load the taxonomy terms based on the term IDs.
+      $terms = \Drupal\taxonomy\Entity\Term::loadMultiple($tids);
+    
+      // Iterate through the terms.
+      foreach ($terms as $term) {
+        // Do something with each term.
+        // $term is an instance of the Term entity.
+        $term_name = $term->getName();
+        $term_id = $term->id();
+        $alltermId[] = $term->id();
+        // ... perform any other operations you need.
+      }
+    }
+    return $alltermId;
+  
+  }
 public function idDocumentMoindeDeuxAnsPlusDocumentsSocial ($query) {
   // Get the entity type manager service.
   $entity_type_manager = \Drupal::entityTypeManager();
@@ -1336,8 +1368,20 @@ public function displayOnlyDocLinkedWithMenu ($query) {
   //Merger les deux array après
   $whiteListeIds = array_merge($whiteListeDocumentViaAddDocId, $whiteListeDocumentViaParagrapheId);
 
+
+  // dump($query->getWhere());
   // dump($whiteListeIds, count($whiteListeIds));
+
+  $orGroup = $query->createConditionGroup('OR');
+  // $orGroup->addCondition('mid',  30159);
+  // $orGroup->addCondition('mid',  30162);
+  
   $query->addCondition('mid',  array_values($whiteListeIds),"IN");
+  // $orGroup->addCondition('title',  '%conso%'," LIKE ");
+  // $query->addConditionGroup($orGroup);
+  // $query->setGroupOperator('OR');
+  // Create a group of conditions with the "OR" operator.
+
   return $query; 
 
 }
