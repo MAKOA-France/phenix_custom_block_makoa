@@ -1011,39 +1011,40 @@ public function customSearchTitreDossier (&$var) {
   if ($field->field == 'title_1') {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
-  
-  if ($entity->hasField('type') && $this->getNodeFieldValue($entity, 'type') == 'dossier' && $entity->hasField('parent_id')) {
+  if ($field->field == 'field_titre') {
+    if ($entity->hasField('type') && $this->getNodeFieldValue($entity, 'type') == 'dossier' && $entity->hasField('parent_id')) {
 
-    $termId = $this->getNodeFieldValue($entity, 'parent_id');
-    $termObj = Term::load($termId);
-    
-    $termName = $this->getNodeFieldValue($termObj, 'name');
-    
-    // Generate the URL for the taxonomy term.
-    $url = Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $termId]);
-    
-    // Create a link using the URL and the term name as the link text.
-    $link = Link::fromTextAndUrl($termName, $url);
-    // dump($link);
-    // Render the link.
-    $output = $link->toRenderable();
-    $linkUrl = \Drupal::service('renderer')->render($output)->__toString();
-    $published_on = $this->getNodeFieldValue($termObj, 'changed');
-    $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
-    
-    $info_term = [
-      '#theme' => 'phenix_custom_bloc_search_titre_dossier_paragraph',
-      '#cache' => ['max-age' => 0],
-      '#content' => [
-        'title' => $termName,
-        'resume' => $value,
-        'published_on' => $convertedDate, 
-        'node_id' => $termObj->id(),
-        ]
-      ]; 
-      $var['output'] = $info_term;
-    }
-  // $var['output'] = ['#markup' => $linkUrl];
+      $termId = $this->getNodeFieldValue($entity, 'parent_id');
+      $termObj = Term::load($termId);
+      
+      $termName = $this->getNodeFieldValue($termObj, 'name');
+      
+      // Generate the URL for the taxonomy term.
+      $url = Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $termId]);
+      
+      // Create a link using the URL and the term name as the link text.
+      $link = Link::fromTextAndUrl($termName, $url);
+      // dump($link);
+      // Render the link.
+      $output = $link->toRenderable();
+      $linkUrl = \Drupal::service('renderer')->render($output)->__toString();
+      $published_on = $this->getNodeFieldValue($termObj, 'changed');
+      $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
+      
+      $info_term = [
+        '#theme' => 'phenix_custom_bloc_search_titre_dossier_paragraph',
+        '#cache' => ['max-age' => 0],
+        '#content' => [
+          'title' => $termName,
+          'resume' => $value,
+          'published_on' => $convertedDate, 
+          'node_id' => $termObj->id(),
+          ]
+        ]; 
+        $var['output'] = $info_term;
+      }
+    // $var['output'] = ['#markup' => $linkUrl];
+  }
 }
 
 /**
