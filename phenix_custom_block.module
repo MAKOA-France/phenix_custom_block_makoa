@@ -754,7 +754,7 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
       $custom_service->customResultSearchDoc ($variables);
     }
     
-    if ($field->field == 'field_titre') {
+    if ($entity instanceof  \Drupal\paragraphs\Entity\Paragraph) {
       $custom_service->customSearchTitreDossier($variables);
     }
     

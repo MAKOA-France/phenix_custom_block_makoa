@@ -990,6 +990,12 @@ public function customSearchTitreDossier (&$var) {
   if ($field->field == 'body') {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
+  if ($field->field == 'field_media_oembed_video') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'field_media_video_file') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
   if ($field->field == 'title') {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
@@ -1007,6 +1013,7 @@ public function customSearchTitreDossier (&$var) {
   }
   
   if ($entity->hasField('type') && $this->getNodeFieldValue($entity, 'type') == 'dossier' && $entity->hasField('parent_id')) {
+
     $termId = $this->getNodeFieldValue($entity, 'parent_id');
     $termObj = Term::load($termId);
     
