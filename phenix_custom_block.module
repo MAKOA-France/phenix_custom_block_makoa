@@ -1,7 +1,8 @@
 <?php
 
 
-
+use Drupal\node\NodeInterface;
+use Drupal\Core\Session\AccountInterface;
 
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperInterface;
@@ -755,7 +756,7 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
     }
     
     if ($field->field == 'field_titre') {
-      $custom_service->customSearchTitreDossier($variables);
+      // $custom_service->customSearchTitreDossier($variables);
     }
     
     if ($field->field == 'thumbnail') {
@@ -1592,6 +1593,8 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
   // You can now use $email for further processing.
   $cid = $custom_service->getContactIdByEmail($email);
   
+  $allRubriq = $custom_service->getAllTermRubrique();
+  // dump($allRubriq);
   
 
   //TODO  select * from menu_link_content_data where description like '%kkk%';
@@ -1612,15 +1615,73 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
     if ((!in_array('super_utilisateur', $user_roles)  && !in_array('administrator', $user_roles)  && !in_array('social', $user_roles))) {
       if (in_array('adherent', $user_roles) || in_array('permanent', $user_roles)) {
         $blackListGroupId = $custom_service-> getAllGroupIdWhereUserDoesntBelongAndGroupIsAfficherSurExtranet ($cid, $groupContacts);
-        $query->addCondition('field_groupes',  $blackListGroupId,"NOT IN");
-        $fields = $index->getFields();
-
-        //Filtre, pour les adherent, le document doit etre lié aux menu
-        $custom_service->displayOnlyDocLinkedWithMenu($query);
+        // $fields = $index->getFields();
         
-        //Filter si le document date de plus 2 ans
-        $custom_service->checkIfMediaShouldNotBeDisplayed($query);
+        $orGroup = $query->createConditionGroup('OR');
 
+        $keyword = \Drupal::request()->query->get('search_api_fulltext');
+        // $orGroup->addCondition('field_groupes',  $blackListGroupId,"NOT IN");
+        $allRubriq = $custom_service->getAllTermRubrique();
+        $orGroup->addCondition('tid',  $allRubriq,"IN");
+        $orGroup->addCondition('field_titre',  '%' . $keyword . '%');
+        // $custom_service->displayOnlyDocLinkedWithMenu($orGroup);
+        
+        //Filtre, pour les adherent, le document doit etre lié aux menu
+        $whiteListeDocumentId = [];
+        //document lié aux termes via ajout document
+        $sql = 'select DISTINCT entity_id from media__field_tag';
+        $sqlQuery = \Drupal::database()->query($sql)->fetchAll();
+        $whiteListeDocumentViaAddDocId = array_column($sqlQuery, 'entity_id');
+        
+        
+        //document lié aux termes via paragraphes
+        $sql = 'SELECT DISTINCT field_document_target_id FROM paragraph__field_document';
+        $sqlQuery = \Drupal::database()->query($sql)->fetchAll();
+        $whiteListeDocumentViaParagrapheId = array_column($sqlQuery, 'field_document_target_id');
+
+        //Merger les deux array après
+        $whiteListeIds = array_merge($whiteListeDocumentViaAddDocId, $whiteListeDocumentViaParagrapheId);
+        // $orGroup->addCondition('mid',  array_values($whiteListeIds),"IN");
+
+
+
+        //Filter si le document date de plus 2 ans
+        // $orGroup = $custom_service->checkIfMediaShouldNotBeDisplayed($orGroup);
+        // Get the entity type manager service.
+        $entity_type_manager = \Drupal::entityTypeManager();
+
+        // Specify the media type you want to query.
+        $media_type = 'document';
+
+        // Get the media entity type.
+        $media_entity_type = $entity_type_manager->getDefinition('media');
+
+        // Get the current date in the site's timezone.
+        $current_date = new DrupalDateTime('now');
+
+        // Set the current date to the start of the week (Sunday).
+        $current_date->modify('-2 years');
+
+        // Get the timestamp for the start of the current week.
+        $current_week_start_timestamp = $current_date->getTimestamp();
+
+        // Use the entity query to retrieve media entities of the specified type created today.
+        $query_get_document = $entity_type_manager->getStorage($media_entity_type->id())->getQuery();
+        $result = $query_get_document
+          ->condition('bundle', $media_type)
+          ->condition('created', $current_week_start_timestamp, '>')
+          ->execute();
+        $result = array_values($result);
+
+        $whiteList = array_values($whiteListeIds);
+        $intersection = array_intersect($whiteList, $result);
+
+        //Enlever les documents de type social 
+        $midWithoutSocial = array_diff($intersection, $custom_service->allDocumentIdSocial());
+
+        $orGroup->addCondition('mid',  $midWithoutSocial,"IN");
+
+        $query->addConditionGroup($orGroup);
         //Filtrer les doc par role social (les utilisateurs qui ont le rôle social/admin seulement peuvent voir les documents social )
         // $custom_service->filterBysocial($query);
 
@@ -1725,8 +1786,30 @@ function phenix_custom_block_webform_submission_presave(Drupal\webform\WebformSu
      $custom_service->createActivity($infos);
   }
 }
-use Drupal\node\NodeInterface;
-use Drupal\Core\Session\AccountInterface;
+
+
+/**
+ * 
+ * Gestion de permission par rapport à l'utilisateur anonyme
+ * 
+ * Implements hook_entity_access().
+ */
+function phenix_custom_block_media_access(\Drupal\Core\Entity\EntityInterface $entity, $operation, \Drupal\Core\Session\AccountInterface $account) {
+  if ($account->isAnonymous()) {
+    if ($entity instanceof Drupal\media\Entity\Media) {
+      if ($entity->bundle() == 'remote_video') {
+        //vérifier si le media video est lié à un paragraphe qui est aussi lié à un terme de type "site metier" (SI OUI on autorise sinon ON BLOQUE)
+        
+        //QUERY qui recupere l'id du term qui est lié à la video ===> select DOS.entity_id from paragraph__field_video as Para LEFT JOIN taxonomy_term__field_dossier_ as DOS ON Para.entity_id = DOS.field_dossier__target_id where Para.field_video_target_id = 29819;
+        
+        return \Drupal\Core\Access\AccessResult::allowed();
+      }
+    }
+    return  \Drupal\Core\Access\AccessResult::forbidden();
+  }
+}
+
+
 /**
  * Implements hook_node_access().
  */
@@ -1743,4 +1826,38 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
     $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://metiers-viande.makoa4.makoa.net/accueil-metier');
     $response->send();
   } 
+
+  if ($account->isAnonymous()) {
+    if ($node->id() == '41250' && $op == 'view') {//TODO mettre le bon id pour MEP
+      return  \Drupal\Core\Access\AccessResult::allowed();
+    }
+    return  \Drupal\Core\Access\AccessResult::forbidden();
+  }
 }
+
+use \Drupal\taxonomy\Entity\Vocabulary;
+use \Drupal\user\Entity\Role;
+
+/**
+ * 
+ * Gestion de permission par rapport à l'utilisateur anonyme
+ * 
+ * Implements hook_entity_access().
+ */
+function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInterface $entity, $operation, \Drupal\Core\Session\AccountInterface $account) {
+      
+  $custom_service = \Drupal::service('phenix_custom_block.view_services');
+  if ($account->isAnonymous()) {
+    $base_url = \Drupal::request()->getSchemeAndHttpHost();
+
+    if ((strpos($base_url, 'metiers-viande.dev.makoa.net') >0) && $entity->hasField('vid') &&  ($custom_service->getNodeFieldValue($entity, 'vid') == 'metiers_viande_com')
+      && ($operation == 'view')) {
+      return  \Drupal\Core\Access\AccessResult::allowed();
+    }
+      
+    return  \Drupal\Core\Access\AccessResult::forbidden();
+  } 
+}
+
+
+
