@@ -1276,8 +1276,61 @@ public function checkIfMediaShouldNotBeDisplayed ($query) {
     ->condition('created', $current_week_start_timestamp, '>')
     ->execute();
 
-  $query->addCondition('mid',  array_values($result),"IN");
+    // $query->getWhere()[1]['type'] = 'OR';
+    // $query->getWhere()[0]['type'] = 'OR';
+    
+    // Set the group operator to OR.
+    
+    // Add conditions to the query.
+    $query->setGroupOperator('OR');
+    $query->addCondition('mid',  array_values($result),"IN");
+    // $query->addCondition('field_name', 'value1', 'CONTAINS');
+    // $query->addCondition('where', [0 => 
+    // [
+    //   'conditions' => array(
+    //     array(
+    //       'field' => 'mid',
+    //       'value' => 14542,
+    //       'operator' => '=',
+    //     ),
+    //   ),
+    //   'args' => [],
+    //   'type' => 'OR'
+    //     ]
+    //   ]);
+      // dump($query, $query->view->filter);
+      // dump($query->getWhere());
   return $query;
+}
+
+public function getAllTermRubrique () {
+  // Load the taxonomy vocabulary (replace 'your_vocabulary_name' with your actual vocabulary name).
+  $vid = 'rubrique';
+  $vocabulary = \Drupal\taxonomy\Entity\Vocabulary::load($vid);
+  $alltermId = [];
+  if ($vocabulary) {
+    // Load all terms in the vocabulary.
+    $query = \Drupal::entityTypeManager()
+      ->getStorage('taxonomy_term')
+      ->getQuery();
+    $query->condition('vid', $vid);
+    $tids = $query->execute();
+  
+    // Load the taxonomy terms based on the term IDs.
+    $terms = \Drupal\taxonomy\Entity\Term::loadMultiple($tids);
+  
+    // Iterate through the terms.
+    foreach ($terms as $term) {
+      // Do something with each term.
+      // $term is an instance of the Term entity.
+      $term_name = $term->getName();
+      $term_id = $term->id();
+      $alltermId[] = $term->id();
+      // ... perform any other operations you need.
+    }
+  }
+  return $alltermId;
+
 }
 
 public function idDocumentMoindeDeuxAnsPlusDocumentsSocial ($query) {
@@ -1309,7 +1362,7 @@ public function idDocumentMoindeDeuxAnsPlusDocumentsSocial ($query) {
     $docMoinsDeDeuxAns = array_values($result);
     $allIds = array_merge($docMoinsDeDeuxAns, $this->allDocumentIdSocial());
     
-  $query->addCondition('mid',  $allIds,"IN");
+  // $query->addCondition('mid',  $allIds,"IN");
 }
 
 public function displayOnlyDocLinkedWithMenu ($query) {
