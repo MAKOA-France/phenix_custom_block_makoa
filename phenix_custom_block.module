@@ -1137,7 +1137,7 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
   $base_url = \Drupal::request()->getSchemeAndHttpHost();
   \Drupal::cache()->invalidateAll();
   $form['#cache']['max-age'] = 0;
-  if ((strpos($base_url, 'metiers-viande.dev.makoa.net'))){//ne pas permettre au domaine metier d'acceder au formulaire poser question
+  if (((strpos($base_url, 'metiers-viande.dev.makoa.net')) !== false) || (strpos($base_url, 'metiers-viande.makoa4.makoa.net') !== false)){//ne pas permettre au domaine metier d'acceder au formulaire poser question
     if ($form['#id'] == 'webform-submission-poser-une-question-add-form') {
       $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://test-culture-viande.dev.makoa.net/');
       $response->send();
@@ -1863,7 +1863,7 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
   if ($account->isAnonymous()) {
     $base_url = \Drupal::request()->getSchemeAndHttpHost();
 
-    if ((strpos($base_url, 'metiers-viande.dev.makoa.net') >0) && $entity->hasField('vid') &&  ($custom_service->getNodeFieldValue($entity, 'vid') == 'metiers_viande_com')
+    if ((((strpos($base_url, 'metiers-viande.dev.makoa.net')) !== false) || (strpos($base_url, 'metiers-viande.makoa4.makoa.net') !== false)) && $entity->hasField('vid') &&  ($custom_service->getNodeFieldValue($entity, 'vid') == 'metiers_viande_com')
       && ($operation == 'view')) {
       return  \Drupal\Core\Access\AccessResult::allowed();
     }
