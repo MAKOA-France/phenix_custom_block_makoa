@@ -1606,21 +1606,86 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
     ->addWhere('group_id.group_type', 'LIKE', '%3%')
     ->addWhere('group_id.is_active', '=', TRUE)
     ->execute()->getIterator();
+
+    // $orGroup = $query->createConditionGroup('OR');
+    // $orGroup->addCondition('mid',  30159);
+    // $orGroup->addCondition('mid',  30162);
+    // $custom_service->displayOnlyDocLinkedWithMenu($query);
+    // $query->addConditionGroup($orGroup);
+    // $query->setGroupOperator('OR');
     
     $groupContacts = iterator_to_array($groupContacts);
     $groupContacts = array_column($groupContacts, 'group_id'); 
     if ((!in_array('super_utilisateur', $user_roles)  && !in_array('administrator', $user_roles)  && !in_array('social', $user_roles))) {
       if (in_array('adherent', $user_roles) || in_array('permanent', $user_roles)) {
         $blackListGroupId = $custom_service-> getAllGroupIdWhereUserDoesntBelongAndGroupIsAfficherSurExtranet ($cid, $groupContacts);
-        $query->addCondition('field_groupes',  $blackListGroupId,"NOT IN");
-        $fields = $index->getFields();
-
-        //Filtre, pour les adherent, le document doit etre lié aux menu
-        $custom_service->displayOnlyDocLinkedWithMenu($query);
+        // $fields = $index->getFields();
         
-        //Filter si le document date de plus 2 ans
-        $custom_service->checkIfMediaShouldNotBeDisplayed($query);
+        $orGroup = $query->createConditionGroup('OR');
 
+        $keyword = \Drupal::request()->query->get('search_api_fulltext');
+        // $orGroup->addCondition('field_groupes',  $blackListGroupId,"NOT IN");
+        $allRubriq = $custom_service->getAllTermRubrique();
+        $orGroup->addCondition('tid',  $allRubriq,"IN");
+        $orGroup->addCondition('field_titre',  '%' . $keyword . '%');
+        // $custom_service->displayOnlyDocLinkedWithMenu($orGroup);
+        
+        //Filtre, pour les adherent, le document doit etre lié aux menu
+        $whiteListeDocumentId = [];
+        //document lié aux termes via ajout document
+        $sql = 'select DISTINCT entity_id from media__field_tag';
+        $sqlQuery = \Drupal::database()->query($sql)->fetchAll();
+        $whiteListeDocumentViaAddDocId = array_column($sqlQuery, 'entity_id');
+        
+        
+        //document lié aux termes via paragraphes
+        $sql = 'SELECT DISTINCT field_document_target_id FROM paragraph__field_document';
+        $sqlQuery = \Drupal::database()->query($sql)->fetchAll();
+        $whiteListeDocumentViaParagrapheId = array_column($sqlQuery, 'field_document_target_id');
+
+        //Merger les deux array après
+        $whiteListeIds = array_merge($whiteListeDocumentViaAddDocId, $whiteListeDocumentViaParagrapheId);
+        // $orGroup->addCondition('mid',  array_values($whiteListeIds),"IN");
+
+
+
+        //Filter si le document date de plus 2 ans
+        // $orGroup = $custom_service->checkIfMediaShouldNotBeDisplayed($orGroup);
+        // Get the entity type manager service.
+        $entity_type_manager = \Drupal::entityTypeManager();
+
+        // Specify the media type you want to query.
+        $media_type = 'document';
+
+        // Get the media entity type.
+        $media_entity_type = $entity_type_manager->getDefinition('media');
+
+        // Get the current date in the site's timezone.
+        $current_date = new DrupalDateTime('now');
+
+        // Set the current date to the start of the week (Sunday).
+        $current_date->modify('-2 years');
+
+        // Get the timestamp for the start of the current week.
+        $current_week_start_timestamp = $current_date->getTimestamp();
+
+        // Use the entity query to retrieve media entities of the specified type created today.
+        $query_get_document = $entity_type_manager->getStorage($media_entity_type->id())->getQuery();
+        $result = $query_get_document
+          ->condition('bundle', $media_type)
+          ->condition('created', $current_week_start_timestamp, '>')
+          ->execute();
+        $result = array_values($result);
+
+        $whiteList = array_values($whiteListeIds);
+        $intersection = array_intersect($whiteList, $result);
+
+        //Enlever les documents de type social 
+        $midWithoutSocial = array_diff($intersection, $custom_service->allDocumentIdSocial());
+
+        $orGroup->addCondition('mid',  $midWithoutSocial,"IN");
+
+        $query->addConditionGroup($orGroup);
         //Filtrer les doc par role social (les utilisateurs qui ont le rôle social/admin seulement peuvent voir les documents social )
         // $custom_service->filterBysocial($query);
 
