@@ -755,8 +755,8 @@ function phenix_custom_block_preprocess_views_view_field(&$variables) {
       $custom_service->customResultSearchDoc ($variables);
     }
     
-    if ($field->field == 'field_titre') {
-      // $custom_service->customSearchTitreDossier($variables);
+    if ($entity instanceof  \Drupal\paragraphs\Entity\Paragraph) {
+      $custom_service->customSearchTitreDossier($variables);
     }
     
     if ($field->field == 'thumbnail') {
@@ -1593,8 +1593,6 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
   // You can now use $email for further processing.
   $cid = $custom_service->getContactIdByEmail($email);
   
-  $allRubriq = $custom_service->getAllTermRubrique();
-  // dump($allRubriq);
   
 
   //TODO  select * from menu_link_content_data where description like '%kkk%';
@@ -1609,6 +1607,13 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
     ->addWhere('group_id.group_type', 'LIKE', '%3%')
     ->addWhere('group_id.is_active', '=', TRUE)
     ->execute()->getIterator();
+
+    // $orGroup = $query->createConditionGroup('OR');
+    // $orGroup->addCondition('mid',  30159);
+    // $orGroup->addCondition('mid',  30162);
+    // $custom_service->displayOnlyDocLinkedWithMenu($query);
+    // $query->addConditionGroup($orGroup);
+    // $query->setGroupOperator('OR');
     
     $groupContacts = iterator_to_array($groupContacts);
     $groupContacts = array_column($groupContacts, 'group_id'); 
@@ -1725,7 +1730,6 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
         }
     }
     }
-
     
     use Drupal\Core\Database\Connection;
     use Drupal\Core\Database\Database;

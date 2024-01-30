@@ -990,6 +990,12 @@ public function customSearchTitreDossier (&$var) {
   if ($field->field == 'body') {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
+  if ($field->field == 'field_media_oembed_video') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'field_media_video_file') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
   if ($field->field == 'title') {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
@@ -1007,6 +1013,7 @@ public function customSearchTitreDossier (&$var) {
   }
   
   if ($entity->hasField('type') && $this->getNodeFieldValue($entity, 'type') == 'dossier' && $entity->hasField('parent_id')) {
+
     $termId = $this->getNodeFieldValue($entity, 'parent_id');
     $termObj = Term::load($termId);
     
@@ -1276,63 +1283,42 @@ public function checkIfMediaShouldNotBeDisplayed ($query) {
     ->condition('created', $current_week_start_timestamp, '>')
     ->execute();
 
-    // $query->getWhere()[1]['type'] = 'OR';
-    // $query->getWhere()[0]['type'] = 'OR';
-    
-    // Set the group operator to OR.
-    
-    // Add conditions to the query.
-    $query->setGroupOperator('OR');
-    $query->addCondition('mid',  array_values($result),"IN");
-    // $query->addCondition('field_name', 'value1', 'CONTAINS');
-    // $query->addCondition('where', [0 => 
-    // [
-    //   'conditions' => array(
-    //     array(
-    //       'field' => 'mid',
-    //       'value' => 14542,
-    //       'operator' => '=',
-    //     ),
-    //   ),
-    //   'args' => [],
-    //   'type' => 'OR'
-    //     ]
-    //   ]);
-      // dump($query, $query->view->filter);
-      // dump($query->getWhere());
+  $query->addCondition('mid',  array_values($result),"IN");
   return $query;
 }
 
-public function getAllTermRubrique () {
-  // Load the taxonomy vocabulary (replace 'your_vocabulary_name' with your actual vocabulary name).
-  $vid = 'rubrique';
-  $vocabulary = \Drupal\taxonomy\Entity\Vocabulary::load($vid);
-  $alltermId = [];
-  if ($vocabulary) {
-    // Load all terms in the vocabulary.
-    $query = \Drupal::entityTypeManager()
-      ->getStorage('taxonomy_term')
-      ->getQuery();
-    $query->condition('vid', $vid);
-    $tids = $query->execute();
-  
-    // Load the taxonomy terms based on the term IDs.
-    $terms = \Drupal\taxonomy\Entity\Term::loadMultiple($tids);
-  
-    // Iterate through the terms.
-    foreach ($terms as $term) {
-      // Do something with each term.
-      // $term is an instance of the Term entity.
-      $term_name = $term->getName();
-      $term_id = $term->id();
-      $alltermId[] = $term->id();
-      // ... perform any other operations you need.
+  /**
+   * TODO CHECK TERM IF SOCIAL AND THEN ESCAPE
+   */
+  public function getAllTermRubrique () {
+    // Load the taxonomy vocabulary (replace 'your_vocabulary_name' with your actual vocabulary name).
+    $vid = 'rubrique';
+    $vocabulary = \Drupal\taxonomy\Entity\Vocabulary::load($vid);
+    $alltermId = [];
+    if ($vocabulary) {
+      // Load all terms in the vocabulary.
+      $query = \Drupal::entityTypeManager()
+        ->getStorage('taxonomy_term')
+        ->getQuery();
+      $query->condition('vid', $vid);
+      $tids = $query->execute();
+    
+      // Load the taxonomy terms based on the term IDs.
+      $terms = \Drupal\taxonomy\Entity\Term::loadMultiple($tids);
+    
+      // Iterate through the terms.
+      foreach ($terms as $term) {
+        // Do something with each term.
+        // $term is an instance of the Term entity.
+        $term_name = $term->getName();
+        $term_id = $term->id();
+        $alltermId[] = $term->id();
+        // ... perform any other operations you need.
+      }
     }
+    return $alltermId;
+  
   }
-  return $alltermId;
-
-}
-
 public function idDocumentMoindeDeuxAnsPlusDocumentsSocial ($query) {
   // Get the entity type manager service.
   $entity_type_manager = \Drupal::entityTypeManager();
@@ -1362,7 +1348,7 @@ public function idDocumentMoindeDeuxAnsPlusDocumentsSocial ($query) {
     $docMoinsDeDeuxAns = array_values($result);
     $allIds = array_merge($docMoinsDeDeuxAns, $this->allDocumentIdSocial());
     
-  // $query->addCondition('mid',  $allIds,"IN");
+  $query->addCondition('mid',  $allIds,"IN");
 }
 
 public function displayOnlyDocLinkedWithMenu ($query) {
@@ -1382,8 +1368,20 @@ public function displayOnlyDocLinkedWithMenu ($query) {
   //Merger les deux array après
   $whiteListeIds = array_merge($whiteListeDocumentViaAddDocId, $whiteListeDocumentViaParagrapheId);
 
+
+  // dump($query->getWhere());
   // dump($whiteListeIds, count($whiteListeIds));
+
+  $orGroup = $query->createConditionGroup('OR');
+  // $orGroup->addCondition('mid',  30159);
+  // $orGroup->addCondition('mid',  30162);
+  
   $query->addCondition('mid',  array_values($whiteListeIds),"IN");
+  // $orGroup->addCondition('title',  '%conso%'," LIKE ");
+  // $query->addConditionGroup($orGroup);
+  // $query->setGroupOperator('OR');
+  // Create a group of conditions with the "OR" operator.
+
   return $query; 
 
 }
