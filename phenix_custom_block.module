@@ -1134,6 +1134,15 @@ use Drupal\Component\Utility\Html;
 // Implements hook_form_alter().
 function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
+  $base_url = \Drupal::request()->getSchemeAndHttpHost();
+  \Drupal::cache()->invalidateAll();
+  $form['#cache']['max-age'] = 0;
+  if ((strpos($base_url, 'metiers-viande.dev.makoa.net'))){//ne pas permettre au domaine metier d'acceder au formulaire poser question
+    if ($form['#id'] == 'webform-submission-poser-une-question-add-form') {
+      $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://test-culture-viande.dev.makoa.net/');
+      $response->send();
+    }
+  }
   
   if ($form['#form_id'] == 'civicrm_participant_edit_form') {
 
