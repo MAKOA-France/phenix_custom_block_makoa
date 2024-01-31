@@ -1853,8 +1853,11 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
     if (in_array($node->id(), [41250, 41248, 41249])) {//TODO mettre le bon id pour MEP
       if (in_array($op, ['view'])) {
           return \Drupal\Core\Access\AccessResult::allowed();
-        }
+      }
+      if (in_array($op, ['delete', 'update', 'view all revisions'])) {
         return \Drupal\Core\Access\AccessResult::forbidden();
+      }
+      return \Drupal\Core\Access\AccessResult::allowed();
     }else {
         // dump($node->id(), $node);
         // return \Drupal\Core\Access\AccessResult::forbidden();
