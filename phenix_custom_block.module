@@ -1690,10 +1690,16 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
         $whiteList = array_values($whiteListeIds);
         $intersection = array_intersect($whiteList, $result);
 
-        //Enlever les documents de type social 
-        $midWithoutSocial = array_diff($intersection, $custom_service->allDocumentIdSocial());
-
-        $orGroup->addCondition('mid',  $midWithoutSocial,"IN");
+        if (!in_array('social', $user_roles)) {
+          //Enlever les documents de type social 
+          $midWithoutSocial = array_diff($intersection, $custom_service->allDocumentIdSocial());
+          $orGroup->addCondition('mid',  $midWithoutSocial,"IN");
+          
+        }else {
+          //Si user a un rôle social on ajouter aussi les id doc de type social
+          $docSimplePlusSocial = array_merge($intersection, $custom_service->allDocumentIdSocial());
+          $orGroup->addCondition('mid',  $docSimplePlusSocial,"IN");
+        }
 
         $query->addConditionGroup($orGroup);
         //Filtrer les doc par role social (les utilisateurs qui ont le rôle social/admin seulement peuvent voir les documents social )
@@ -1705,9 +1711,9 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
     //Si user est social et que user n'est pas admin ou superutilsateur
     if (((!in_array('super_utilisateur', $user_roles)  || !in_array('administrator', $user_roles)) && in_array('social', $user_roles))) {
       //Ne pas filtre par date de 2 ans si le document est social et que le role est social
-      $custom_service->idDocumentMoindeDeuxAnsPlusDocumentsSocial ($query);
+      // $custom_service->idDocumentMoindeDeuxAnsPlusDocumentsSocial ($query);
       //Filtre, pour les adherent, le document doit etre lié aux menu
-      $custom_service->displayOnlyDocLinkedWithMenu($query);
+      // $custom_service->displayOnlyDocLinkedWithMenu($query);
     }
     
       
