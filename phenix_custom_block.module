@@ -1840,10 +1840,13 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
   } 
 
   if ($account->isAnonymous()) {
-    if (in_array($node->id(), ['41250', 41248]) && $op == 'view') {//TODO mettre le bon id pour MEP
-      return  \Drupal\Core\Access\AccessResult::allowed();
+    if (in_array($node->id(), [41250, 41248])) {//TODO mettre le bon id pour MEP
+      if (in_array($op, ['view'])) {
+          \Drupal\Core\Access\AccessResult::allowed();
+      }
+    }else {
     }
-    return  \Drupal\Core\Access\AccessResult::forbidden();
+      \Drupal\Core\Access\AccessResult::forbidden();
   }
 }
 
@@ -1876,9 +1879,9 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
         $response->send();
       }
     }else{
-        $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/');
-        $response->send();
-      }
+      $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/');
+      $response->send();
+    }
   } 
 }
 
