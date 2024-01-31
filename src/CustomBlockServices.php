@@ -65,6 +65,9 @@ class CustomBlockServices {
      * Permet de recuperer tous mes groupes
      */
     public function getAllMyGroup ($cid) {
+      if (!$cid) {
+        return;
+      }
         $query = "SELECT
             civicrm_group_civicrm_group_contact.id AS civicrm_group_civicrm_group_contact_id,
             civicrm_group_civicrm_group_contact.title AS civicrm_group_civicrm_group_contact_title,

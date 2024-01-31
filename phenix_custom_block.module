@@ -1840,13 +1840,21 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
   } 
 
   if ($account->isAnonymous()) {
-    if (in_array($node->id(), [41250, 41248])) {//TODO mettre le bon id pour MEP
-      if (in_array($op, ['view'])) {
-          \Drupal\Core\Access\AccessResult::allowed();
-      }
-    }else {
+    if ((strpos($domain, 'test-culture') !== false) || (strpos($domain, 'phenix.cultureviande') !== false)) {
+      return \Drupal\Core\Access\AccessResult::forbidden();
     }
-      \Drupal\Core\Access\AccessResult::forbidden();
+    
+    if (in_array($node->id(), [41250, 41248, 41249])) {//TODO mettre le bon id pour MEP
+      if (in_array($op, ['view'])) {
+          return \Drupal\Core\Access\AccessResult::allowed();
+        }
+        return \Drupal\Core\Access\AccessResult::forbidden();
+    }else {
+        // dump($node->id(), $node);
+        // return \Drupal\Core\Access\AccessResult::forbidden();
+        $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/accueil-metier');
+        $response->send();
+    }
   }
 }
 
