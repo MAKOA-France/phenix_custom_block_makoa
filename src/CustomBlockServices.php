@@ -2117,12 +2117,13 @@ public function notAdherentOrSocial  () {
         
         $documentPermission = $this->getNodeFieldValue($mediaObject, $permissionMedia);
         
-        if ($documentPermission && $hasRole) {
-          //on autorise la visualisation
-          return  \Drupal\Core\Access\AccessResult::allowed();
-        }else {
-          $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/');
-          $response->send();
+        if ($documentPermission) {
+          if ($hasRole) {
+            return  \Drupal\Core\Access\AccessResult::allowed();
+          }else {
+            $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/');
+            $response->send();
+          }
         }
       }
     } 
