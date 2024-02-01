@@ -2097,7 +2097,7 @@ public function notAdherentOrSocial  () {
     return $get_all_values;
   }
 
-    /**
+  /**
    * Permet de checker la permission de visualiser un media
    */
   public function checkPermissionMedia ($whiteListRole, $permissionMedia, $account) {
@@ -2126,7 +2126,7 @@ public function notAdherentOrSocial  () {
         }
       }
     } 
-}
+  }
 
 
 }
