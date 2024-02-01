@@ -190,7 +190,9 @@ tr:has(td > p.row-to-hide) {
     top: 9px;
     z-index: -1;
   }
-
+.role--permanent  .field--type-text-long.paragraphs-content .js-text-format-wrapper {
+    width: 97%;
+}
   
 .page-recherche .views-element-container nav.pager .pager__items .pager__item--previous {
     margin-right: unset !important;
