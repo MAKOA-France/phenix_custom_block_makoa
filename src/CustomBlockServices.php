@@ -2097,5 +2097,36 @@ public function notAdherentOrSocial  () {
     return $get_all_values;
   }
 
+    /**
+   * Permet de checker la permission de visualiser un media
+   */
+  public function checkPermissionMedia ($whiteListRole, $permissionMedia, $account) {
+    $current_role = $account->getRoles();
+
+    //Checker le role de l'utilisateur courant
+    $hasRole = in_array($whiteListRole, $current_role);
+
+    $request = \Drupal::request();
+    
+    //Si l'utilisateur n'est pas ni admin / Permanent / admin client / super user
+    if ((!in_array('super_utilisateur', $current_role) && !in_array('admin_client', $current_role) && !in_array('permanent', $current_role) && !in_array('administrator', $current_role))) {
+      //tester d'abord s'il y a du mid
+      if ($request->attributes->get('media') && $request->attributes->get('media')->get('mid')){
+        $media_id = $request->attributes->get('media')->get('mid')->getValue()[0]['value'];
+        $mediaObject = \Drupal\media\Entity\Media::load($media_id);
+        
+        $documentPermission = $this->getNodeFieldValue($mediaObject, $permissionMedia);
+        
+        if ($documentPermission && $hasRole) {
+          //on autorise la visualisation
+          return  \Drupal\Core\Access\AccessResult::allowed();
+        }else {
+          $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/');
+          $response->send();
+        }
+      }
+    } 
+}
+
 
 }

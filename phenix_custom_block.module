@@ -1905,5 +1905,24 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
   } 
 }
 
-
-
+/**
+ * Hook_entity_access
+ * Permet de determiner l'accès à une entité
+ * Pour l'instant c'est pour l'entité media de type document ici 
+ * 
+ */
+function phenix_custom_block_entity_access (\Drupal\Core\Entity\EntityInterface $entity, $operation, \Drupal\Core\Session\AccountInterface $account) {
+  
+  //Verifier si l'entité est de type media
+  if ($entity instanceof \Drupal\media\Entity\Media && ($operation == 'view')) {
+    //Verifier aussi si l'entité est de type media  et aussi document
+    if (getNodeFieldValue($entity, 'bundle') == 'document') {
+      $custom_service = \Drupal::service('phenix_custom_block.view_services');
+      $whiteListRole = "social";
+      $permissionMedia = "field_social";
+      //Pour gerer la permission des medias suivant le rôle
+      $custom_service->checkPermissionMedia($whiteListRole, $permissionMedia, $account) ;
+    }
+  }
+    
+}
