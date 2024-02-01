@@ -1823,7 +1823,10 @@ function phenix_custom_block_media_access(\Drupal\Core\Entity\EntityInterface $e
         return \Drupal\Core\Access\AccessResult::allowed();
       }
     }
-    // return  \Drupal\Core\Access\AccessResult::forbidden(); Ne pas mettre forbidden pour que les adherents puissent telecharger les documents via lien dans un email
+    if (\Drupal::request()->query->get('mcd')) {//s'il y a du parametre mcd dans le mail on autorise
+      return \Drupal\Core\Access\AccessResult::allowed();
+    }
+     return  \Drupal\Core\Access\AccessResult::forbidden(); //Ne pas mettre forbidden pour que les adherents puissent telecharger les documents via lien dans un email
   }
 }
 
