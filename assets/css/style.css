@@ -51,9 +51,14 @@
 .role--permanent .field--name-field-taxonomy-views-integrator-, .role--permanent [id^="edit-tvi"] {
     display: none;
 }
-.role--permanent .paragraphs-subform .field--type-text-long.field--name-field-texte-formate,.role--permanent  .field--type-text-long.field--name-field-contenu {
+.role--permanent  .taxonomy-term-rubrique-form.paragraphs-subform .field--type-text-long.field--name-field-texte-formate,.role--permanent .taxonomy-term-rubrique-form  .field--type-text-long.field--name-field-contenu {
     display: inline-flex;
-    width: 47%;
+    width: 100%;
+}
+
+.role--permanent .taxonomy-term-rubrique-form .field--type-text-long.field--name-field-contenu {
+    padding-top: 40px;
+    padding-bottom: 50px;
 }
 
 .role--permanent .field--name-status {
