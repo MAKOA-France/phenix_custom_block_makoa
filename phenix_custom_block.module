@@ -498,7 +498,7 @@ function phenix_custom_block_preprocess_page(&$variables)
         $all_possibility_type_certification = $custom_service->allTypeCertification();
         $default_value_of_current_cid = $custom_service->allValueCertificationInPreviousYearByContact ($current_cid);
         foreach($all_possibility_type_certification as $value) {
-            // dump($value, $default_value_of_current_cid);
+            
             if (!in_array($value, $default_value_of_current_cid)) {
               //Creer une ligne vide pour chaque value
               $results = \Civi\Api4\CustomValue::create('certifications_mgd', FALSE)
@@ -1880,7 +1880,6 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
       }
       return \Drupal\Core\Access\AccessResult::allowed();
     }else {
-        // dump($node->id(), $node);
         // return \Drupal\Core\Access\AccessResult::forbidden();
         $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/accueil-metier');
         $response->send();
