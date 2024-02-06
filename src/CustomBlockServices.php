@@ -2264,7 +2264,17 @@ public function notAdherentOrSocial  () {
    */
   public function getAllIdParagrapheWhenContentLikeKeyword ($keyword) {
     $query=  " select entity_id from paragraph__field_texte_formate where field_texte_formate_value like '%" . $keyword . "%'";
-    return \Drupal::database()->query($query)->fetchCol('entity_id');
+    $allEntityId = \Drupal::database()->query($query)->fetchCol('entity_id');
+    $whiteListEntityId = [];
+    foreach ($allEntityId as $entityId) {
+      $termId = \Drupal::database()->query('select entity_id from taxonomy_term__field_dossier where field_dossier_target_id = ' . $entityId)->fetch()->entity_id;
+      
+      $isLinkedWithMenu = $this->isTermLinkedWithMenu($termId);
+      if ($isLinkedWithMenu) {
+        $whiteListEntityId[] = $entityId;
+      }
+    }
+    return $whiteListEntityId;
   }
 
 
