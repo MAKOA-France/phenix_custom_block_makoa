@@ -502,7 +502,6 @@ class CustomBlockServices {
             }elseif ($paragraph->hasField('field_lien')) {//Si de type liste de liens
               $this->getLinkHtml($paragraph, $data, $counter);
               
-              // dump($paragraph);
             }
            
           }
@@ -933,7 +932,6 @@ public function getAllLinkedDocByTags (&$var) {
   $term_name = $this->getNodeFieldValue($term_object, 'name');
   $string_query = 'select entity_id from media__field_tag where field_tag_target_id = ' . $term_object_id;
   $all_linked_doc = $db->query($string_query)->fetchAll();
-  // dump($all_linked_doc, $term_object_id);
   return $all_linked_doc;
 }
  
@@ -1092,7 +1090,6 @@ public function customSearchTitreDossier (&$var) {
       
       // Create a link using the URL and the term name as the link text.
       $link = Link::fromTextAndUrl($termName, $url);
-      // dump($link);
       // Render the link.
       $output = $link->toRenderable();
       $linkUrl = \Drupal::service('renderer')->render($output)->__toString();
@@ -1238,7 +1235,6 @@ public function customResultSearchDoc (&$var) {
         $allnames = '';
         if(count($curr_term) > 1) {
           foreach($curr_term as $key => $value_term) {
-            // dump($this->getNodeFieldValue($value_term, 'name'));
             $allnames .= $this->getNodeFieldValue($value_term, 'name') . ', ';
           }
           $allnames = rtrim($allnames, ', ');
@@ -1382,7 +1378,8 @@ public function checkIfMediaShouldNotBeDisplayed ($query) {
         $term_name = $term->getName();
         $term_id = $term->id();
         $isLinkedWithMenu = $this->isTermLinkedWithMenu($term->id());
-        if ($isLinkedWithMenu) {
+        $isTermSocial = $this->isTermSocial($term->id());
+        if ($isLinkedWithMenu && !$isTermSocial) {
           $alltermId[] = $term->id();
         }
       }
@@ -1435,13 +1432,10 @@ public function displayOnlyDocLinkedWithMenu ($query) {
   $sqlQuery = \Drupal::database()->query($sql)->fetchAll();
   $whiteListeDocumentViaParagrapheId = array_column($sqlQuery, 'field_document_target_id');
 
-  // dump(count($whiteListeDocumentViaParagrapheId));
   //Merger les deux array après
   $whiteListeIds = array_merge($whiteListeDocumentViaAddDocId, $whiteListeDocumentViaParagrapheId);
 
 
-  // dump($query->getWhere());
-  // dump($whiteListeIds, count($whiteListeIds));
 
   $orGroup = $query->createConditionGroup('OR');
   // $orGroup->addCondition('mid',  30159);
@@ -1715,7 +1709,6 @@ public function customResultSearchTerm(&$var){
 
   $isTheTermHasLinkedMenu = \Drupal::database()->query("select link__uri from menu_link_content_data where link__uri like '%internal:/taxonomy/term/5561%'")->fetch();
   // $query = \Drupal::database()->query("select REVERSE(SUBSTRING_INDEX(REVERSE(link__uri), '/', 1)) AS term_id from menu_link_content_data where link__uri like '%/taxonomy/term/%';")->fetchAll();
-    // dump($value, $row->_entity->get('mid'));
     // if (!$isTheTermHasLinkedMenu) {
     //   unset($var['row']);
     //   unset($var['view']);
@@ -1769,7 +1762,12 @@ public function customResultSearchTerm(&$var){
         $description = utf8_decode($description);
       }
     }
-    
+    // Truncate the text
+    $maxLength = 200; // Adjust the maximum length as needed
+    $nombreCaracteres = mb_strlen($description);
+    $troisPoint = ($nombreCaracteres <200) ? ' ' : ' ...';
+    $description = mb_substr($description, 0, $maxLength) . $troisPoint;
+
      $info_node_article = [
       '#theme' => 'phenix_custom_bloc_search_term',
       '#cache' => ['max-age' => 0],
@@ -1851,7 +1849,6 @@ public function checkIfUserIsAdminOrSocial () {
   // Get an array of role IDs for the current user.
   $user_roles = $current_user->getRoles();
   $whiteListRole = ['administrator', 'social', 'super_utilisateur'];
-  // dump($user_roles);
   $allowToEdit = false;
   
   if (in_array('administrator', $user_roles) || in_array('social', $user_roles) || in_array('super_utilisateur', $user_roles)) {
@@ -1941,7 +1938,6 @@ public function sortTermIdByDateCreation ($res, $isTermSocial = false) {
   if ($docs) {
 
     uasort($docs, function($a, $b) {
-      // dump($a->get('created')->value);
       $timestampA = $a->get('created')->value;
       $timestampB = $b->get('created')->value;
       return $timestampB - $timestampA;
@@ -2229,7 +2225,9 @@ public function notAdherentOrSocial  () {
     //Vérifier si le term est lié au menu
     foreach ($datas as $data) {
       $isLinkedWithMenu = $this->isTermLinkedWithMenu($data->tid);
-      if ($isLinkedWithMenu) {
+      
+      $isTermSocial = $this->isTermSocial($data->tid);
+      if ($isLinkedWithMenu  && !$isTermSocial ) {
         $documentId = \Drupal::database()->query('select field_document_target_id from paragraph__field_document where entity_id = ' . $data->pid . '')->fetchAll();
         if ($documentId) {
           $currentTermId = 0;
@@ -2245,7 +2243,6 @@ public function notAdherentOrSocial  () {
             $now = time();
             // Calculer le timestamp pour il y a exactement deux ans à partir de maintenant
             $twoYearsAgo = strtotime("-2 years", $now);
-            // dump($currentTermId, $data->tid);
             // Vérifier si la date donnée est plus de deux ans dans le passé
             if (($dateTimestamp > $twoYearsAgo) && ($currentTermId != $data->tid)) {
               $whiteListparaId[] = $data->pid;
@@ -2270,11 +2267,23 @@ public function notAdherentOrSocial  () {
       $termId = \Drupal::database()->query('select entity_id from taxonomy_term__field_dossier where field_dossier_target_id = ' . $entityId)->fetch()->entity_id;
       
       $isLinkedWithMenu = $this->isTermLinkedWithMenu($termId);
-      if ($isLinkedWithMenu) {
+      $isTermSocial = $this->isTermSocial($termId);
+      if ($isLinkedWithMenu && !$isTermSocial) {
         $whiteListEntityId[] = $entityId;
       }
     }
     return $whiteListEntityId;
+  }
+
+
+  public function isTermSocial ($termId) {
+    $termObj = Term::load($termId);
+    $isTermSocial = false;
+    if ($termObj) {
+      $isTermSocial = $this->getNodeFieldValue($termObj, 'field_social');
+      return $isTermSocial;
+    }
+    return $isTermSocial;
   }
 
 
