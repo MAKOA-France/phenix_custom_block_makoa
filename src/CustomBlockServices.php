@@ -1014,10 +1014,75 @@ public function customSearchTitreDossier (&$var) {
   if ($field->field == 'title_1') {
     $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
   }
-  if ($field->field == 'field_titre') {
+
+  if ($field->field == 'parent_type') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'id') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'type') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'parent_field_name') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+  if ($field->field == 'parent_id') {
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+
+   
+  if ($field->field == 'field_texte_formate' && $value) {
+    $textDescription = $this->getNodeFieldValue($entity, $field->field);
+
+    $termId = $this->getNodeFieldValue($entity, 'parent_id');
+     
+    $termObj = Term::load($termId);
+    
+    $termName = $this->getNodeFieldValue($termObj, 'name');
+    
+    $published_on = $this->getNodeFieldValue($termObj, 'changed');
+    $convertedDate = $this->convertTimestampToDateDMYHS($published_on);
+
+    // Remove HTML tags
+    $plainTextContent = strip_tags($value);
+
+    // Truncate the text
+    $maxLength = 200; // Adjust the maximum length as needed
+    $value = mb_substr($plainTextContent, 0, $maxLength);
+
+
+    $info_term = [
+      '#theme' => 'phenix_custom_bloc_search_description_term',
+      '#cache' => ['max-age' => 0],
+      '#content' => [
+        'title' => $termName,
+        'resume' => $value,
+        'published_on' => $convertedDate, 
+        'node_id' => $termObj->id(),
+        ]
+      ]; 
+      $var['output'] = $info_term;
+    
+
+    
+  }
+
+  if ($field->field == 'field_titre' && (!$value)) {
+
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+      
+  if ($field->field == 'field_texte_formate' && (!$value)) {
+
+    $var['output'] = ['#markup' => '<span class="empty-td"></span>'];
+  }
+
+  if ($field->field == 'field_titre' && $value) {
     if ($entity->hasField('type') && $this->getNodeFieldValue($entity, 'type') == 'dossier' && $entity->hasField('parent_id')) {
 
       $termId = $this->getNodeFieldValue($entity, 'parent_id');
+      $isLinkedWithMenu = $this->isTermLinkedWithMenu($termId);
       $termObj = Term::load($termId);
       
       $termName = $this->getNodeFieldValue($termObj, 'name');
@@ -1316,8 +1381,10 @@ public function checkIfMediaShouldNotBeDisplayed ($query) {
         // $term is an instance of the Term entity.
         $term_name = $term->getName();
         $term_id = $term->id();
-        $alltermId[] = $term->id();
-        // ... perform any other operations you need.
+        $isLinkedWithMenu = $this->isTermLinkedWithMenu($term->id());
+        if ($isLinkedWithMenu) {
+          $alltermId[] = $term->id();
+        }
       }
     }
     return $alltermId;
@@ -2127,6 +2194,77 @@ public function notAdherentOrSocial  () {
         }
       }
     } 
+  }
+
+  public function isTermLinkedWithMenu ($term_id) {
+    $term = \Drupal\taxonomy\Entity\Term::load($term_id);
+    // Check if the term entity is valid
+    if ($term) {
+      // Check if there are menu links associated with the term
+      // $menu_link_manager = \Drupal::service('plugin.manager.menu.link');
+      // $menu_links = $menu_link_manager->loadLinksByRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $term_id]);
+
+      $title = $this->getNodeFieldValue($term, 'name');
+      $title = str_replace("'", "''", $title);
+      $query = "select enabled from menu_link_content_data where title =  '$title'"; 
+      if (\Drupal::database()->query($query)) {
+
+        if (\Drupal::database()->query($query)) {
+          $fetched  = \Drupal::database()->query($query)->fetchAll();
+          $fetched = array_column($fetched, 'enabled');
+          return in_array('1', $fetched);
+        }
+      } 
+
+      return false;
+    }
+  } 
+  
+  public function getIdParagraphesWhereTitreLikeKeyWord($keyWord) {
+    //Récuperer le term parent qui est lié à ce paragraphe
+    $query = "select TAX.entity_id as tid, PAR.entity_id as pid from paragraph__field_titre as PAR LEFT JOIN taxonomy_term__field_dossier  as TAX ON PAR.entity_id = TAX.field_dossier_target_id where field_titre_value like '%$keyWord%'";
+    $datas = \Drupal::database()->query($query)->fetchAll();
+    $whiteListparaId = [];
+
+    //Vérifier si le term est lié au menu
+    foreach ($datas as $data) {
+      $isLinkedWithMenu = $this->isTermLinkedWithMenu($data->tid);
+      if ($isLinkedWithMenu) {
+        $documentId = \Drupal::database()->query('select field_document_target_id from paragraph__field_document where entity_id = ' . $data->pid . '')->fetchAll();
+        if ($documentId) {
+          $currentTermId = 0;
+          foreach($documentId as $docId) {
+            $media = Media::load($docId->field_document_target_id);
+            $created = $this->getNodeFieldValue($media, 'created');
+            $now = time();
+            $twoYearsAgo = strtotime("-2 years", $now);
+            $date = date("d-m-Y", $created);
+            // Convertir la date donnée en timestamp
+            $dateTimestamp = strtotime($date);
+            // Obtenir le timestamp actuel
+            $now = time();
+            // Calculer le timestamp pour il y a exactement deux ans à partir de maintenant
+            $twoYearsAgo = strtotime("-2 years", $now);
+            // dump($currentTermId, $data->tid);
+            // Vérifier si la date donnée est plus de deux ans dans le passé
+            if (($dateTimestamp > $twoYearsAgo) && ($currentTermId != $data->tid)) {
+              $whiteListparaId[] = $data->pid;
+              $currentTermId = $data->tid;
+            }
+          }
+        }
+      }
+    }
+
+    return $whiteListparaId;
+  }
+
+    /**
+   * 
+   */
+  public function getAllIdParagrapheWhenContentLikeKeyword ($keyword) {
+    $query=  " select entity_id from paragraph__field_texte_formate where field_texte_formate_value like '%" . $keyword . "%'";
+    return \Drupal::database()->query($query)->fetchCol('entity_id');
   }
 
 
