@@ -150,6 +150,14 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
           'path' => $path . '/templates',
           'template' => 'search-titre-dossier-term'
         ],
+        'phenix_custom_bloc_search_description_term' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates',
+          'template' => 'search-in-description-term'
+        ],
         'phenix_custom_bloc_search_media_video' => [
           'variables' => [
           'content' => Null,
@@ -1637,8 +1645,18 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
         // $orGroup->addCondition('field_groupes',  $blackListGroupId,"NOT IN");
         $allRubriq = $custom_service->getAllTermRubrique();
         $orGroup->addCondition('tid',  $allRubriq,"IN");
-        $orGroup->addCondition('field_titre',  '%' . $keyword . '%');
-        // $custom_service->displayOnlyDocLinkedWithMenu($orGroup);
+
+        //Countournement du probleme de reherche  ==> Recuperer les id elements qui sont like 'field_titre';
+        $whiteListParagraphe = $custom_service->getIdParagraphesWhereTitreLikeKeyWord ($keyword);
+        //recuperer tous les id de paragraphes qui est resseble ("like")au mot clés like 'field_texte_formate'
+        $idParagraphes = $custom_service->getAllIdParagrapheWhenContentLikeKeyword ($keyword);
+        //Merger avec le whitelist paragraphe
+        $whiteListParagraphe = array_merge($whiteListParagraphe, $idParagraphes);
+        $whiteListParagraphe = array_unique($whiteListParagraphe);
+        
+        if ($whiteListParagraphe) {
+          $orGroup->addCondition('id',  $whiteListParagraphe, 'IN');
+        }
         
         //Filtre, pour les adherent, le document doit etre lié aux menu
         $whiteListeDocumentId = [];

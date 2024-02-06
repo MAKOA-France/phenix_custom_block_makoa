@@ -1,8 +1,8 @@
-<div class="node-search document-content">
+<div class="node-search document-content blallll">
     <div class="default-content-node default-content-doc">
-        <a href="/taxonomy/term/{{ content.node_id }}"><h3>{{ content.resume }}</h3></a>
+        <a href="/taxonomy/term/{{ content.node_id }}"><h3>{{ content.title |raw }}</h3></a>
         <div class="node-description doc-resume">
-            <p class="p-node-description doc-resume">{{ content.title|raw }}</p>
+            <p class="p-node-description doc-resume">{{ content.resume|raw }}</p>
         </div>
         <p class="doc-created-at">  {{ "Publié le " ~ content.published_on |raw}}</p>        
     </div>
