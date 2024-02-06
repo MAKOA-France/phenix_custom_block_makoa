@@ -11,6 +11,10 @@
     width: 19%;
     margin-right: 10px;
 }
+.page-culture-viande-edito-du-president table img {
+    padding-left: 30px;
+    padding-bottom: 20px;
+}
 .webform-submission-poser-une-question-form .form-item-civicrm-1-activity-1-activity-subject {
     margin-left: 3.5% !important;
 }
@@ -1588,6 +1592,13 @@ ul.chosen-results li {
 }
 /* Small devices (landscape phones) */
 @media (max-width: 768px) { 
+    .page-culture-viande-edito-du-president table img {
+        padding-left: 0px;
+        padding-bottom: 20px;
+    }
+    .page-culture-viande-edito-du-president .img-txt-side-by-side h3 {
+        font-size: 1em;
+    }
     .custom-add-and-edit-form #edit-field-media-document-0-upload,
     .custom-add-and-edit-form #edit-field-media-document-wrapper span.file,
     .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"] {
