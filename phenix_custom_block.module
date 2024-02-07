@@ -1953,5 +1953,23 @@ function phenix_custom_block_entity_access (\Drupal\Core\Entity\EntityInterface 
       $custom_service->checkPermissionMedia($whiteListRole, $permissionMedia, $account) ;
     }
   }
+
+  //Vérifier si l'entité en question est civicrm_group
+  if ($entity instanceof Drupal\civicrm_entity\Entity\CivicrmEntity && $entity->getEntityTypeId() == 'civicrm_group') {
+    $user_roles = $account->getRoles();
+    //checker le role de l'user si c'est ni un SU ou Admin ou admin client
+    if ((!in_array('super_utilisateur', $user_roles)  && !in_array('administrator', $user_roles)  && !in_array('admin_client', $user_roles))) {
+      //Si l'user a un role 'adherent' ou 'social'
+      if (in_array('adherent', $user_roles) || in_array('social', $user_roles)) {
+        //et que l'operation n'est pas "visualiser" on n'autorise pas
+        if ($operation == 'view') {
+          return  \Drupal\Core\Access\AccessResult::allowed();
+        }else {
+          return  \Drupal\Core\Access\AccessResult::forbidden();
+        }
+      }
+    }
+
+  }
     
 }
