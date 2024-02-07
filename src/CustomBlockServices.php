@@ -2042,6 +2042,30 @@ public function notAdherentOrSocial  () {
     return $all_types;
   }
 
+  public function getPreviousYear () {
+    return date('Y', strtotime('-1 year'));
+
+  }
+
+  public function formulaireDonneeEcoCheckIfThereIsDonneeGeneraleByCid($cid) {
+    $hasValue = \Drupal::database()->query("select entity_id , dg_annee from civicrm_value_donnees_generales_annee where dg_annee like '%" . $this->getPreviousYear() . "%' and  entity_id =" . $cid)->fetch();
+    return $hasValue;
+  }
+
+  public function createEmptyLineForDonneeGenerale ($cid) {
+    $results = \Civi\Api4\CustomValue::create('donnees_generales_annee', FALSE)
+    ->addValue('dg_annee', '2023-01-01')
+    ->addValue('dg_ca', '')
+    ->addValue('dg_ca_gms', '')
+    ->addValue('dg_ca_bouchers', '')
+    ->addValue('dg_ca_rdh', '')
+    ->addValue('dg_ca_exp', '')
+    ->addValue('dg_ca_grossiste', '')
+    ->addValue('dg_ca_ind', '')
+    ->addValue('entity_id', $cid)
+    ->execute();
+  }
+
   public function allTypeViande () {
     $all_types = \Civi\Api4\OptionValue::get(FALSE)
     ->addSelect('value')

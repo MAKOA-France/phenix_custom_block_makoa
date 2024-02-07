@@ -475,6 +475,18 @@ function phenix_custom_block_preprocess_page(&$variables)
       }
     }
 
+    
+    //Permet d'afficher des lignes vides s'il n'y a pas de valeur pour la page Données generale
+    if ($current_cid && strpos($current_path, 'entreprise-donnee-generale') !== false ) {
+      
+      //checker s'il n'y a pas de donnée pour l'année precedante
+      $hasData = $custom_service->formulaireDonneeEcoCheckIfThereIsDonneeGeneraleByCid($current_cid);
+      
+      //Si non on crée une ligne
+      if (!$hasData) {
+        $custom_service->createEmptyLineForDonneeGenerale($current_cid);
+      }
+    }
 
     //Permet d'afficher des lignes vides s'il n'y a pas de valeur pour la page transformation et decoupe
     if ($current_cid && strpos($current_path, 'transformation-decoupe') !== false ) {
