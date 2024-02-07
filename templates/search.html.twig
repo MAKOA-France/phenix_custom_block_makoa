@@ -8,7 +8,7 @@
     </div>
     <div class="doc-info">
         {% if content.filiere %}
-         <span class="libelle-filiere-doc"></span><span class="doc-filiere">{{ content.filiere }}</span> |
+         <span class="libelle-filiere-doc"></span><span class="doc-filiere">{{ content.filiere }}</span> {% if content.type_document %} | {% endif %}
         {% endif %}
         {% if content.type_document %}
             <span class="libelle-type-doc"></span><span class="doc-type">{{ content.type_document }}</span>
