@@ -59,6 +59,21 @@
     display: inline-flex;
     width: 100%;
 }
+.icon-search-result-doc {
+    width: 20px;
+}
+.a-custom-icon-search-doc {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+}
+.result-term-custom {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+}
 
 .role--permanent .taxonomy-term-rubrique-form .field--type-text-long.field--name-field-contenu {
     padding-top: 40px;
