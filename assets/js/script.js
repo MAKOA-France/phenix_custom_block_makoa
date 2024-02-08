@@ -1,7 +1,8 @@
 (function($) {
     $(window).on('load', function () {
 
-        $('.submenu').removeClass('menu-to-be-showed');
+        jQuery('.menu-to-be-showed').parents('ul').show();
+
 
         $('body').on('click', '.af-button.btn-warning',function() {
             jQuery('li.active').next('li').find('a').click();
