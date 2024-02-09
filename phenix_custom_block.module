@@ -587,7 +587,7 @@ function phenix_custom_block_preprocess_page(&$variables)
 
       $current_cid = CRM_Core_Session::singleton()->get('userID');
 
-      $variables['page']['highlighted']['#markup'] = '<h2>DONNEES ECONOMIQUES - ' . $custom_service->getContactNameById($cid) . '</h2><br><p>Merci de renseigner les 9 onglets.</p><ul id="progressbar">
+      $variables['page']['highlighted']['#markup'] = '<h2>Synthèse et Données Economiques ' . $custom_service->getContactNameById($cid) . '</h2><br><p>Merci de renseigner les 9 onglets.</p><ul id="progressbar">
       <li  href-attribute="/civicrm/donnees-economique-entreprise-agrement-sanitaire#?id=' . $current_cid . '"  class="' . $custom_service->isActive('agrement-sanitaire') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-agrement-sanitaire#?id=' . $current_cid . '">Agréments sanitaires</a></li>
       <li  href-attribute="/civicrm/donnees-economique-entreprise-donnee-generale#?id=' . $current_cid . '" class="' . $custom_service->isActive('donnee-generale') . '" id="donnee-eoconomique-entreprise-donnee-generale"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-donnee-generale#?id=' . $current_cid . '">Données Générales</a></li>
       <li  href-attribute="/civicrm/donnees-economique-entreprise-abattages#?id=' . $current_cid . '" class="' . $custom_service->isActive('abattages') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-abattages#?id=' . $current_cid . '">Abattages</a></li>
