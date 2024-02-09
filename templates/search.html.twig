@@ -1,7 +1,11 @@
 {% if content.has_result %}
 <div class="document-content">
     <div class="default-content-doc">
-        <a href="/media/{{ content.media_id }}/download"><h3>{{ content.title }}</h3></a><p class="doc-created-at">  {{ "Publié le " ~ content.published_on |raw}}</p>
+        <a href="/media/{{ content.media_id }}/download?token={{ content.doc_token }}" class="a-custom-icon-search-doc">
+            {{ content.icon_doc }}
+            <h3>{{ content.title }}</h3>
+        </a>
+        <p class="doc-created-at">  {{ "Publié le " ~ content.published_on |raw}}</p>
     </div>
     <div class="doc-resume">
         <p class="doc-resume">{{ content.resume|raw }}</p>
