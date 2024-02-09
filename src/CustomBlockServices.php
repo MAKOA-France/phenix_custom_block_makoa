@@ -13,6 +13,7 @@ use Drupal\file\Entity\File;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
+use \Drupal\Component\Utility\UrlHelper;
 
 use Drupal\Core\Routing\TrustedRedirectResponse;
 
@@ -1112,6 +1113,8 @@ public function customSearchTitreDossier (&$var) {
   }
 }
 
+
+
 /**
  * Personnaliser l'affichage des resultat de recherche (search api)
  */
@@ -1247,9 +1250,39 @@ public function customResultSearchDoc (&$var) {
       $type_doc = $entity->get('field_type_de_document')->getValue()[0]['value'];
       $libelle = $this->getTypeDocumentWithAutre($entity);
       $allowToEdit = $this->checkIfUserCanEditDoc ();
+      $icon_html = '';
+      //recuperer le type de document 
+      if ($entity->hasField('field_media_document')) {
+
+        $file = $this->getNodeFieldValue($entity, 'field_media_document');
+        $file = \Drupal\file\Entity\File::load($file);
+        $filememe = $this->getNodeFieldValue($file, 'filemime');
+        $file_type = 'pdf-3.png';
+        switch($filememe) {
+        case 'application/pdf':
+          $file_type = 'pdf-3.png';
+          break;
+        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+          $file_type = 'pdf-2.png';
+          break;
+          case 'application/msword':
+          $file_type = 'pdf-2.png';
+          break;
+          case 'application/rtf':
+            $txt_file = '.rtf';
+          break;
+        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+          $file_type = 'pdf.png';
+          break;
+        case 'application/vnd.ms-excel':
+          $file_type = 'pdf.png';
+          break;
+        }
+        
+        $icon_html = ['#markup' => '<img   class="icon-search-result-doc" loading="lazy" src="/files/assets/'. $file_type .'">'];
+      }
 
 
-      
       if ($libelle) {
         $libelle = $libelle == 'Autre' ? false : $libelle;
         $doc_info = [
@@ -1264,7 +1297,9 @@ public function customResultSearchDoc (&$var) {
             'media_id' => $entity->id(),
             'can_edit_doc' => $allowToEdit,
             'has_result' => true, 
-            'linked_term_name' => $allnames
+            'linked_term_name' => $allnames,
+            'doc_token' => $this->generateTokenToMedia($entity),
+            'icon_doc' => $icon_html,
             ]
         ];
         $var['output'] = $doc_info;
@@ -1295,6 +1330,31 @@ public function customResultSearchDoc (&$var) {
   }
 }
 
+
+public function generateTokenToMedia ($media) {
+  $csrfToken = '';
+    // Vérifier si le média existe et s'il a une relation de fichier
+    if ($media && $media->hasField('field_media_document')) {
+      // Récupérer la cible de la relation de fichier (le fichier)
+      $file_target = $media->get('field_media_document')->target_id;
+
+      // Charger l'entité de fichier correspondante
+      $file = File::load($file_target);
+
+      // Vérifier si le fichier existe
+      if ($file) {
+          // Obtenir l'URI du fichier
+          $file_uri = $file->getFileUri();
+
+          // Générer une instance de l'URL à partir de l'URI du fichier
+          $url = Url::fromUri(file_create_url($file_uri));
+
+          // Générer un token CSRF
+          $csrfToken = \Drupal::service('csrf_token')->get();
+      }
+    }
+    return $csrfToken;
+}
 
 /**
  * Requete de test pour reuperer un document lié par paragraphe
