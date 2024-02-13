@@ -426,13 +426,24 @@ function phenix_custom_block_preprocess_page(&$variables)
         if (!in_array($value, $default_value_of_current_cid)) {
           //Creer une ligne vide pour chaque value
           $results = \Civi\Api4\CustomValue::create('prod_approv_abattage', FALSE)
-            ->addValue('abattage_annee', $custom_service->getPreviousOnlyYear())
-            ->addValue('abattage_type_viandes', $value)
+          ->addValue('abattage_annee', $custom_service->getPreviousOnlyYear())
+          ->addValue('abattage_type_viandes', $value)
             ->addValue('entity_id', $current_cid)
             ->execute();
         }
       }
     } 
+    
+    // Effectif annuel creer une ligne vide s'il y en a pas
+    if ($current_cid && strpos($current_path, 'entreprise-effectif-annuel') !== false ) {
+      $hasData = $custom_service->checkIfThereIsAlreadyAdata($current_cid);
+      if (!$hasData) {
+        $results = \Civi\Api4\CustomValue::create('phx_CC', FALSE)
+          ->addValue('entity_id', $current_cid)
+          ->addValue('Annee', $custom_service->getPreviousOnlyYear())
+          ->execute();
+      }
+    }
 
     $current_cid = is_array($current_cid) ? $current_cid[1] : $current_cid;
     if ($current_cid && strpos($current_path, 'entreprise-agrement-sanitaire') !== false ) {
@@ -541,13 +552,14 @@ function phenix_custom_block_preprocess_page(&$variables)
     }
 
     //Formulaire  "Informations Thématiques" (Abonnements)
-    if (strpos($current_path, 'gdpr/comms-prefs/update') !== false ) {
+    if (strpos($current_path, 'gdpr/comms-prefs/update') !== false) {
     //   $variables['page']['content']['#markup'] = '<h1>Bonjour, voici le Formulaire de mise à jour des Informations Thématiques" (Abonnements) de votre entreprise</h1><br><h2 class="turn-right">Informations thématiques diffusées par Culture Viande</h2>
     //   <p class="listing-category turn-right">(qualité, export, économique, social, etc…)</p>
     //  <h2 class="turn-right">Désignation des destinataires au titre de votre entreprise</h2>';
     }
 
-    if (strpos($current_path, 'donnees-economique-entreprise') !== false) {
+    if (strpos($current_path, 'donnees-economique-entreprise') !== false || strpos($current_path, '/civicrm/bulletin-cotisation-') !== false
+     || strpos($current_path, 'buttetin-cotisation-') !== false  || strpos($current_path, 'bulletin-de-cotisation') !== false ) {
       $cid = \Drupal::service('session')->get('current_ contact_id');
       
       
@@ -587,7 +599,12 @@ function phenix_custom_block_preprocess_page(&$variables)
 
       $current_cid = CRM_Core_Session::singleton()->get('userID');
 
-      $variables['page']['highlighted']['#markup'] = '<h2>Synthèse et Données Economiques ' . $custom_service->getContactNameById($cid) . '</h2><br><p>Merci de renseigner les 9 onglets.</p><ul id="progressbar">
+      $variables['page']['highlighted']['#markup'] = '<h2>Synthèse et Données Economiques ' . $custom_service->getContactNameById($cid) . '</h2><br><p>Merci de renseigner les 13 onglets.</p><ul id="progressbar">
+      <li  href-attribute="civicrm/bulletin-de-cotisation-infomration-contact#?Organization1=' . $current_cid . '" class="' . $custom_service->isActive('civicrm/bulletin-de-cotisation-infomration-contact') . '"  class="active"><a class="progress-bar-link" href="civicrm/bulletin-de-cotisation-infomration-contact#?Organization1=' . $current_cid . '">Informations de l\'entreprise</a></li>
+      <li  href-attribute="civicrm/donnees-economique-entreprise-effectif-annuel#?id=' . $current_cid . '" class="' . $custom_service->isActive('donnees-economique-entreprise-effectif-annuel') . '"  class="active"><a class="progress-bar-link" href="civicrm/donnees-economique-entreprise-effectif-annuel#?id==' . $current_cid . '">Effectif annuel</a></li>
+      <li  href-attribute="/civicrm/bulletin-de-cotisation-dirigeants#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-dirigeants') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation-dirigeants#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $current_cid . '">Informations dirigeant</a></li>
+      <li  href-attribute="/civicrm/buttetin-cotisation-liste-abonnement#?id=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-liste-abonnement') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/buttetin-cotisation-liste-abonnement#?id=' . $current_cid . '">Abonnements</a></li>
+      <li  href-attribute="/civicrm/bulletin-cotisation-contact-entreprise#?id=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-contact-entreprise') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/bulletin-cotisation-contact-entreprise#?id=' . $current_cid . '">Contact entreprise</a></li>
       <li  href-attribute="/civicrm/donnees-economique-entreprise-agrement-sanitaire#?id=' . $current_cid . '"  class="' . $custom_service->isActive('agrement-sanitaire') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-agrement-sanitaire#?id=' . $current_cid . '">Agréments sanitaires</a></li>
       <li  href-attribute="/civicrm/donnees-economique-entreprise-donnee-generale#?id=' . $current_cid . '" class="' . $custom_service->isActive('donnee-generale') . '" id="donnee-eoconomique-entreprise-donnee-generale"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-donnee-generale#?id=' . $current_cid . '">Données Générales</a></li>
       <li  href-attribute="/civicrm/donnees-economique-entreprise-abattages#?id=' . $current_cid . '" class="' . $custom_service->isActive('abattages') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-abattages#?id=' . $current_cid . '">Abattages</a></li>
@@ -605,16 +622,7 @@ function phenix_custom_block_preprocess_page(&$variables)
     }
   }
   
-  if (strpos($current_path, '/civicrm/bulletin-de-cotisation') !== false || strpos($current_path, '/buttetin-cotisation-liste-abonnement') !== false  || strpos($current_path, 'buttetin-cotisation-contact-entreprise') !== false || strpos($current_path, 'bulletin-cotisation-contact') !== false ) {
-    $variables['page']['content']['#markup'] = '<h2>Bonjour, voici le formulaire pour mettre à jour leBulletin de cotisation - Feuillet 3 Fiche Synthèse, de votre entreprise</h2><br><ul id="progressbar">
-    <li class="' . $custom_service->isActive('bulletin-de-cotisation') . '"  class="active"><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation#?Organization1=675">Informations de l\'entreprise</a></li>
-    <li class="' . $custom_service->isActive('cotisation-dirigeants') . '" ><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation-dirigeants#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=675&id=2049">Informations dirigeant</a></li>
-    <li class="' . $custom_service->isActive('buttetin-cotisation-liste-abonnement') . '" ><a class="progress-bar-link" href="https://test-culture-viande.dev.makoa.net/civicrm/buttetin-cotisation-liste-abonnement">Abonnements</a></li>
-    <li class="' . $custom_service->isActive('bulletin-cotisation-contact') . '" ><a class="progress-bar-link" href="/civicrm/bulletin-cotisation-contact-entreprise#?id=' . $current_cid . '">Contact Entreprise</a></li>
-    
-    </ul>';
 
-  }
 
   $variables['#attached']['library'][] = 'phenix_custom_block/phenix_custom_block';
 }
@@ -865,6 +873,14 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
   $db = \Drupal::database();
 
   $term_object = $variables['elements']['#taxonomy_term'];
+
+  //ajouter une classe specifique pour les terms de type metier 
+  if ($term_object) {
+    $term_machine_name = $custom_service->getNodeFieldValue($term_object, 'vid');
+    if ($term_machine_name == 'metiers_viande_com') {
+      $variables['attributes']['class'][] = 'term-metier-viandes';
+    }
+  }
 
   $term_object_id = $custom_service->getNodeFieldValue($term_object, 'tid');
   // Alter the term page variables here.
@@ -1157,6 +1173,7 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
   $base_url = \Drupal::request()->getSchemeAndHttpHost();
   \Drupal::cache()->invalidateAll();
   $form['#cache']['max-age'] = 0;
+  
   if (((strpos($base_url, 'metiers-viande.dev.makoa.net')) !== false) || (strpos($base_url, 'metiers-viande.makoa4.makoa.net') !== false)){//ne pas permettre au domaine metier d'acceder au formulaire poser question
     if ($form['#id'] == 'webform-submission-poser-une-question-add-form') {
       $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://test-culture-viande.dev.makoa.net/');
