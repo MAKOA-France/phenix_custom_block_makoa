@@ -478,10 +478,19 @@ class CustomBlockServices {
        * 
        */
       public function checkIfThereIsAlreadyAdata ($cid) {
+
         return \Civi\Api4\CustomValue::get('phx_CC', FALSE)
           ->addSelect('Effectif_annee', 'Coti_CA_annuel')
           ->addWhere('entity_id', '=', $cid)
+          ->addWhere('Annee', '=', $this->getPreviousOnlyYear())
           ->execute()->first();
+      }
+
+      public function createLineEffectif ($current_cid) {
+        return \Civi\Api4\CustomValue::create('phx_CC', FALSE)
+          ->addValue('entity_id', $current_cid)
+          ->addValue('Annee', $this->getPreviousOnlyYear())
+          ->execute();
       }
 
 
