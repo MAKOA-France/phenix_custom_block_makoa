@@ -1,6 +1,14 @@
 (function($) {
     $(window).on('load', function () {
 
+        //Bouton suivant
+        console.log(' is here ', $('.af-button.btn-info').length)
+        $('body').on('click', '.af-button.btn-info', function() {
+            if (jQuery('#progressbar').length) {
+                jQuery('#progressbar .active').next('li').find('a.progress-bar-link').click();
+            }
+        })
+
         jQuery('.menu-to-be-showed').parents('ul').show();
 
 
@@ -70,9 +78,66 @@
                     // Parse the response as JSON
                     var responseData = JSON.parse(xhr.responseText);
                     let url = window.location.href;
+                    
+
+                    //Vérifier si c'est le formulaire n°1 form contact info
+                    if (url.includes('bulletin-de-cotisation-infomration-contact')) {
+                        if (settings.url == '/civicrm/ajax/api4/Afform/submit') {//Vérifier si c'est le form builder qui est submité et non pas juste un champ select qui fait de l'ajax
+                            if ( $('.cust-form-person-who-filled').val()) {
+                                $('.cust-form-submit').click();
+                            }
+                        }
+                    }
+
+                    //Vérifier si c'est le formulaire n°12 "detail des activités"
+                    if (url.includes('donnees-economique-entreprise-formulaire-certification')) {
+                        if (settings.url == '/civicrm/ajax/api4/Afform/submit') {//Vérifier si c'est le form builder qui est submité et non pas juste un champ select qui fait de l'ajax
+                            console.log(responseData.values[0]['Organization1'][0].id, responseData.values[0]['Organization1'][0]['id']);
+                            let currentId = responseData.values ? responseData.values[0]['Organization1'][0].id : '';
+                            let url = "civicrm/donnees-economique-entreprise-detail-activity-certification#?id=" + currentId + "";
+                            location.href = url;
+                        }
+                    }
+
+                    //Pour le calcul de la total dans le form produits commerciaux
+                    //Vérifier si c'est le formulaire n°1 form contact info
+                    if (url.includes('donnees-economique-entreprise-produit-commercialises')) {
+                        if (settings.url == '/civicrm/ajax/api4') {//Vérifier si c'est le form builder qui est submité et non pas juste un champ select qui fait de l'ajax
+                            //recuperer la ligne modifié
+                            if (responseData.inPlaceEdit && responseData.inPlaceEdit.values) {
+                                let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                                $.ajax({
+                                    url: '/formulaire/donnees-economique-produits-commerciaux',
+                                    data: {valeur: editedVal},
+                                    success: (successResult, val, ee) => {
+                                    
+                                    
+                                    },
+                                    error: function(error) {
+                                        console.log(error, 'ERROR')
+                                    }
+                                });
+                            }
+                        }
+                    }
                 
                     if (responseData.inPlaceEdit && responseData.inPlaceEdit.values) {
 
+                        //Abattage
+                        if (url.includes('economique-entreprise-abattages')) {
+                            let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                            $.ajax({
+                                url: '/formulaire/donnees-economique-entreprise/abattage-activity',
+                                data: {valeur: editedVal},
+                                success: (successResult, val, ee) => {
+                                
+                                
+                                },
+                                error: function(error) {
+                                    console.log(error, 'ERROR')
+                                }
+                            });
+                        }
                         //Données générales
                         if (url.includes('achat-viandes')) {
                             let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
@@ -95,6 +160,20 @@
                                 data: {valeur: editedVal},
                                 success: (successResult, val, ee) => {
                                     console.log('activity created', successResult)
+                                
+                                },
+                                error: function(error) {
+                                    console.log(error, 'ERROR')
+                                }
+                            });
+                        }
+                        if (url.includes('donnees-economique-entreprise-effectif-annuel')) {
+                            let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                            $.ajax({
+                                url: '/formulaire/donnees-economique-entreprise/donnees-economique-entreprise-effectif-annuel',
+                                data: {valeur: editedVal},
+                                success: (successResult, val, ee) => {
+                                    console.log('activity created for Effectifs', successResult)
                                 
                                 },
                                 error: function(error) {
