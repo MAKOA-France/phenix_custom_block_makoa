@@ -418,6 +418,7 @@ function phenix_custom_block_preprocess_page(&$variables)
   if (strpos($current_path, '/civicrm/') !== false) {
 
     $current_cid = CRM_Core_Session::singleton()->get('userID');
+    //Création de ligne(s) s'il n'existe pas encore pour abattage
     if ($current_cid && strpos($current_path, 'entreprise-abattage') !== false ) {
       $all_possibility_type_viande = $custom_service->allTypeViande();
       $default_value_of_current_cid = $custom_service->allValueAbattageInPreviousYearByContact ($current_cid);
@@ -560,7 +561,7 @@ function phenix_custom_block_preprocess_page(&$variables)
       $cid = \Drupal::service('session')->get('current_ contact_id');
       
       
-      if (strpos($current_path, 'entreprise-agrement-sanitaire') !== false) {
+      if (strpos($current_path, 'bulletin-de-cotisation-infomration-contac') !== false) {
         
         $session = CRM_Core_Session::singleton();
         $contactId = $session->get('userID');
@@ -586,12 +587,21 @@ function phenix_custom_block_preprocess_page(&$variables)
           '#attributes' => ['class' => ['person-who-filled']]
         ];
         
-        $variables['page']['highlighted']['info_organisation']['field_email'] = [
-          '#type' => 'email',
-          '#title' => t('Courriel'),
-          '#wrapper_attributes' => ['class' => ['c-col-md-4']],
-          '#attributes' => ['class' => ['person-who-filled-mail']]
-        ];
+        // $variables['page']['highlighted']['info_organisation']['field_email'] = [
+        //   '#type' => 'email',
+        //   '#title' => t('Courriel'),
+        //   '#wrapper_attributes' => ['class' => ['c-col-md-4']],
+        //   '#attributes' => ['class' => ['person-who-filled-mail']]
+        // ];
+
+        // Get the form builder service.
+        $form_builder = \Drupal::service('form_builder');
+          
+        // Build your form.
+        $form = $form_builder->getForm('\Drupal\phenix_custom_block\Form\ContactForm');
+
+        // Assign the form to a variable in $variables.
+        $variables['page']['highlighted']['info_organisation'] = $form;
       }
 
       $current_cid = CRM_Core_Session::singleton()->get('userID');
@@ -609,7 +619,7 @@ function phenix_custom_block_preprocess_page(&$variables)
       <li  href-attribute="/civicrm/donnees-economique-entreprise-achat-viande#?id=' . $current_cid . '" class="' . $custom_service->isActive('achat-viande') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-achat-viande#?id=' . $current_cid . '">Achat de viande</a></li>
       <li  href-attribute="/civicrm/donnees-economique-entreprise-transformation-decoupe#?id=' . $current_cid . '" class="' . $custom_service->isActive('transformation-decoupe') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-transformation-decoupe#?id=' . $current_cid . '"> Découpe et Transformation</a></li>
       <li  href-attribute="/civicrm/donnees-economique-entreprise-produit-commercialises#?id=' . $current_cid . '" class="' . $custom_service->isActive('produit-commercial') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-produit-commercialises#?id=' . $current_cid . '">Produits commerciaux</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-formulaire-certification#?Organization1=675" class="' . $custom_service->isActive('formulaire-certification') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-formulaire-certification#?Organization1=675">Détail des activités</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-formulaire-certification#?Organization1=' . $current_cid . '" class="' . $custom_service->isActive('formulaire-certification') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-formulaire-certification#?Organization1=' . $current_cid . '">Détail des activités</a></li>
       <li  href-attribute="/civicrm/donnees-economique-entreprise-detail-activity-certification#?id=' . $current_cid . '" class="' . $custom_service->isActive('detail-activity-certification') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-detail-activity-certification#?id=' . $current_cid . '">Certifications</a></li>
       </ul>
   '
