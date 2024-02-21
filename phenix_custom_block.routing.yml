@@ -33,6 +33,28 @@ phenix_custom_block.form_donnee_econ.donnee_generale.activity:
     _title: 'creation activité donnée generale'
   requirements:
     _access: 'TRUE'
+
+phenix_custom_block.form_donnee_econ.abattage.activity:
+  path: '/formulaire/donnees-economique-entreprise/abattage-activity'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::abattageActivity'
+    _title: 'creation activité abattage'
+  requirements:
+    _access: 'TRUE'
+phenix_custom_block.form.produit.commerciaux.calcul.total:
+  path: '/formulaire/donnees-economique-produits-commerciaux'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::produitCommerciauxCalculTotal'
+    _title: 'Calcul de la total lors de la modification d une ligne'
+  requirements:
+    _access: 'TRUE'
+phenix_custom_block.form_donnee_econ.effectif_annuel.activity:
+  path: '/formulaire/donnees-economique-entreprise/donnees-economique-entreprise-effectif-annuel'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::effectifAnnuelActivity'
+    _title: 'creation activité effectif annuel'
+  requirements:
+    _access: 'TRUE'
 phenix_custom_block.form_donnee_econ.certification.activity:
   path: '/activity/donnees-economique-entreprise/detail-activity-certification'
   defaults:
