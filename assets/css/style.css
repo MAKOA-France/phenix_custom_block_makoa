@@ -15,6 +15,14 @@
     padding-left: 30px;
     padding-bottom: 20px;
 }
+.page-civicrm-bulletin-cotisation-contact-entreprise .af-button.btn-info, .page-civicrm-buttetin-cotisation-liste-abonnement .af-button.btn-info,
+.page-civicrm-bulletin-de-cotisation-dirigeants .af-button.btn-info, .page-civicrm-donnees-economique-entreprise-effectif-annuel .af-button.btn-info {
+    border-radius: 20px 0 !important;
+    padding: 12px 30px !important;
+    background-color: #140d3d !important;
+    border-color: #140d3d !important;
+    color: #f7f5f3 !important;
+}
 .webform-submission-poser-une-question-form .form-item-civicrm-1-activity-1-activity-subject {
     margin-left: 3.5% !important;
 }
@@ -163,9 +171,41 @@ tr:has(td > p.row-to-hide) {
     color: cyan;
     background-color: red;
 }
+.page-civicrm-bulletin-de-cotisation-infomration-contact [af-join="Address"] .ng-scope.ng-isolate-scope.af-field-type-select {
+    padding-top: 24px !important;
+    display: flex !important;
+    flex-direction: column;
+}
 
+.my-contact-form {
+    display: inline-flex;
+    gap: 20px;
+    width: 50%;
+}
+.js-form-item-personne-who-filled label , .page-civicrm-bulletin-de-cotisation-infomration-contact  .js-form-item-contact-email label {
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+.page-civicrm-bulletin-de-cotisation-infomration-contact [af-join="Phone"] .af-repeat-add-btn, 
+.page-civicrm-bulletin-de-cotisation-infomration-contact [af-join="Phone"] .af-repeat-copy-btn {
+    margin-top: 85px !important;
+}
+.page-civicrm-bulletin-de-cotisation-infomration-contact #bootstrap-theme {
+    padding-top: 0;
+}
 .bloc-head-meetings-in-theme .block-layout-builder {
     display: none;
+}
+.page-civicrm-bulletin-de-cotisation-infomration-contact form {
+    padding-top: 44px;
+}
+.page-civicrm-bulletin-de-cotisation-infomration-contact form h1 {
+    display: none !important;
+}
+.page-civicrm-bulletin-de-cotisation-infomration-contact .c-fieldset.form-item.js-form-wrapper.form-wrapper {
+    padding-left: 0;
 }
 
 /************/
@@ -522,7 +562,7 @@ span.group-description {
     color: #f7f5f3 !important;
 }
 
-.page-civicrm-donnees-economique-entreprise-agrement-sanitaire .af-button.btn-info{
+.page-civicrm-donnees-economique-entreprise-agrement-sanitaire .af-button.btn-info, .page-civicrm-bulletin-cotisation-contact-entreprise .af-button.btn-info{
     border-radius: 20px 0 !important;
     padding: 12px 30px !important;
     background-color: #140d3d !important;
@@ -1560,9 +1600,32 @@ ul.chosen-results li {
     .layout__region--second .all-tag-dropdown ul ul {
         padding-inline-start: 30px;
     }
+    #progressbar li {
+        cursor: pointer;
+        list-style-type: none;
+        color: #679b9b;
+        text-transform: uppercase;
+        font-size: 9px;
+        width: 13.5%;
+        float: left;
+        text-align: center;
+        position: relative;
+    }
 }
 /* Medium devices (tablets) */
 @media (max-width: 992px) { 
+
+    #progressbar li {
+        cursor: pointer;
+        list-style-type: none;
+        color: #679b9b;
+        text-transform: uppercase;
+        font-size: 9px;
+        width: 13.5%;
+        float: left;
+        text-align: center;
+        position: relative;
+    }
     .custom-add-and-edit-form #edit-field-media-document-0-upload,
     .custom-add-and-edit-form #edit-field-media-document-wrapper span.file,
     .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"] {
@@ -1610,6 +1673,20 @@ ul.chosen-results li {
 }
 /* Small devices (landscape phones) */
 @media (max-width: 768px) { 
+    #progressbar li {
+        cursor: pointer;
+        list-style-type: none;
+        color: #679b9b;
+        text-transform: uppercase;
+        font-size: 9px;
+        width: 19.5%;
+        float: left;
+        text-align: center;
+        position: relative;
+    }
+    a.progress-bar-link {
+        font-size: 9px;
+    }
     .page-culture-viande-edito-du-president table img {
         padding-left: 0px;
         padding-bottom: 20px;
