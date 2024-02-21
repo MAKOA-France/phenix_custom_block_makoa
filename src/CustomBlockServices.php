@@ -478,7 +478,6 @@ class CustomBlockServices {
        * 
        */
       public function checkIfThereIsAlreadyAdata ($cid) {
-
         return \Civi\Api4\CustomValue::get('phx_CC', FALSE)
           ->addSelect('Effectif_annee', 'Coti_CA_annuel')
           ->addWhere('entity_id', '=', $cid)

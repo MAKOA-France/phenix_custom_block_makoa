@@ -81,6 +81,74 @@ class FormulaireController extends ControllerBase
     }
     return new JsonResponse(['tes' => 'true']);
   }  
+  
+  public function produitCommerciauxCalculTotal () {
+    $req = \Drupal::request();
+    $details = [];
+    $data = $req->query->get('valeur');
+    \Drupal::service('civicrm')->initialize();
+    if ($data) {
+      $data = json_decode($data);
+
+      $idOfEditedLine = $data->id;
+      $organisationId = $data->entity_id;
+
+      $total = $this->calculeTotal($idOfEditedLine);
+
+      $results = \Civi\Api4\CustomValue::update('commercialisation', TRUE)
+        ->addValue('com_total', $total)
+        ->addWhere('id', '=', $idOfEditedLine)
+        ->execute();
+
+    }
+
+    return new JsonResponse(['tes' => 'true']);
+  }
+
+  private function calculeTotal ($idOfLine) {
+    \Drupal::service('civicrm')->initialize();
+    $commercialisations = \Civi\Api4\CustomValue::get('commercialisation', FALSE)
+        ->addSelect('com_boeuf', 'com_veau', 'com_porc', 'com_agneau', 'com_caprin', 'com_melange')
+        ->addWhere('id', '=', $idOfLine)
+        ->execute()->first();
+
+      unset($commercialisations['id']);
+      $commercialisations = array_sum($commercialisations);
+      return $commercialisations;
+  }
+
+  
+  public function abattageActivity () {
+    $req = \Drupal::request();
+    $details = [];
+
+    if ($req->query->get('valeur')) {
+      \Drupal::service('civicrm')->initialize();
+      $valeur_edited = json_decode($req->query->get('valeur'));
+      $idAbattage = $valeur_edited->id;
+      $cid = $valeur_edited->entity_id;
+      $organizationName  = $this->getOrganizationName($cid);
+      $source_contact_id = \Drupal::service('session')->get('contact_who_filled' . $cid);
+      $subject = "Formulaire de données économiques de l'entreprise";
+      // $label = $this->getLabelElement($valeur_edited, 75);
+      $details['Entreprise : '] = $organizationName;
+      $editedAbattage = $this->abattageEditedLine($idAbattage);
+      $label = '';
+      if ($editedAbattage) {
+        $label = $editedAbattage['abattage_type_viandes:label'] . ' : ' . $editedAbattage['abattage_tonnage_abattu'];
+      }
+      $details['Valeur modifié pour abattage :  (' . $this->getLastYear() . ') : '] = $label;
+      $this->createActivity ($cid, $subject, $details, $source_contact_id);
+    }
+    return new JsonResponse(['tes' => 'true']);
+  }  
+
+  private function abattageEditedLine ($idAbattage) {
+    return \Civi\Api4\CustomValue::get('prod_approv_abattage', FALSE)
+      ->addSelect('abattage_type_viandes:label', 'abattage_tonnage_abattu')
+      ->addWhere('id', '=', $idAbattage)
+      ->execute()->first();
+  }
 
   
   public function donneeGeneraleActivity () {
@@ -187,6 +255,32 @@ class FormulaireController extends ControllerBase
     return new JsonResponse(['tes' => 'true']);
   }
 
+  public function effectifAnnuelActivity () {
+    $elements = $this->getEditedValueDecoded();
+    $subject = "Formulaire de données économiques de l'entreprise";
+    $details['Entreprise : '] = $elements['organization_name'];
+    $details[' Effectif annuel pour l\'annee ' . $this->getLastYear() . ' est : '] = '' . $elements['valeur_modifiee'];
+    $isCreated = $this->createActivity ($elements['cid'], $subject, $details, $elements['source_contact_id']);
+    return new JsonResponse(['tes' => $isCreated]);
+  }
+
+  private function getEditedValueDecoded() {
+    $req = \Drupal::request();
+    $elements = [];
+    if ($req->query->get('valeur')) {
+      \Drupal::service('civicrm')->initialize();
+      $valeur_edited = json_decode($req->query->get('valeur'));
+      $cid = $valeur_edited->entity_id;
+      $elements['cid']  = $cid;
+      $elements['valeur_modifiee']  = $valeur_edited->Effectif_annee;
+      $elements['organization_name'] = $this->getOrganizationName($cid);
+      $elements['source_contact_id'] = \Drupal::service('session')->get('contact_who_filled' . $cid);
+      $elements['valeur_edited'] = $valeur_edited;
+    }
+
+    return $elements;
+  }
+
   public function getTypeViandeByDecoupe ($idCustomProduit) {
     $prodDecoupes = \Civi\Api4\CustomValue::get('prod_decoupe', FALSE)
       ->addSelect('decoupe_type_viandes:label')
@@ -210,7 +304,6 @@ class FormulaireController extends ControllerBase
        }
      }
      \Drupal::service('civicrm')->initialize();
-     dump($source_contact_id);
      if ($source_contact_id) {
 
        return \Civi\Api4\Activity::create(FALSE)
@@ -224,9 +317,7 @@ class FormulaireController extends ControllerBase
          ->addValue('details',  $html)
          ->addValue('source_contact_id', $cid)
          ->execute();
-        }
-
-        dump($html);
+      }
         return \Civi\Api4\Activity::create(FALSE)
        ->addValue('activity_type_id', self::ID_TYPE_ACTIVITE_UPDATE_ECO_DATA)
        ->addValue('subject', $subject)
