@@ -485,11 +485,44 @@ class CustomBlockServices {
           ->execute()->first();
       }
 
+      /**
+       * 
+       */
       public function createLineEffectif ($current_cid) {
-        return \Civi\Api4\CustomValue::create('phx_CC', FALSE)
-          ->addValue('entity_id', $current_cid)
-          ->addValue('Annee', $this->getPreviousOnlyYear())
-          ->execute();
+        if (\Civi\Api4\CustomValue::get('phx_CC', FALSE)
+        ->addSelect('Effectif_annee', 'Coti_CA_annuel')
+        ->addWhere('entity_id', '=', $current_cid)
+        ->execute()->first()) {
+          if (\Civi\Api4\CustomValue::get('phx_CC', FALSE)
+                ->addSelect('Effectif_annee', 'Coti_CA_annuel')
+                ->addWhere('entity_id', '=', $current_cid)
+                ->addWhere('Annee', '=', $this->getPreviousOnlyYear())
+                ->execute()->first()) {
+
+                  return ;
+                }else {
+                  return \Civi\Api4\CustomValue::create('phx_CC', FALSE)
+                  ->addValue('entity_id', $current_cid)
+                  ->addValue('Annee', $this->getPreviousOnlyYear())
+                  ->execute();
+                }
+        } else {
+           if (\Civi\Api4\CustomValue::get('phx_CC', FALSE)
+                ->addSelect('Effectif_annee', 'Coti_CA_annuel')
+                ->addWhere('entity_id', '=', $current_cid)
+                ->addWhere('Annee', '=', $this->getPreviousOnlyYear())
+                ->execute()->first()) {
+
+                  return ;
+                }else {
+                  return \Civi\Api4\CustomValue::create('phx_CC', FALSE)
+                  ->addValue('entity_id', $current_cid)
+                  ->addValue('Annee', $this->getPreviousOnlyYear())
+                  ->execute();
+                  // $query = \Drupal::database()->query('insert into civicrm_value_phx_chiffrescle (entity_id) values ' . $current_cid)->execute();
+                }
+        }
+     
       }
 
 
@@ -1346,10 +1379,23 @@ public function customResultSearchDoc (&$var) {
     // return $var;
   }
 }
+public function is_valid_uri_scheme($media) {
+  // Get the URI of the media entity.
+  $uri = $media->getSource()->getSourceFieldValue($media);
 
+  // Extract the scheme from the URI.
+  $scheme = parse_url($uri, PHP_URL_SCHEME);
+
+  // Get the stream wrapper manager service.
+  $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
+
+  // Check if the scheme is valid.
+  return $stream_wrapper_manager->isValidScheme($scheme);
+}
 
 public function generateTokenToMedia ($media) {
   $csrfToken = '';
+
     // Vérifier si le média existe et s'il a une relation de fichier
     if ($media && $media->hasField('field_media_document')) {
       // Récupérer la cible de la relation de fichier (le fichier)
@@ -1359,15 +1405,21 @@ public function generateTokenToMedia ($media) {
       $file = File::load($file_target);
 
       // Vérifier si le fichier existe
-      if ($file) {
+      if ($this->is_valid_uri_scheme($media)) {
+
+        if ($file) {
           // Obtenir l'URI du fichier
           $file_uri = $file->getFileUri();
-
+          
           // Générer une instance de l'URL à partir de l'URI du fichier
           $url = Url::fromUri(file_create_url($file_uri));
-
+          
           // Générer un token CSRF
           $csrfToken = \Drupal::service('csrf_token')->get();
+        }
+      }else {
+        $idTokenized = base64_encode($media->id());
+        return $idTokenized;
       }
     }
     return $csrfToken;
