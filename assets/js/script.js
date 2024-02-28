@@ -1,8 +1,47 @@
 (function($) {
+
     $(window).on('load', function () {
 
+        // Function to parse query parameters from a URL
+    function getParameterByName(url, name) {
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+    //Formulaire de données économique onglet 'entreprise' desactiver le bouton envoyer si le nom de la personne qui a renseigné le form est vide
+    if (!jQuery('.cust-form-person-who-filled').val()) {
+        jQuery('.page-civicrm-bulletin-de-cotisation-infomration-contact .af-button.btn-primary').attr('disabled', true);
+    }
+    
+    jQuery('.cust-form-person-who-filled').on('keyup', function() {
+        if ($(this).val()) {
+            jQuery('.af-button.btn-primary').removeAttr('disabled');
+        }
+    });
+    // Get the value of "Organization1"
+    let organization1Value = getParameterByName(location.href, 'Organization1');  
+    let hasDataOrgId = $('.effectif-menu-class').attr('data-org-id');
+    if (!hasDataOrgId && hasDataOrgId.trim() == '') {
+        //run ajax to reconnect with authx
+        $.ajax({
+            url: '/formulaire/donnee-economique',
+            data: {contact_id: organization1Value},
+            success: (successResult, val, ee) => {
+               location.href = "/civicrm/bulletin-de-cotisation-infomration-contact?_authx=" + successResult.res + "&_authxSes=1#?Organization1=" + organization1Value;
+            },
+            error: function(error) {
+                console.log(error, 'ERROR')
+            }
+        });        
+    }
+
+
+
         //Bouton suivant
-        console.log(' is here ', $('.af-button.btn-info').length)
         $('body').on('click', '.af-button.btn-info', function() {
             if (jQuery('#progressbar').length) {
                 jQuery('#progressbar .active').next('li').find('a.progress-bar-link').click();
@@ -139,7 +178,7 @@
                             });
                         }
                         //Données générales
-                        if (url.includes('achat-viandes')) {
+                        if (url.includes('achat-viande')) {
                             let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
                             $.ajax({
                                 url: '/formulaire/donnees-economique-entreprise/achat-viande-activity',
