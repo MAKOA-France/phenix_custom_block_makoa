@@ -53,6 +53,10 @@
     background-color: gainsboro;
 }
 
+.section-media .detail-page-document-cv span a {
+    display: none;
+}
+
 /** Page modification term */
 .role--permanent .layout__region.layout__region--content .js-media-library-selection.js-form-wrapper.form-wrapper{
     display: flex;
@@ -226,7 +230,7 @@ tr:has(td > p.row-to-hide) {
     color: #679b9b;
     text-transform: uppercase;
     font-size: 9px;
-    width: 7.5%;
+    width: 7.6%;
     float: left;
     text-align: center;
     position: relative;
@@ -416,7 +420,7 @@ tr:has(td > p.row-to-hide) {
 
 .progress-bar-link {
     font-weight: bold;
-    font-size: 11px;
+    font-size: 9px;
 }
 
 .page-civicrm-bulletin-de-cotisation [af-join="Phone"] .af-repeat-add-btn.ng-binding, .page-civicrm-bulletin-de-cotisation [af-join="Phone"] .af-repeat-copy-btn{
@@ -1548,6 +1552,10 @@ ul.chosen-results li {
     width: initial;
     height: initial;
 } 
+
+.page-civicrm-bulletin-de-cotisation-infomration-contact .medium-12.cell {
+    z-index: 4;
+}
 /*========================================= Fin ajout document===========================================================*/
 /* Large devices (desktops) */
 @media (max-width: 1800px) {
@@ -1580,6 +1588,9 @@ ul.chosen-results li {
 }
 /* Large devices (desktops) */
 @media (max-width: 1200px) {
+    .my-contact-form {
+        width: 100%;
+    }
     .custom-add-and-edit-form .layout--twocol-section {
         gap: 1rem;
     }
