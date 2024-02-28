@@ -17,7 +17,7 @@ class ContactForm extends FormBase {
 
     $form['personne_who_filled'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Nom de la personne ayant renseigné le formulaire'),
+      '#title' => $this->t('Nom de la personne ayant renseigné le formulaire *'),
       '#attributes' => [
         'class' => ['cust-form-person-who-filled']
       ],
