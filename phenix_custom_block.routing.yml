@@ -34,6 +34,14 @@ phenix_custom_block.form_donnee_econ.donnee_generale.activity:
   requirements:
     _access: 'TRUE'
 
+phenix_custom_block.form_donnee_econ.donnee_generale.get_organization_id:
+  path: '/formulaire/donnee-economique'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::getOrganisationId'
+    _title: 'Recharge le formulaire pour que l utilisateur se connecte'
+  requirements:
+    _access: 'TRUE'
+
 phenix_custom_block.form_donnee_econ.abattage.activity:
   path: '/formulaire/donnees-economique-entreprise/abattage-activity'
   defaults:
