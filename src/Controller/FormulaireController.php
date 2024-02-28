@@ -31,7 +31,7 @@ class FormulaireController extends ControllerBase
     $userMail = $req->query->get('usermail');
     
     $details['Entreprise : '] = $organisationName;
-    $details['Nom de la personne ayant renseigné le formulaire : '] = $whoFilledTheForm;
+    $details['Nozzm de la personne ayant renseigné le formulaire : '] = $whoFilledTheForm;
     $details['Email de la personne ayant renseigné le formulaire : '] = $userMail;
     $source_contact_id = $this->getCIDbyEmail($userMail);
     if ($source_contact_id) {
@@ -288,6 +288,21 @@ class FormulaireController extends ControllerBase
       ->execute()->first()['decoupe_type_viandes:label'];
 
     return $prodDecoupes;
+  }
+
+  /**
+   * TODO HERE 
+   */
+  public function getOrganisationId () {
+    
+    $req = \Drupal::request();
+    $cid = $req->get('contact_id');
+    \Drupal::service('civicrm')->initialize();
+    $results = \Civi\Api4\AuthxCredential::create(FALSE)
+    ->setContactId($cid)
+    ->execute()->first()['cred'];
+    
+    return new JsonResponse(['tes' => 'true', 'res' => $results]);
   }
 
  /**
