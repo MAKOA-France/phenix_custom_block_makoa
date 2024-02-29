@@ -16,6 +16,11 @@
     if (!jQuery('.cust-form-person-who-filled').val()) {
         jQuery('.page-civicrm-bulletin-de-cotisation-infomration-contact .af-button.btn-primary').attr('disabled', true);
     }
+
+
+    //Formulaire de données éco...  ==> après validation, indiquer quel onglet n'est pas visité
+    let tab_already_processed = jQuery('.tab-certification').attr('data-set'); 
+    tab_already_processed = JSON.parse(tab_already_processed);
     
     jQuery('.cust-form-person-who-filled').on('keyup', function() {
         if ($(this).val()) {
