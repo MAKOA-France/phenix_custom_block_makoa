@@ -56,7 +56,26 @@
 .section-media .detail-page-document-cv span a {
     display: none;
 }
+._cust_thumbnail_class img {
+    width: 55px;
+}
 
+.cust-doc-class-detail > div a {
+    display: none;
+}
+
+.cust-doc-class-detail-tag > div:first-child {
+    background: #fff;
+    border-radius: 50px 0;
+    line-height: initial;
+    text-transform: uppercase;
+    font-size: medium;
+    font-weight: 500;
+    font-family: "new-order" !important;
+}
+.cust-doc-class-detail-tag {
+    padding-left: 30px;
+}
 .custom-msg-tabs {
     color: #903023;
     background-color: #ddc44f;
