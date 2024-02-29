@@ -31,7 +31,7 @@ class FormulaireController extends ControllerBase
     $userMail = $req->query->get('usermail');
     
     $details['Entreprise : '] = $organisationName;
-    $details['Nozzm de la personne ayant renseigné le formulaire : '] = $whoFilledTheForm;
+    $details['Nom de la personne ayant renseigné le formulaire : '] = $whoFilledTheForm;
     $details['Email de la personne ayant renseigné le formulaire : '] = $userMail;
     $source_contact_id = $this->getCIDbyEmail($userMail);
     if ($source_contact_id) {
