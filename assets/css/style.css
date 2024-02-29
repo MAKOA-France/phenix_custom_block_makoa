@@ -64,6 +64,10 @@
     display: none;
 }
 
+.cust-doc-class-detail {
+    padding-left: 5px;
+}
+
 .cust-doc-class-detail-tag > div:first-child {
     background: #fff;
     border-radius: 50px 0;
