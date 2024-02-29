@@ -1393,6 +1393,23 @@ public function is_valid_uri_scheme($media) {
   return $stream_wrapper_manager->isValidScheme($scheme);
 }
 
+public function allFormulaireTabsAvailable () {
+  return [
+    "entreprise",
+    "effectif",
+    "dirigeants",
+    "abonnements",
+    "contact entreprise",
+    "agrement sanitaire",
+    "donnee generale",
+    "achat viande",
+    "produit commercialisés",
+    "certification",
+    "activités",
+    "abattage"
+  ];
+}
+
 public function generateTokenToMedia ($media) {
   $csrfToken = '';
 
