@@ -1500,12 +1500,9 @@ function phenix_custom_block_preprocess_media(array &$variables) {
       $file_entity = $media->field_media_document->entity;
       $idTokenized = base64_encode($media->id());
       $filename = $custom_service->getNodeFieldValue($file_entity, 'filename');
-      $variables['content']['#suffix'] = '<a href="/media/' . $media->id() . '/download?token=' . $idTokenized . '"> ' . $filename  . '</p>';
-      
+      $variables['content']['thumbnail']['#suffix'] = '<a href="/media/' . $media->id() . '/download?token=' . $idTokenized . '"> ' . $filename  . '</p>';
       $variables['attributes']['class'][] = 'detail-page-document-cv';
-      // dump($variables);
       // Get the file entity from the file field.
-    // dump($variables);
       $variables['#cache']['max-age'] = 0;
       // Check if the file entity exists.
        if ($file_entity) {
@@ -1522,19 +1519,19 @@ function phenix_custom_block_preprocess_media(array &$variables) {
         // $url_string = $url->toString();
         
         // $file_entity->save();
-      // // Convert the modified URL object back to a string.
-      // $variables['file_url'] = $url->toString();
+        // // Convert the modified URL object back to a string.
+        // $variables['file_url'] = $url->toString();
         // $file->setOption('query', ['isvalid' => 'true']);
           // Récupérer l'URI actuel du fichier.
 
-  // // Ajouter le paramètre de requête à l'URI.
-  // $new_uri = $current_uri . '?isvalid=' . $idTokenized;
-  
-  // // Définir le nouvel URI du fichier.
-  // $file_entity->setFileUri($new_uri);
+        // // Ajouter le paramètre de requête à l'URI.
+        // $new_uri = $current_uri . '?isvalid=' . $idTokenized;
+        
+        // // Définir le nouvel URI du fichier.
+        // $file_entity->setFileUri($new_uri);
 
-  // // Enregistrer l'entité de fichier.
-  // $file_entity->save();
+        // // Enregistrer l'entité de fichier.
+        // $file_entity->save();
       } 
 
       // if ($file_entity) {
@@ -1570,8 +1567,27 @@ function phenix_custom_block_preprocess_media(array &$variables) {
       $new_thumbnail_image = File::create([
         'uri' => $new_thumbnail_image_path,
       ]);
-      $new_thumbnail_image->save();
+      // $new_thumbnail_image->save();
+      
+      // Filter the array using an anonymous function
+      $all_tags = array_filter($variables['content']['field_tag'], function($key) {
+        return is_int($key);
+      }, ARRAY_FILTER_USE_KEY);
 
+      $s = count($all_tags) > 1 ? 's' : '';
+
+      //Styliser l'affichage des tags / changer le titre
+      $variables['content']['field_tag']['#title'] = 'Tag' . $s . ' lié' . $s . ' au document';
+      $variables['content']['field_tag']['#attributes']['class'][] = 'cust-doc-class-detail-tag';
+      
+
+      
+      //ne pas ajouter le style d'image pour ne pas modifier le chemin du fichier
+      unset($variables['content']['thumbnail'][0]['#image_style']);
+      
+      $variables['content']['field_media_document']['#attributes']['class'][] = 'cust-doc-class-detail';
+      $variables['attributes']['class'][] = 'thumbnail_cust_class';
+      $variables['content']['thumbnail']['#attributes']['class'][] = '_cust_thumbnail_class';
       // Update the media entity's "thumbnail" field to reference the new image.
       $variables['content']['thumbnail']['#object']->set('thumbnail', $new_thumbnail_image);
       $variables['content']['thumbnail']['#object']->save();
