@@ -2,6 +2,13 @@
 
     $(window).on('load', function () {
 
+        //lien vers formulaire dans l'onglet activité, vérifier si l'utilisateur clique dessus...
+/*         jQuery('body').on('click', '.boosturl', function(e) {
+            e.preventDefault();
+            location.href = "/civicrm/bulletin-de-cotisation-dirigeants?cs=6863eee1f86c41869fe3eed9747ee9c9_1709707364_192#?id=4467";
+            return false;
+
+        }) */
         // Function to parse query parameters from a URL
     function getParameterByName(url, name) {
         name = name.replace(/[\[\]]/g, "\\$&");
@@ -27,23 +34,58 @@
             jQuery('.af-button.btn-primary').removeAttr('disabled');
         }
     });
-    // Get the value of "Organization1"
-    let organization1Value = getParameterByName(location.href, 'Organization1');  
-    let hasDataOrgId = $('.effectif-menu-class').attr('data-org-id');
-    if (!hasDataOrgId && hasDataOrgId.trim() == '') {
-        //run ajax to reconnect with authx
+
+
+    //Vérifier si l'url contient le bon checksum
+    let url = window.location.href;
+    if (url.includes('civicrm/donnees-economique') || url.includes('civicrm/bulletin-de-cotisation')  || url.includes('civicrm/bulletin-cotisation-') ) {
+        let organization1Value = getParameterByName(location.href, 'Organization1') ? getParameterByName(location.href, 'Organization1') : getParameterByName(location.href, 'id');  
+        if (!organization1Value) {
+            organization1Value = location.href.split('.entreprise=')[1];
+        }
+        let hasDataOrgId = $('.effectif-menu-class').attr('data-org-id');
+        let searchParams = new URLSearchParams(window.location.search);
+        //Vérifier d'abord si c'est le bon checksum
+        let checksum = searchParams.get('cs');
+        console.log('midiiii==>', checksum, searchParams, location.href, organization1Value)
+        if (!checksum) {
+            location.href = '/'
+        }
         $.ajax({
-            url: '/formulaire/donnee-economique',
-            data: {contact_id: organization1Value},
+            url: '/formulaire/verify-checksum',
+            data: {contact_id: organization1Value,  checksum: checksum},
             success: (successResult, val, ee) => {
-               location.href = "/civicrm/bulletin-de-cotisation-infomration-contact?_authx=" + successResult.res + "&_authxSes=1#?Organization1=" + organization1Value;
+                if (!successResult.hasToken) {
+                    location.href = "/"
+                }
             },
             error: function(error) {
                 console.log(error, 'ERROR')
             }
-        });        
+        });  
+        
+        
+        if (checksum) {
+            //Reconnect with authx/  Get the value of "Organization1"
+            if (!hasDataOrgId && hasDataOrgId.trim() == '') {
+                //run ajax to reconnect with authx
+                $.ajax({
+                url: '/formulaire/donnee-economique',
+                data: {contact_id: organization1Value, url: location.href},
+                success: (successResult, val, ee) => {
+                    //Todo rediriger vers le bon onglet
+                    location.href = successResult.url // + "?cs=" + successResult.checksum + "&_authx=" + successResult.res + "&_authxSes=1#?Organization1=" + organization1Value;
+                },
+                error: function(error) {
+                    console.log(error, 'ERROR')
+                }
+            });        
+        }
+    }else {
+        location.href = "/"
     }
-
+}
+    
 
 
         //Bouton suivant
@@ -138,8 +180,22 @@
                         if (settings.url == '/civicrm/ajax/api4/Afform/submit') {//Vérifier si c'est le form builder qui est submité et non pas juste un champ select qui fait de l'ajax
                             console.log(responseData.values[0]['Organization1'][0].id, responseData.values[0]['Organization1'][0]['id']);
                             let currentId = responseData.values ? responseData.values[0]['Organization1'][0].id : '';
-                            let url = "civicrm/donnees-economique-entreprise-detail-activity-certification#?id=" + currentId + "";
-                            location.href = url;
+                            $.ajax({
+                                url: '/formulaire/get_url_to_redirect_to_page_certification',
+                                data: {cid: currentId},
+                                success: (successResult, val, ee) => {
+                                    console.log(successResult, ' pmppp')
+                                    location.href = "/civicrm/donnees-economique-entreprise-detail-activity-certification?cs="  + successResult.checksum +  "#?id=" + currentId;
+                                },
+                                error: function(error) {
+                                    console.log(error, 'ERROR')
+                                }
+                            });
+
+                            // $checksum = get_checksum($cid);
+                            // $urlTab = '<a href="/civicrm/donnees-economique-entreprise-detail-activity-certification?cs=' . $checksum . '&_authx=' . get_credential_authx($cid) . '&_authxSes=1#?id=' . $cid . '">url</a>';
+                            // let url = "civicrm/donnees-economique-entreprise-detail-activity-certification#?id=" + currentId + "";
+                            // location.href = url;
                         }
                     }
 
@@ -182,12 +238,28 @@
                                 }
                             });
                         }
-                        //Données générales
+                        //achat de viande activity
                         if (url.includes('achat-viande')) {
                             let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
                             $.ajax({
                                 url: '/formulaire/donnees-economique-entreprise/achat-viande-activity',
                                 data: {valeur: editedVal},
+                                success: (successResult, val, ee) => {
+                                
+                                
+                                },
+                                error: function(error) {
+                                    console.log(error, 'ERROR')
+                                }
+                            });
+                        }
+                        //contactes activity
+                        if (url.includes('cotisation-contact-entreprise')) {
+                            let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                            let cid = location.href.split('id=')[1];
+                            $.ajax({
+                                url: '/formulaire/donnees-economique-entreprise/cotisation-contact-entreprise-activity',
+                                data: {valeur: editedVal, cid: cid},
                                 success: (successResult, val, ee) => {
                                 
                                 
@@ -225,6 +297,21 @@
                                 }
                             });
                         }
+                        if (url.includes('bulletin-de-cotisation-dirigeants')) {
+                            let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                            let cid = location.href.split('.entreprise=')[1] 
+                            $.ajax({
+                                url: '/formulaire/donnees-economique-entreprise/donnees-economique-entreprise-dirigeants',
+                                data: {valeur: editedVal, cid: cid},
+                                success: (successResult, val, ee) => {
+                                    console.log('activity created for Dirigeants', successResult)
+                                
+                                },
+                                error: function(error) {
+                                    console.log(error, 'ERROR ONGLET DIRIGEANT')
+                                }
+                            });
+                        }
                         if (url.includes('detail-activity-certification')) {
                             let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
                     
@@ -241,10 +328,11 @@
                             });
                         }
                         if (url.includes('entreprise-transformation-decoupe')) {
+                            let cid = location.href.split('id=')[1];
                             let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
                             $.ajax({
                                 url: '/activity/donnees-economique-entreprise/transformation-decoupe',
-                                data: {valeur: editedVal},
+                                data: {valeur: editedVal, cid:cid},
                                 success: (successResult, val, ee) => {
                                     
                                 },
@@ -254,24 +342,16 @@
                             });
                         }
                         if (url.includes('produit-commercialises')) {
-                            let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
-                            $.ajax({
-                                url: '/formulaire/donnees-economique-entreprise/produit-commercialises',
-                                data: {valeur: editedVal},
-                                success: (successResult, val, ee) => {
-                                    console.log('activity produit commercialises created', successResult)
-                                
-                                },
-                                error: function(error) {
-                                    console.log(error, 'ERROR')
-                                }
-                            });
+                            ajaxActivity ('/formulaire/donnees-economique-entreprise/produit-commercialises', 'id=') 
                         }
+
+                        //creation activité agrement sanitaire
                         if (url.includes('agrement-sanitaire')) {
                             let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                            let cid = location.href.split('id=')[1];
                             $.ajax({
                                 url: '/formulaire/donnees-economique-entreprise/agrement-sanitaire',
-                                data: {valeur: editedVal},
+                                data: {valeur: editedVal, cid:cid},
                                 success: (successResult, val, ee) => {
                                 
                                 
@@ -352,6 +432,21 @@
             jQuery('.first-element-doc a img').css('border', '#cc4b4c solid 1px')
         }
     })
+
+    function ajaxActivity (url, split_by) {
+        let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+        let cid = location.href.split(split_by)[1];
+        $.ajax({
+            url: url,
+            data: {valeur: editedVal, cid:cid},
+            success: (successResult, val, ee) => {
+            
+            },
+            error: function(error) {
+                console.log(error, 'ERROR')
+            }
+        });
+    }
     $(document).ready(function() {
 
         jQuery('.group-description').each(function() {
