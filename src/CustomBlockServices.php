@@ -794,6 +794,14 @@ public function hasChildren ($term_id) {
 
 }
 
+
+public function getCredentialAuthx ($cid) {
+  \Drupal::service('civicrm')->initialize();
+  return  \Civi\Api4\AuthxCredential::create(FALSE)
+        ->setContactId($cid)
+        ->execute()->first()['cred'];
+}
+
 /**
  * Recupère la date de création d'un fichier
  */
@@ -1440,6 +1448,12 @@ public function generateTokenToMedia ($media) {
       }
     }
     return $csrfToken;
+}
+
+public function getChecksum ($cid) {
+  return \Civi\Api4\Contact::getChecksum(FALSE)
+  ->setContactId($cid)
+  ->execute()->first()['checksum'];
 }
 
 /**
