@@ -1652,11 +1652,15 @@ function convertToNestedULWithCheckboxes($items, $default_value) {
     $checked = in_array($id, $default_value) ? ' checked' : '';
     //check if term has children
     $class_has_child = $custom_service->hasChildren($id) || $custom_service->isRubriqueWithTxtAndImg($id) ? ' term-who-had-child' : ' term-don-t-have-child';
-    $result .= '<li class="ifhas ' . $class_has_child . '" data-current-id="' . $id . '">
+    $only_tag_txt_img = $custom_service->isRubriqueWithTxtAndImg($id) ? ' only-txt-and-img ' : ' ';
+    $custom_icon_for_tag_txt_img = $custom_service->isRubriqueWithTxtAndImg($id) ? '  <div class="cus-tooltip"><i class="fa fa-question-circle " aria-hidden="true"></i>
+    <span class="cus-tooltiptext">Attention pour ajouter des documents allez directement sur la rubrique <a href="/taxonomy/term/' . $id . '/edit">ici</a></span>
+  </div> ' : ' ';
+    $result .= '<li class=" ' . $only_tag_txt_img .  ' ifhas ' . $class_has_child . '" data-current-id="' . $id . '">
     <span class="fancytree-node fancytree-expanded fancytree-has-children fancytree-exp-e fancytree-ico-e">
     <span class="fancytree-expander"></span>
     <span class="fancytree-checkbox ' . $checked . '"></span>
-    <span class="fancytree-title">' . $itemText . '</span></span>';
+    <span class="fancytree-title">' . $itemText . $custom_icon_for_tag_txt_img . '</span></span>';
   }
   
   $result .= str_repeat("</li></ul>", count($indentations) - 1) . "</li></ul></div>";
