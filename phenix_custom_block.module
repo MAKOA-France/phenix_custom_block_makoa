@@ -30,6 +30,14 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
           'path' => $path . '/templates',
           'template' => 'my-account-block'
         ],
+        'metier_home_content_video' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates/metier',
+          'template' => 'metier-home-content-video'
+        ],
         'my_group' => [
           'variables' => [
           'content' => Null,
