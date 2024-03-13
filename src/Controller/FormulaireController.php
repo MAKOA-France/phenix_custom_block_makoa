@@ -29,7 +29,9 @@ class FormulaireController extends ControllerBase
     $whoFilledTheForm =  $req->query->get('Cname');
     $organisationName =  $customService->getContactNameById ($cid);
     $userMail = $req->query->get('usermail');
-    
+    if ($userMail) {
+      \Drupal::service('session')->set('mail_of_user_who_filled_the_form', $userMail);
+    }
     $details['Entreprise : '] = $organisationName;
     $details['Nom de la personne ayant renseigné le formulaire : '] = $whoFilledTheForm;
     $details['Email de la personne ayant renseigné le formulaire : '] = $userMail;
@@ -43,7 +45,7 @@ class FormulaireController extends ControllerBase
       $this->createActivity($cid, $subject, $details, false);
     }
     
-    return new JsonResponse(['activity' => 'created activity agrement sanitaire']);
+    return new JsonResponse(['activity' => 'created activity info entreprise']);
   }
   
   public function storeCIDinSession () {
@@ -74,9 +76,13 @@ class FormulaireController extends ControllerBase
         ->addWhere('id', '=', $certificationId)
         ->execute()->first()['cert_certif:label'];
 
-      $details['Entreprise : '] = $organizationName;
+
       $certificationPrecision = $valeur_edited->cert_precision;
-      $details['Certification (' . $this->getLastYear() . ') : '] = '<p>Activité : ' . $certificationLabel .', Précision : '. $certificationPrecision .'</p>';
+      $this->createHtmlDetailActivity ($details, $cid, '/civicrm/donnees-economique-entreprise-detail-activity-certification', ' Certifications ', '<p>Certification (' . $this->getLastYear() . ') :  Activité : ' . $certificationLabel .', Précision : '. $certificationPrecision .'</p>');
+
+
+      // $details['Entreprise : '] = $organizationName;
+      // $details['Certification (' . $this->getLastYear() . ') : '] = '<p>Activité : ' . $certificationLabel .', Précision : '. $certificationPrecision .'</p>';
       $this->createActivity ($cid, $subject, $details, $source_contact_id);
     }
     return new JsonResponse(['tes' => 'true']);
@@ -162,8 +168,31 @@ class FormulaireController extends ControllerBase
       $source_contact_id = \Drupal::service('session')->get('contact_who_filled' . $cid);
       $subject = "Formulaire de données économiques de l'entreprise";
       $label = $this->getLabelElement($valeur_edited, 75);
-      $details['Entreprise : '] = $organizationName;
-      $details['Données générales (' . $this->getLastYear() . ') : '] = $label;
+
+      $this->createHtmlDetailActivity ($details, $cid, '/civicrm/donnees-economique-entreprise-donnee-generale', ' Données générales ', '<p>Données générales (' . $this->getLastYear() . ') : ' .  $label . '</p>');
+
+      $this->createActivity ($cid, $subject, $details, $source_contact_id);
+    }
+    return new JsonResponse(['tes' => 'true']);
+  }  
+  
+  public function abonnementActivity () {
+    $req = \Drupal::request();
+    $details = [];
+    if ($req->query->get('valeur')) {
+      \Drupal::service('civicrm')->initialize();
+      $valeur_edited = json_decode($req->query->get('valeur'));
+      $cid = $req->query->get('cid');
+      $organizationName  = $this->getOrganizationName($cid);
+      $source_contact_id = \Drupal::service('session')->get('contact_who_filled' . $cid);
+      $subject = "Formulaire de données économiques de l'entreprise";
+      // $label = $this->getLabelElement($valeur_edited, 75);
+      
+      //recuperer le contact qui a été modifié
+      $edited_name_contact = $valeur_edited->first_name;
+
+
+      $this->createHtmlDetailActivity ($details, $cid, '/civicrm/buttetin-cotisation-liste-abonnement', ' Abonnements ', '<p>Le contact qui a été modifié c\'est : ' .  $edited_name_contact . '</p>');
 
       $this->createActivity ($cid, $subject, $details, $source_contact_id);
     }
@@ -176,8 +205,8 @@ class FormulaireController extends ControllerBase
     if ($req->query->get('valeur')) {
       \Drupal::service('civicrm')->initialize();
       $valeur_edited = json_decode($req->query->get('valeur'));
-      
-      $cid = $valeur_edited->entity_id;
+      $subject = "Formulaire de données économiques de l'entreprise";
+      $cid = $req->query->get('cid');
       $argSanId = $valeur_edited->id;
       $agrsanNumero = $valeur_edited->agrsan_numero;
 
@@ -186,15 +215,55 @@ class FormulaireController extends ControllerBase
         ->addWhere('id', '=', $argSanId)
         ->execute()->first()['agrsan_type:label'];
 
-      $organizationName  = $this->getOrganizationName($cid);
-      $source_contact_id = \Drupal::service('session')->get('contact_who_filled' . $cid);
-      $subject = "Formulaire de données économiques de l'entreprise";
-      $details['Entreprise : '] = $organizationName;
-      $details['Agréments sanitaire  : '] = '<p>' . $agrementsSanitaireType . ' : ' . $agrsanNumero . '</p>';
+      $this->createHtmlDetailActivity ($details, $cid, '/civicrm/donnees-economique-entreprise-agrement-sanitaire', ' Agrément sanitaire ', '<p>' . $agrementsSanitaireType . ' : ' . $agrsanNumero . '</p>');
+        
+      // $details['Agréments sanitaire  : '] = '<p>' . $agrementsSanitaireType . ' : ' . $agrsanNumero . '</p>';
       $this->createActivity ($cid, $subject, $details, $source_contact_id);
     }
     return new JsonResponse(['tes' => 'true', 'cid' => $cid]);
   }  
+
+  private function createHtmlDetailActivity (&$details, $cid, $urlTab, $tabName, $dataEdited) {
+    $customService = \Drupal::service('phenix_custom_block.view_services');
+    $req = \Drupal::request();
+    $checksum = get_checksum($cid);
+    $urlTab = '<a href="' . $urlTab . '?cs=' . $checksum . '#?id=' . $cid . '">url</a>';
+    $details['<h2>Onglet ' . $tabName . '</h2>'] = '<h4 class="boosturl">Url pour y accéder : ' . $urlTab . '</h4>';
+    $subject = "Formulaire de données économiques de l'entreprise";
+    $details['<p> Entreprise : '] = $customService->getContactNameById($cid) . '</p>';
+    $elements['organization_name'];
+    $details['Les informations de qui ont été modifiés pour cet onglet'] = $dataEdited;
+
+    $whoFilledTheForm =  \Drupal::service('session')->get('contact_who_filled_the_form');
+    $userMail = \Drupal::service('session')->get('mail_of_user_who_filled_the_form');
+    
+    if ($whoFilledTheForm) {
+      $details['<p>Nom de la personne ayant renseigné le formulaire : '] = $whoFilledTheForm . '</p>';
+    }
+
+    if ($userMail) {
+      $details['<p>Email de la personne ayant renseigné le formulaire : '] = $userMail . '</p>';
+    }
+
+    return $details;
+  }
+
+  /**
+   * 
+   */
+  public function getChecksumAndAuthx () {
+        $req = \Drupal::request();
+        \Drupal::service('civicrm')->initialize();
+        $customService = \Drupal::service('phenix_custom_block.view_services');
+        $cid = $req->query->get('cid');
+        if ($cid) {
+          $cid = intval($cid);
+          $checksum = $customService->getChecksum ($cid);
+          $authx = $customService->getCredentialAuthx ($cid);
+          return new JsonResponse(['checksum' => $checksum, 'authx' => $authx]);
+        }
+        return new JsonResponse(['checksum' => false, 'authx' => true]);
+  }
 
   
   public function produitCommercialisesActivity () {
@@ -212,6 +281,8 @@ class FormulaireController extends ControllerBase
       
       $details['Produits commercialisés (' . $this->getLastYear() . ') : '] = $label;
 
+      $this->createHtmlDetailActivity ($details, $cid, '/civicrm/donnees-economique-entreprise-produit-commercialises', ' Produits commercialisés ', '  <p> Produits commercialisés (' . $this->getLastYear() . ') : ' . $label . '</p>');
+
       $this->createActivity ($cid, $subject, $details, $source_contact_id);
     }
     return new JsonResponse(['tes' => 'true']);
@@ -220,16 +291,18 @@ class FormulaireController extends ControllerBase
   public function achatViandeActivity () {
     $req = \Drupal::request();
     $details = [];
+    $customService = \Drupal::service('phenix_custom_block.view_services');
     if ($req->query->get('valeur')) {
       \Drupal::service('civicrm')->initialize();
       $valeur_edited = json_decode($req->query->get('valeur'));
-      $cid = $valeur_edited->entity_id;
+      $cid = $req->query->get('cid');
       $organizationName  = $this->getOrganizationName($cid);
       $source_contact_id = \Drupal::service('session')->get('contact_who_filled' . $cid);
       $subject = "Formulaire de données économiques de l'entreprise";
       $label = $this->getLabelElement($valeur_edited, 77);
-      $details['Entreprise : '] = $organizationName;
-      $details[' Production - Approvisionnement - achat viande (' . $this->getLastYear() . ') : '] = $label;
+      
+      $this->createHtmlDetailActivity ($details, $cid, '/civicrm/donnees-economique-entreprise-achat-viande', ' Achat de viande ', ' <p>Production - Approvisionnement - achat viande (' . $this->getLastYear() . ') : ' . $label . '</p>');
+
       $this->createActivity ($cid, $subject, $details, $source_contact_id);
     }
     return new JsonResponse(['tes' => 'true']);
@@ -238,18 +311,20 @@ class FormulaireController extends ControllerBase
   public function transformationDecoupeActivity () {
     $req = \Drupal::request();
     $details = [];
+    $customService = \Drupal::service('phenix_custom_block.view_services');
     if ($req->query->get('valeur')) {
       \Drupal::service('civicrm')->initialize();
       $valeur_edited = json_decode($req->query->get('valeur'));
-      $cid = $valeur_edited->entity_id;
+      $cid = $req->query->get('cid');
       $idCustomProduit = $valeur_edited->id;
       $organizationName  = $this->getOrganizationName($cid);
       $source_contact_id = \Drupal::service('session')->get('contact_who_filled' . $cid);
       $subject = "Formulaire de données économiques de l'entreprise";
       $label = $this->getLabelElement($valeur_edited, 78);
-      $details['Entreprise : '] = $organizationName;
+
+      $this->createHtmlDetailActivity ($details, $cid, '/civicrm/donnees-economique-entreprise-transformation-decoupe', ' Découpe et transformation ', '  <p>Production - Découpe et transformation (' . $this->getLastYear() . ') :  ' . $typeOfViande . ' : ' .$label . ' </p>');
+
       $typeOfViande = $this->getTypeViandeByDecoupe ($idCustomProduit);
-      $details[' Production - Découpe et transformation (' . $this->getLastYear() . ') : '] = '<p> Pour ' . $typeOfViande . ' : ' .$label;
       $this->createActivity ($cid, $subject, $details, $source_contact_id);
     }
     return new JsonResponse(['tes' => 'true']);
@@ -257,10 +332,97 @@ class FormulaireController extends ControllerBase
 
   public function effectifAnnuelActivity () {
     $elements = $this->getEditedValueDecoded();
+
+     //créer une url pour rediriger vers l'onglet 
+    $cid = $elements['cid'];
+    $checksum = get_checksum($cid);
+    $url_tab = '<a href="/civicrm/donnees-economique-entreprise-effectif-annuel?cs=' . $checksum . '#?id=' . $cid . '">url</a>';
+
+    $details['<h2>Onglet "Effectif"</h2>'] = '<h4>Url pour y accéder : ' . $url_tab . '</h4>';
     $subject = "Formulaire de données économiques de l'entreprise";
-    $details['Entreprise : '] = $elements['organization_name'];
-    $details[' Effectif annuel pour l\'annee ' . $this->getLastYear() . ' est : '] = '' . $elements['valeur_modifiee'];
+    $details['<p> Entreprise : '] = $elements['organization_name'] . '</p>';
+    $elements['organization_name'];
+    $details['Les informations de qui ont été modifiés pour cet onglet'] = '<p> Effectif annuel pour l\'annee ' . $this->getLastYear() . ' est : ' . $elements['valeur_modifiee'] . '</p>';
+    $actual_session_activity = \Drupal::service('session')->get('all_activity');
+    $effectif_activity_detail = '<p> Effectif annuel pour l\'annee ' . $this->getLastYear() . ' est : ' . $elements['valeur_modifiee'] . '</p>';
+    $this->detailAddWhoFilledTheForm ($details);
+    \Drupal::service('session')->set('all_activity', $actual_session_activity . $effectif_activity_detail);
+
     $isCreated = $this->createActivity ($elements['cid'], $subject, $details, $elements['source_contact_id']);
+    return new JsonResponse(['tes' => $isCreated]);
+  }
+
+  private function detailAddWhoFilledTheForm (&$details) {
+    $whoFilledTheForm =  \Drupal::service('session')->get('contact_who_filled_the_form');
+    $userMail = \Drupal::service('session')->get('mail_of_user_who_filled_the_form');
+    $details['<p class="who-fill">Nom de la personne ayant renseigné le formulaire : '] = $whoFilledTheForm . '</p>';
+    $details['<p class="email-who-fill">Email de la personne ayant renseigné le formulaire : '] = $userMail. '</p>';
+    return $details;
+  }
+
+
+  public function listContactActivity () {
+    $elements = $this->getEditedValueDecoded();
+    $req = \Drupal::request();
+     //créer une url pour rediriger vers l'onglet 
+    $cid = $req->query->get('cid');
+    $checksum = get_checksum($cid);
+    $url_tab = '<a href="/civicrm/bulletin-cotisation-contact-entreprise?cs=' . $checksum . '&_authx=' . get_credential_authx($cid) . '&_authxSes=1#?id=' . $cid . '">url</a>';
+
+    $subject = "Formulaire de données économiques de l'entreprise";
+    $actual_session_activity = \Drupal::service('session')->get('all_activity');
+
+    $this->createHtmlDetailActivity ($details, $cid, '/civicrm/bulletin-cotisation-contact-entreprise', ' Contacts ', '<p> Le contact qui a été modifiés est ' . $elements['valeur_edited']->sort_name . '</p>');
+
+    $contact_modifie = '<p> Le contact qui a été modifiés est  : ' . $elements['valeur_edited']->sort_name . '</p>';
+    \Drupal::service('session')->set('all_activity', $actual_session_activity . $effectif_activity_detail);
+
+    $isCreated = $this->createActivity ($cid, $subject, $details, $elements['source_contact_id']);
+    return new JsonResponse(['tes' => $isCreated]);
+  }
+
+  public function dirigeantActivity () {
+    $req = \Drupal::request();
+    $customService = \Drupal::service('phenix_custom_block.view_services');
+    $elements = $this->getEditedValueDecoded();
+    $cid = $req->query->get('cid');
+    // $details[' information dirigeant modifié : '] = 'qsfdgqdgqfd' . $elements['valeur_modifiee'];
+    $actual_session_activity = \Drupal::service('session')->get('all_activity');
+    
+    //changement de la fonction
+    if ($elements['valeur_edited']->fonction ) {
+      \Drupal::service('civicrm')->initialize();
+      $all_function = '';
+      foreach ($elements['valeur_edited']->fonction as $id_fonction) {
+        
+        $indiviualContactFonctions = \Civi\Api4\CustomValue::get('indiviual_contact_fonction', FALSE)
+        ->addSelect('fonction:label')
+        ->addWhere('fonction', '=', $id_fonction)
+        ->execute()->first()['fonction:label'][0];
+        if ($indiviualContactFonctions ) {
+          $all_function .= $indiviualContactFonctions . ', ';
+        }
+      }
+
+      $all_function = trim($all_function, ', ');
+      
+      //activité Seulement pour "fonction" pour le moment
+
+    $checksum = get_checksum($cid);
+    // $url_tab = '<a href="/civicrm/bulletin-de-cotisation-dirigeants?cs=' . $checksum . '&_authx=' . get_credential_authx($cid) . '&_authxSes=1#?id=' . $cid . '">url</a>';
+    $url_tab = '<a href="/civicrm/bulletin-de-cotisation-dirigeants?cs=' . $checksum . '#?id=' . $cid . '">url</a>';
+
+    $details['<h2>Onglet "Dirigeants"</h2>'] = '<h4 class="boosturl">Url pour y accéder : ' . $url_tab . '</h4>';
+    $subject = "Formulaire de données économiques de l'entreprise";
+    $details['<p> Entreprise : '] = $customService->getContactNameById($cid) . '</p>';
+    $elements['organization_name'];
+    $effectif_activity_detail = '<p> information dirigeant modifié : ' . $all_function . '</p>';
+    $details['Les informations de qui ont été modifiés pour cet onglet'] = '<p>Fonctions :  ' . $all_function . '</p>';
+
+    $isCreated = $this->createActivity ($cid, $subject, $details, $elements['source_contact_id']);
+    \Drupal::service('session')->set('all_activity', $actual_session_activity . $effectif_activity_detail);
+    }
+    
     return new JsonResponse(['tes' => $isCreated]);
   }
 
@@ -290,6 +452,26 @@ class FormulaireController extends ControllerBase
     return $prodDecoupes;
   }
 
+  public function verifyToken () {
+    $req = \Drupal::request();
+    $cid = $req->get('contact_id');
+    $checksum = $req->get('checksum');
+    $hasToken = false;
+    \Drupal::service('civicrm')->initialize();
+    if ($cid) {
+
+      $isValidChecksum = \Civi\Api4\Contact::validateChecksum(FALSE)
+        ->setContactId($cid)  
+        ->setChecksum($checksum)
+        ->execute()->first()['valid'];
+      if ($isValidChecksum) {
+        $hasToken = true;
+      }
+    }
+
+    return new JsonResponse(['hasToken' => $hasToken,]);
+  }
+
   /**
    * TODO HERE 
    */
@@ -297,12 +479,61 @@ class FormulaireController extends ControllerBase
     
     $req = \Drupal::request();
     $cid = $req->get('contact_id');
+    $url = $req->get('url');
+    // dump($req, $_SERVER, $url, explode('?cs=', $url), $_SERVER['HTTP_HOST']);
+
+    $customService = \Drupal::service('phenix_custom_block.view_services');
     \Drupal::service('civicrm')->initialize();
-    $results = \Civi\Api4\AuthxCredential::create(FALSE)
+    $authx = \Civi\Api4\AuthxCredential::create(FALSE)
     ->setContactId($cid)
     ->execute()->first()['cred'];
+
+    $checksum = $customService->getChecksum($cid);
+
+    switch($url) {
+      case (strpos($url, 'infomration-contact') !== false):
+        $rightUrl = '/civicrm/bulletin-de-cotisation-infomration-contact?cs=' . $checksum . '&_authx=' . $authx . '&_authxSes=1#?Organization1=' . $cid;
+        break;
+      case (strpos($url, 'effectif-annuel') !== false):
+        $rightUrl = '/civicrm/donnees-economique-entreprise-effectif-annuel?cs=' . $checksum . '&_authx=' . $authx . '&_authxSes=1#?id=' . $cid;
+        break;
+      case (strpos($url, 'cotisation-dirigeants') !== false):
+        $rightUrl = '/civicrm/bulletin-de-cotisation-dirigeants?cs=' . $checksum . '&_authx=' . $authx . '&_authxSes=1#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $cid;
+        break;
+      case (strpos($url, 'liste-abonnement') !== false):
+        $rightUrl = '/civicrm/buttetin-cotisation-liste-abonnement?cs=' . $checksum . '&_authx=' . $authx . '&_authxSes=1#?id=' . $cid;
+        break;
+      case (strpos($url, 'contact-entreprise') !== false):
+        $rightUrl = '/civicrm/bulletin-cotisation-contact-entreprise?cs=' . $checksum . '&_authx=' . $authx . '&_authxSes=1#?id=' . $cid;
+        break;
+      case (strpos($url, '-agrement-sanitaire') !== false):
+        $rightUrl = '/civicrm/donnees-economique-entreprise-agrement-sanitaire?cs=' . $checksum . '&_authx=' . $authx . '&_authxSes=1#?id=' . $cid;
+        break;
+      case (strpos($url, 'donnee-generale') !== false):
+        $rightUrl = '/civicrm/donnees-economique-entreprise-donnee-generale?cs=' . $checksum . '&_authx=' . $authx . '&_authxSes=1#?id=' . $cid;
+        break;
+      case (strpos($url, 'entreprise-abattages') !== false):
+        $rightUrl = '/civicrm/donnees-economique-entreprise-abattages?cs=' . $checksum . '&_authx=' . $authx . '&_authxSes=1#?id=' . $cid;
+        break;
+      case (strpos($url, 'achat-viande') !== false):
+        $rightUrl = '/civicrm/donnees-economique-entreprise-achat-viande?cs=' . $checksum . '&_authx=' . $authx . '&_authxSes=1#?id=' . $cid;
+        break;
+      case (strpos($url, 'transformation-decoupe') !== false):
+        $rightUrl = '/civicrm/donnees-economique-entreprise-transformation-decoupe?cs=' . $checksum . '&_authx=' . $authx . '&_authxSes=1#?id=' . $cid;
+        break;
+      case (strpos($url, 'produit-commercialises') !== false):
+        $rightUrl = '/civicrm/donnees-economique-entreprise-produit-commercialises?cs=' . $checksum . '&_authx=' . $authx . '&_authxSes=1#?id=' . $cid;
+        break;
+      case (strpos($url, 'formulaire-certification') !== false):
+        $rightUrl = '/civicrm/donnees-economique-entreprise-formulaire-certification?cs=' . $checksum . '&_authx=' . $authx . '&_authxSes=1#?Organization1=' . $cid;;
+        break;
+      case (strpos($url, 'activity-certification') !== false):
+        $rightUrl = '/civicrm/donnees-economique-entreprise-detail-activity-certification?cs=' . $checksum . '&_authx=' . $authx . '&_authxSes=1#?id=' . $cid;;
+        break;
+    }
+
     
-    return new JsonResponse(['tes' => 'true', 'res' => $results]);
+    return new JsonResponse(['tes' => 'true', 'res' => $authx, 'checksum' => $checksum, 'url' => $rightUrl]);
   }
 
  /**
@@ -314,8 +545,8 @@ class FormulaireController extends ControllerBase
 
      foreach ($details as $keyDetail => $valueDetail) {
        if ($valueDetail) {
-         $html .= $keyDetail . '<br>';
-         $html .= $valueDetail . '<br>';
+         $html .= $keyDetail . '';
+         $html .= $valueDetail . '';
        }
      }
      \Drupal::service('civicrm')->initialize();

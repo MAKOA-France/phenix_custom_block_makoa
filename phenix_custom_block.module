@@ -451,7 +451,9 @@ function phenix_custom_block_preprocess_page(&$variables)
     // $tab_visited = []; 
     switch ($current_path) {
       case (strpos($current_path, 'bulletin-de-cotisation-infomration-contact') !== false ):
+        $already = \Drupal::service('session')->get('form_tab_visited');
         $tab_visited['1'] = 'entreprise';
+        $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
       case (strpos($current_path, 'donnees-economique-entreprise-effectif-annuel') !== false ):
@@ -645,8 +647,8 @@ function phenix_custom_block_preprocess_page(&$variables)
 
     if (strpos($current_path, 'donnees-economique-entreprise') !== false || strpos($current_path, '/civicrm/bulletin-cotisation-') !== false
      || strpos($current_path, 'buttetin-cotisation-') !== false  || strpos($current_path, 'bulletin-de-cotisation') !== false ) {
-      $cid = \Drupal::service('session')->get('current_ contact_id');
-      
+
+      $cid = CRM_Core_Session::singleton()->get('userID');
       
       if (strpos($current_path, 'bulletin-de-cotisation-infomration-contac') !== false) {
         
@@ -696,31 +698,33 @@ function phenix_custom_block_preprocess_page(&$variables)
       $missing_tab = '';
       if ($missing_values) {
         $missing_tab = implode(', ', $missing_values);
+        
+        $success_div = '<div class=" custom-msg-tabs messages messages--warning">
+        <h2 class="visually-hidden">Message d\'état</h2>Les onglets suivant n\'ont pas encore été renseignés : ' . $missing_tab . '</div><br>';
       }
-
-
-      $success_div = '<div class=" custom-msg-tabs messages messages--warning">
-      <h2 class="visually-hidden">Message d\'état</h2>Les onglets suivant n\'ont pas encore été renseignés : ' . $missing_tab . '</div><br>';
 
       $current_cid = CRM_Core_Session::singleton()->get('userID');
       $all_datas = json_encode(\Drupal::service('session')->get('form_tab_visited'));
+
+      $checksum = $cid ? $custom_service->getChecksum($cid) : '';
+      
       $variables['page']['highlighted']['#markup'] = '<h2>Synthèse et Données Economiques : ' . $custom_service->getContactNameById($cid) . '</h2><br><p>Merci de renseigner les 13 onglets.</p>
       '. $success_div . '
       <ul id="progressbar">
-      <li  href-attribute="civicrm/bulletin-de-cotisation-infomration-contact#?Organization1=' . $current_cid . '" class="' . $custom_service->isActive('civicrm/bulletin-de-cotisation-infomration-contact') . '"  class="active"><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation-infomration-contact#?Organization1=' . $current_cid . '">Entreprise</a></li>
-      <li data-org-id="' . $current_cid . '" href-attribute="/civicrm/donnees-economique-entreprise-effectif-annuel#?id=' . $current_cid . '" class="effectif-menu-class ' . $custom_service->isActive('donnees-economique-entreprise-effectif-annuel') . '"  class="active"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-effectif-annuel#?id=' . $current_cid . '">Effectifs</a></li>
-      <li  href-attribute="/civicrm/bulletin-de-cotisation-dirigeants#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-dirigeants') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation-dirigeants#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $current_cid . '">Dirigeants</a></li>
-      <li  href-attribute="/civicrm/buttetin-cotisation-liste-abonnement#?id=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-liste-abonnement') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/buttetin-cotisation-liste-abonnement#?id=' . $current_cid . '">Abonnements</a></li>
+      <li  href-attribute="civicrm/bulletin-de-cotisation-infomration-contact?cs=' . $checksum . '#?Organization1=' . $current_cid . '" class="' . $custom_service->isActive('civicrm/bulletin-de-cotisation-infomration-contact') . '"  class="active"><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation-infomration-contact?cs=' . $checksum . '#?Organization1=' . $current_cid . '">Entreprise</a></li>
+      <li data-org-id="' . $current_cid . '" href-attribute="/civicrm/donnees-economique-entreprise-effectif-annuel?cs=' . $checksum . '#?id=' . $current_cid . '" class="effectif-menu-class ' . $custom_service->isActive('donnees-economique-entreprise-effectif-annuel') . '"  class="active"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-effectif-annuel?cs=' . $checksum . '#?id=' . $current_cid . '">Effectifs</a></li>
+      <li  href-attribute="/civicrm/bulletin-de-cotisation-dirigeants?cs=' . $checksum . '#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-dirigeants') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation-dirigeants?cs=' . $checksum . '#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $current_cid . '">Dirigeants</a></li>
+      <li  href-attribute="/civicrm/buttetin-cotisation-liste-abonnement?cs=' . $checksum . '#?id=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-liste-abonnement') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/buttetin-cotisation-liste-abonnement?cs=' . $checksum . '#?id=' . $current_cid . '">Abonnements</a></li>
       
-      <li  href-attribute="/civicrm/bulletin-cotisation-contact-entreprise#?id=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-contact-entreprise') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/bulletin-cotisation-contact-entreprise#?id=' . $current_cid . '">Contacts</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-agrement-sanitaire#?id=' . $current_cid . '"  class="' . $custom_service->isActive('agrement-sanitaire') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-agrement-sanitaire#?id=' . $current_cid . '">Agréments sanitaires</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-donnee-generale#?id=' . $current_cid . '" class="' . $custom_service->isActive('donnee-generale') . '" id="donnee-eoconomique-entreprise-donnee-generale"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-donnee-generale#?id=' . $current_cid . '">Données Générales</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-abattages#?id=' . $current_cid . '" class="' . $custom_service->isActive('abattages') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-abattages#?id=' . $current_cid . '">Abattages</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-achat-viande#?id=' . $current_cid . '" class="' . $custom_service->isActive('achat-viande') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-achat-viande#?id=' . $current_cid . '">Achat de viande</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-transformation-decoupe#?id=' . $current_cid . '" class="' . $custom_service->isActive('transformation-decoupe') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-transformation-decoupe#?id=' . $current_cid . '"> Découpe et Transformation</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-produit-commercialises#?id=' . $current_cid . '" class="' . $custom_service->isActive('produit-commercial') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-produit-commercialises#?id=' . $current_cid . '">Produits commerciaux</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-formulaire-certification#?Organization1=' . $current_cid . '" class="' . $custom_service->isActive('formulaire-certification') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-formulaire-certification#?Organization1=' . $current_cid . '">Détail des activités</a></li>
-      <li data-tab-session="' . json_encode(\Drupal::service('session')->get('form_tab_visited')) . '" href-attribute="/civicrm/donnees-economique-entreprise-detail-activity-certification#?id=' . $current_cid . '" class="' . $custom_service->isActive('detail-activity-certification') . '" ><a data-set="'.  htmlspecialchars($all_datas, ENT_QUOTES, 'UTF-8') .'" class="tab-certification progress-bar-link" href="/civicrm/donnees-economique-entreprise-detail-activity-certification#?id=' . $current_cid . '">Certifications</a></li>
+      <li  href-attribute="/civicrm/bulletin-cotisation-contact-entreprise?cs=' . $checksum . '#?id=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-contact-entreprise') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/bulletin-cotisation-contact-entreprise?cs=' . $checksum . '#?id=' . $current_cid . '">Contacts</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-agrement-sanitaire?cs=' . $checksum . '#?id=' . $current_cid . '"  class="' . $custom_service->isActive('agrement-sanitaire') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-agrement-sanitaire?cs=' . $checksum . '#?id=' . $current_cid . '">Agréments sanitaires</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-donnee-generale?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('donnee-generale') . '" id="donnee-eoconomique-entreprise-donnee-generale"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-donnee-generale?cs=' . $checksum . '#?id=' . $current_cid . '">Données Générales</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-abattages?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('abattages') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-abattages?cs=' . $checksum . '#?id=' . $current_cid . '">Abattages</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-achat-viande?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('achat-viande') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-achat-viande?cs=' . $checksum . '#?id=' . $current_cid . '">Achat de viande</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-transformation-decoupe?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('transformation-decoupe') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-transformation-decoupe?cs=' . $checksum . '#?id=' . $current_cid . '"> Découpe et Transformation</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-produit-commercialises?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('produit-commercial') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-produit-commercialises?cs=' . $checksum . '#?id=' . $current_cid . '">Produits commerciaux</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-formulaire-certification?cs=' . $checksum . '#?Organization1=' . $current_cid . '" class="' . $custom_service->isActive('formulaire-certification') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-formulaire-certification?cs=' . $checksum . '#?Organization1=' . $current_cid . '">Détail des activités</a></li>
+      <li data-tab-session="' . json_encode(\Drupal::service('session')->get('form_tab_visited')) . '" href-attribute="/civicrm/donnees-economique-entreprise-detail-activity-certification?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('detail-activity-certification') . '" ><a data-set="'.  htmlspecialchars($all_datas, ENT_QUOTES, 'UTF-8') .'" class="tab-certification progress-bar-link" href="/civicrm/donnees-economique-entreprise-detail-activity-certification?cs=' . $checksum . '#?id=' . $current_cid . '">Certifications</a></li>
       </ul>';
 
 
@@ -1656,11 +1660,15 @@ function convertToNestedULWithCheckboxes($items, $default_value) {
     $checked = in_array($id, $default_value) ? ' checked' : '';
     //check if term has children
     $class_has_child = $custom_service->hasChildren($id) || $custom_service->isRubriqueWithTxtAndImg($id) ? ' term-who-had-child' : ' term-don-t-have-child';
-    $result .= '<li class="ifhas ' . $class_has_child . '" data-current-id="' . $id . '">
+    $only_tag_txt_img = $custom_service->isRubriqueWithTxtAndImg($id) ? ' only-txt-and-img ' : ' ';
+    $custom_icon_for_tag_txt_img = $custom_service->isRubriqueWithTxtAndImg($id) ? '  <div class="cus-tooltip"><i class="fa fa-question-circle " aria-hidden="true"></i>
+    <span class="cus-tooltiptext">Attention pour ajouter des documents allez directement sur la rubrique <a href="/taxonomy/term/' . $id . '/edit">ici</a></span>
+  </div> ' : ' ';
+    $result .= '<li class=" ' . $only_tag_txt_img .  ' ifhas ' . $class_has_child . '" data-current-id="' . $id . '">
     <span class="fancytree-node fancytree-expanded fancytree-has-children fancytree-exp-e fancytree-ico-e">
     <span class="fancytree-expander"></span>
     <span class="fancytree-checkbox ' . $checked . '"></span>
-    <span class="fancytree-title">' . $itemText . '</span></span>';
+    <span class="fancytree-title">' . $itemText . $custom_icon_for_tag_txt_img . '</span></span>';
   }
   
   $result .= str_repeat("</li></ul>", count($indentations) - 1) . "</li></ul></div>";

@@ -33,6 +33,13 @@ phenix_custom_block.form_donnee_econ.donnee_generale.activity:
     _title: 'creation activité donnée generale'
   requirements:
     _access: 'TRUE'
+phenix_custom_block.form_donnee_econ.abonnement.activity:
+  path: '/formulaire/buttetin-cotisation-liste-abonnement-activity'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::abonnementActivity'
+    _title: 'creation activité abonnement'
+  requirements:
+    _access: 'TRUE'
 
 phenix_custom_block.form_donnee_econ.donnee_generale.get_organization_id:
   path: '/formulaire/donnee-economique'
@@ -42,10 +49,26 @@ phenix_custom_block.form_donnee_econ.donnee_generale.get_organization_id:
   requirements:
     _access: 'TRUE'
 
+phenix_custom_block.form_donnee_econ.verify.token:
+  path: '/formulaire/verify-checksum'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::verifyToken'
+    _title: 'Vérifier si c est le bon checksum'
+  requirements:
+    _access: 'TRUE'
+
 phenix_custom_block.form_donnee_econ.abattage.activity:
   path: '/formulaire/donnees-economique-entreprise/abattage-activity'
   defaults:
     _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::abattageActivity'
+    _title: 'creation activité abattage'
+  requirements:
+    _access: 'TRUE'
+
+phenix_custom_block.form_donnee_econ.contacts.activity:
+  path: '/formulaire/donnees-economique-entreprise/cotisation-contact-entreprise-activity'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::listContactActivity'
     _title: 'creation activité abattage'
   requirements:
     _access: 'TRUE'
@@ -61,6 +84,20 @@ phenix_custom_block.form_donnee_econ.effectif_annuel.activity:
   defaults:
     _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::effectifAnnuelActivity'
     _title: 'creation activité effectif annuel'
+  requirements:
+    _access: 'TRUE'
+phenix_custom_block.form_donnee_econ.dirigeants.activity:
+  path: '/formulaire/donnees-economique-entreprise/donnees-economique-entreprise-dirigeants'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::dirigeantActivity'
+    _title: 'creation activité dirigeant annuel'
+  requirements:
+    _access: 'TRUE'
+phenix_custom_block.form_donnee_econ.url_toredirect_to_certification:
+  path: '/formulaire/get_url_to_redirect_to_page_certification'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::getChecksumAndAuthx'
+    _title: 'recupertation du checksum et authx'
   requirements:
     _access: 'TRUE'
 phenix_custom_block.form_donnee_econ.certification.activity:
