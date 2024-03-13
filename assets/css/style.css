@@ -33,6 +33,10 @@
     display:none;
 }
 
+#block-menuprincipal .metier-first-menu  {
+    display: block;
+}
+
 .content-sub-menu-burger a.dropdown-item-burger {
     text-wrap: initial
 }
@@ -1587,6 +1591,69 @@ ul.chosen-results li {
 .page-civicrm-bulletin-de-cotisation-infomration-contact .medium-12.cell {
     z-index: 4;
 }
+
+
+/**SITE METIER **/
+body #main-menu .grid-container nav.nav_custom_class_metier {
+    display: block;
+}
+
+nav#block-menuprincipal ul.menu-site-metier >li.menu-item--expanded::after {
+    display: none;
+}
+
+#main-menu.top-bar.menu-sidebar-open .content-sub-menu-burger.site-metier-sub-menu-burger:before {
+    display: none;
+}
+
+.custom-metier-banner {
+    margin-left: -15px;
+    background-color: #3e7269;
+    display: flex;
+    height: 145px;
+    margin-left: -13px;
+    width: 76%;
+    color: white;
+    top: 0px;
+    border-bottom-right-radius: 60px;
+    position: absolute;
+}
+.cust-txt-banner-home {
+    padding-left: 7%;
+}
+.div-img-metier-head-leaf {
+    display: flex;
+    align-content: flex-end;
+    align-items: flex-end;
+}
+.img-metier-head-leaf {
+    width: 19%;
+    padding-left: 7%;
+    padding-bottom: 4%;
+}
+
+.section-accueil-metier .breadcrumb.c-breadcrumb {
+    display: none;
+}
+
+.custom-metier-div {
+    padding-bottom: 133px;
+}
+
+.metier-each-media-video {
+    width: 30%;
+    display: inline-flex;
+    padding-right: 21px;
+}
+ul.metier-home-title-video li {
+    list-style: none;
+}
+.metier-text-img-video iframe {
+    border-radius: 18px;
+}
+.cust-output img {
+    display: list-item;
+}
 /*========================================= Fin ajout document===========================================================*/
 /* Large devices (desktops) */
 @media (max-width: 1800px) {
@@ -1715,6 +1782,14 @@ ul.chosen-results li {
 }
 /* Small devices (landscape phones) */
 @media (max-width: 768px) { 
+    .metier-each-media-video{
+        width: 100%;
+    }
+    .custom-metier-banner {
+        height: 130px;
+        margin-left: -16px;
+        width: 93%;
+    }
     #progressbar li {
         cursor: pointer;
         list-style-type: none;
