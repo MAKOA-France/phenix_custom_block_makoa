@@ -27,7 +27,9 @@
 
     //Formulaire de données éco...  ==> après validation, indiquer quel onglet n'est pas visité
     let tab_already_processed = jQuery('.tab-certification').attr('data-set'); 
-    tab_already_processed = JSON.parse(tab_already_processed);
+    if (tab_already_processed) {
+        tab_already_processed = JSON.parse(tab_already_processed);
+    }
     
     jQuery('.cust-form-person-who-filled').on('keyup', function() {
         if ($(this).val()) {
@@ -74,16 +76,17 @@
                 data: {contact_id: organization1Value, url: location.href},
                 success: (successResult, val, ee) => {
                     //Todo rediriger vers le bon onglet
+                    console.log(successResult.url)
                     location.href = successResult.url // + "?cs=" + successResult.checksum + "&_authx=" + successResult.res + "&_authxSes=1#?Organization1=" + organization1Value;
                 },
                 error: function(error) {
                     console.log(error, 'ERROR')
                 }
             });        
+            }
+        }else {
+            location.href = "/"
         }
-    }else {
-        location.href = "/"
-    }
 }
     
 
@@ -244,6 +247,22 @@
                             $.ajax({
                                 url: '/formulaire/donnees-economique-entreprise/achat-viande-activity',
                                 data: {valeur: editedVal},
+                                success: (successResult, val, ee) => {
+                                
+                                
+                                },
+                                error: function(error) {
+                                    console.log(error, 'ERROR')
+                                }
+                            });
+                        }
+                        //achat de viande activity
+                        if (url.includes('cotisation-liste-abonnement')) {
+                            let editedVal = JSON.stringify(responseData.inPlaceEdit.values[0]);
+                            let cid = location.href.split('id=')[1];
+                            $.ajax({
+                                url: '/formulaire/buttetin-cotisation-liste-abonnement-activity',
+                                data: {valeur: editedVal, cid: cid},
                                 success: (successResult, val, ee) => {
                                 
                                 
