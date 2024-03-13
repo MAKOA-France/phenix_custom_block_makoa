@@ -33,6 +33,13 @@ phenix_custom_block.form_donnee_econ.donnee_generale.activity:
     _title: 'creation activité donnée generale'
   requirements:
     _access: 'TRUE'
+phenix_custom_block.form_donnee_econ.abonnement.activity:
+  path: '/formulaire/buttetin-cotisation-liste-abonnement-activity'
+  defaults:
+    _controller: '\Drupal\phenix_custom_block\Controller\FormulaireController::abonnementActivity'
+    _title: 'creation activité abonnement'
+  requirements:
+    _access: 'TRUE'
 
 phenix_custom_block.form_donnee_econ.donnee_generale.get_organization_id:
   path: '/formulaire/donnee-economique'
