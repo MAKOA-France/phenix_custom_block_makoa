@@ -2402,6 +2402,7 @@ public function notAdherentOrSocial  () {
   
   public function getIdParagraphesWhereTitreLikeKeyWord($keyWord) {
     //Récuperer le term parent qui est lié à ce paragraphe
+    $keyWord = str_replace("'", " ", $keyWord);
     $query = "select TAX.entity_id as tid, PAR.entity_id as pid from paragraph__field_titre as PAR LEFT JOIN taxonomy_term__field_dossier  as TAX ON PAR.entity_id = TAX.field_dossier_target_id where field_titre_value like '%$keyWord%'";
     $datas = \Drupal::database()->query($query)->fetchAll();
     $whiteListparaId = [];
@@ -2444,6 +2445,7 @@ public function notAdherentOrSocial  () {
    * 
    */
   public function getAllIdParagrapheWhenContentLikeKeyword ($keyword) {
+    $keyword = str_replace("'", " ", $keyword);
     $query=  " select entity_id from paragraph__field_texte_formate where field_texte_formate_value like '%" . $keyword . "%'";
     $allEntityId = \Drupal::database()->query($query)->fetchCol('entity_id');
     $whiteListEntityId = [];
