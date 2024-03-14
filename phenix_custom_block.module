@@ -1654,7 +1654,7 @@ function convertToNestedULWithCheckboxes($items, $default_value) {
     $class_has_child = $custom_service->hasChildren($id) || $custom_service->isRubriqueWithTxtAndImg($id) ? ' term-who-had-child' : ' term-don-t-have-child';
     $only_tag_txt_img = $custom_service->isRubriqueWithTxtAndImg($id) ? ' only-txt-and-img ' : ' ';
     $custom_icon_for_tag_txt_img = $custom_service->isRubriqueWithTxtAndImg($id) ? '  <div class="cus-tooltip"><i class="fa fa-question-circle " aria-hidden="true"></i>
-    <span class="cus-tooltiptext">Attention pour ajouter des documents allez directement sur la rubrique <a href="/taxonomy/term/' . $id . '/edit">ici</a></span>
+    <span class="cus-tooltiptext">Attention pour ajouter des documents allez directement sur la rubrique (texte + images)<a href="/taxonomy/term/' . $id . '/edit">  ici</a></span>
   </div> ' : ' ';
     $result .= '<li class=" ' . $only_tag_txt_img .  ' ifhas ' . $class_has_child . '" data-current-id="' . $id . '">
     <span class="fancytree-node fancytree-expanded fancytree-has-children fancytree-exp-e fancytree-ico-e">
