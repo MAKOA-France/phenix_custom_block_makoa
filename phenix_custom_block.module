@@ -1106,6 +1106,9 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                   }
 
 
+                  if (!$media) {
+                    continue;
+                  }
                   $created_at = $custom_service->convertTimesptamToDate($custom_service->getNodeFieldValue($media, 'created'));
 
                   $get_description_by_id = \Drupal::database()->query('select * from  media__field_media_document where entity_id = ' . $fileId)->fetch()->field_media_document_description;
@@ -1173,6 +1176,11 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             $html = ['#markup' => $media_extrait];
             $html = \Drupal::service('renderer')->render($html);
             unset($all_documents[$first_title][0]);
+
+            //Récuperation du second dernier document
+            $secondDataDoc = $custom_service->getDataSecondDocument($all_documents);
+            unset($all_documents[$first_title][1]);
+            //end recuperation ****----------
             
             $allowToEdit = $custom_service->checkIfUserCanEditDoc ();
             
@@ -1182,7 +1190,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             $file0bj = File::load($file_id);
             $file_size_readable = $custom_service->getFileSize($file0bj);
             // $display_see_other_doc = ($counted_doc > 1); TODO 
-            $display_see_other_doc = (count($all_documents) > 1 || count(reset($all_documents)));
+            $display_see_other_doc = (count($all_documents) > 2 || count(reset($all_documents)));//TODO à mettre sup à 2 car les deux seront au dessus
             
             $variables['content'] = [
               '#theme' => 'phenix_custom_block_custom_last_doc',
@@ -1207,6 +1215,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                 'contenu' => $contenu,
                 'is_adherent' => $custom_service->isAdherent(),
                 'not_adherent_or_social' => $custom_service->notAdherentOrSocial(),
+                'second_document_data' => $secondDataDoc
               ]
             ]; 
           }else {
