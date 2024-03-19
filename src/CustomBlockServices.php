@@ -942,6 +942,12 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
      
       $seeMoreDoc = $this->getAllOtherDocInfo ($media_entities, $term_name) ? true : false;
       $allowToEdit = $this->checkIfUserCanEditDoc ();
+      
+
+      //Recuperer le second document
+      // $allInfoDoc = $this->getDataSecondDocument($media_entities[0]); //TODO Commenté pour le moment à decommenté si on en a besoin
+      
+
       return $var['content'] = [
         '#theme' => 'phenix_custom_block_last_doc_automatique',
         '#cache' => ['max-age' => 0],
@@ -964,6 +970,7 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
           'can_edit_doc' => $allowToEdit,
           'filiere' => $filieres,
           'term_id' => $term_object_id,
+          'second_document_data' => $allInfoDoc,
           'is_adherent' => $this->isAdherent(),
           'not_adherent_or_social' => $this->notAdherentOrSocial(),
         ], 
@@ -2096,7 +2103,8 @@ public function NePasAfficherDansOption (&$options) {
 public function sortTermIdByDateCreation ($res, $isTermSocial = false) {
   $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($res);
   if ($docs) {
-
+    $current_user = \Drupal::currentUser();
+    $user_roles = $current_user->getRoles();
     uasort($docs, function($a, $b) {
       $timestampA = $a->get('created')->value;
       $timestampB = $b->get('created')->value;
@@ -2106,6 +2114,10 @@ public function sortTermIdByDateCreation ($res, $isTermSocial = false) {
     $newres = [];
     foreach($docs as $d ) {
       $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
+      //si c'est un admin on autorise 
+      if ((in_array('super_utilisateur', $user_roles) || in_array('admin_client', $user_roles) /* && !in_array('permanent', $user_roles) */ || in_array('administrator', $user_roles))) {
+        $newres[] = $d->id();
+      }
       if (($d->get('created')->value <= $two_years_ago_timestamp) && !$isTermSocial) {//si le document date d'il y a deux ans on ne l'affiche pas (sauf pour le rôle social)
         continue;
       }else {
@@ -2403,13 +2415,8 @@ public function notAdherentOrSocial  () {
   /**
    * 
    */
-  public function getDataSecondDocument (&$allDoc) {
+  public function getDataSecondDocument ($media) {
 
-    if (count(reset($allDoc)) > 0) {
-
-      $secondElm = reset($allDoc)[1];
-      $secondElmId = $secondElm['media_id'];
-      $media = Media::load($secondElmId);
       $file_type = 'application/pdf';//default
       if ($media) {
         $media_extrait = getNodeFieldValue ($media, 'field_resume');
@@ -2436,11 +2443,10 @@ public function notAdherentOrSocial  () {
         'file_size' => $file_size_readable,// la taille du document
         'filiere' => $filiere_label,//filiere
         'file_type' => $file_type,
-        'second_element_id' => $secondElmId,
+        'second_element_id' => $media->id(),
         'date_doc' => $this->convertTimesptamToDate($this->getNodeFieldValue($media, 'created'))
       ];
       
-    }
     //condition si le premier element contient au moins deux document
     // if (reset($allDoc))
     //quels sont les éléments à recuperer
