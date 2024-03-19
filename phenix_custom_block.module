@@ -3,7 +3,7 @@
 
 use Drupal\node\NodeInterface;
 use Drupal\Core\Session\AccountInterface;
-
+use \Drupal\media\Entity\Media;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Drupal\file\Entity\File;
@@ -1178,8 +1178,11 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             unset($all_documents[$first_title][0]);
 
             //Récuperation du second dernier document
-            $secondDataDoc = $custom_service->getDataSecondDocument($all_documents);
-            unset($all_documents[$first_title][1]);
+            /* $secondElm = reset($all_documents)[1];
+            $secondElmId = $secondElm['media_id'];
+            $media = Media::load($secondElmId);
+            $secondDataDoc = $custom_service->getDataSecondDocument($media);
+            unset($all_documents[$first_title][1]);   *///Commenté pour le moment à decommenté si on en a besoin
             //end recuperation ****----------
             
             $allowToEdit = $custom_service->checkIfUserCanEditDoc ();
