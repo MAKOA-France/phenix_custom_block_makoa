@@ -3,7 +3,7 @@
 
 namespace Drupal\phenix_custom_block;
 
-use Drupal\media\Entity\Media;
+use \Drupal\media\Entity\Media;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -2399,6 +2399,55 @@ public function notAdherentOrSocial  () {
       return false;
     }
   } 
+
+  /**
+   * 
+   */
+  public function getDataSecondDocument (&$allDoc) {
+
+    if (count(reset($allDoc)) > 0) {
+
+      $secondElm = reset($allDoc)[1];
+      $secondElmId = $secondElm['media_id'];
+      $media = Media::load($secondElmId);
+      $file_type = 'application/pdf';//default
+      if ($media) {
+        $media_extrait = getNodeFieldValue ($media, 'field_resume');
+        $title = getNodeFieldValue($media, 'field_titre_public') ? getNodeFieldValue($media, 'field_titre_public') : getNodeFieldValue($media, 'name');
+        $first_element_file_id = getNodeFieldValue($media, 'field_media_document');
+        $first_file_document = File::load($first_element_file_id);
+        $first_file_extension = getNodeFieldValue($first_file_document, 'filemime');
+        $file_type = $this->getFileTypeExtension($first_file_extension);
+      }
+      $file_id = $this->getNodeFieldValue($media, 'field_media_document');
+      $file0bj = File::load($file_id);
+      $file_size_readable = $this->getFileSize($file0bj);
+
+      $allowToEdit = $this->checkIfUserCanEditDoc ();
+
+      // // Convert the size to a human-readable format
+      $file_size_readable = round($file_size_bytes / 1024, 2);
+      $filiere_label = $this->getFiliereLabels($media);
+      $typeDoc = $this->getTypeDocument ($media);
+
+      return [
+        'title' => $title,// le titre
+        'type_doc' => $typeDoc, // le type de document,
+        'file_size' => $file_size_readable,// la taille du document
+        'filiere' => $filiere_label,//filiere
+        'file_type' => $file_type,
+        'second_element_id' => $secondElmId,
+        'date_doc' => $this->convertTimesptamToDate($this->getNodeFieldValue($media, 'created'))
+      ];
+      
+    }
+    //condition si le premier element contient au moins deux document
+    // if (reset($allDoc))
+    //quels sont les éléments à recuperer
+   
+    
+    //l'identifiant pour le lien edit et pour le téléchargemnt
+  }
   
   public function getIdParagraphesWhereTitreLikeKeyWord($keyWord) {
     //Récuperer le term parent qui est lié à ce paragraphe
