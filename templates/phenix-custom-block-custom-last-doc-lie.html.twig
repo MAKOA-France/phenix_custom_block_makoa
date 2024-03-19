@@ -11,6 +11,10 @@
       {% else %}  
           <h2 class="main-title-last-doc">{{ content.term_name ~  ' - ' ~ content.document_year }}</h2>
       {% endif %}
+      
+    {% if content.second_document_data %}
+      <div class="two-elements">
+    {% endif %}   
     <div class="first-element-doc">
       <a href="/media/{{ content.first_element_id }}/download" class="custom-icon-first-element">
         <img src="/files/assets/{{ content.file_type }}">
@@ -61,6 +65,66 @@
   </div>
   </div>
 
+  {# SECOND ELEMENT  #}
+
+    {% if content.second_document_data %}
+    <div class="first-element-doc">
+    <a href="/media/{{ content.second_document_data.second_element_id  }}/download" class="custom-icon-first-element right-element-doc">
+        <img src="/files/assets/{{ content.second_document_data.file_type }}">
+      </a>  
+      <div class="content-frist-doc">
+        <div class="detail-title-resume-first-doc">
+
+          <div class="extrait-resume">
+            <h2 class="title-first-doc">
+              <a href="/media/{{ content.second_document_data.second_element_id }}/download">
+                {{ content.second_document_data.title }}
+              </a>
+            </h2>
+            {% if (content.resume) %}
+             <div class="content-resume-doc">
+              {{ content.resume|raw }}
+              </div>
+            {% endif %}
+          </div>
+
+          {% if content.not_adherent_or_social and not content.first_element  %}
+            {% if content.group_id%}
+              {# <a class="btn-add-meeting" style="width: fit-content" href="/media/add/document?group_id={{ content.group_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a> #}
+            {% else %}
+              <a class="btn-add-meeting" style="width: fit-content" href="/media/add/document?term_id={{ content.term_id }}"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
+            {% endif %}
+          {% endif %}
+        </div>
+
+         <div class="detail-date-button-first-doc">
+          <div  class="date-size-first-doc ">
+            <span>{{ content.second_document_data.date_doc }}  | {{ content.second_document_data.file_size }} Ko </span>
+
+              {% if content.second_document_data.filiere %}
+                | <span class="">
+                    {{ content.second_document_data.filiere }} 
+                </span>
+              {% endif %}
+              {% if content.second_document_data.type_doc  is not empty %}
+                | <span class="type-first-doc">
+                    {{ content.second_document_data.type_doc }} 
+                </span>
+              {% endif %}
+              {% if content.can_edit_doc %}
+              <a href="/media/{{ content.second_document_data.second_element_id }}/edit" class="edit-doc-button btn-ask-question-home"> <i class="fas fa-edit"></i>  Modifier</a>
+              {% endif %}
+            </div>
+            <a href="/media/{{ content.second_document_data.second_element_id }}/download" class="media-download-file-first"><i class='icon-custom-download-file'></i>Télécharger le document</a>
+          </div>
+        </div>
+  </div>
+</div>
+  {% endif %}
+    {# END SECOND ELEMENT #}
+  {% if content.second_document_data %}
+    </div> {# closing tag div with class two-elements#}
+  {% endif %}
   {% if content.display_see_other_doc %}
     <div class="line-container-plus">
       <hr class="hr-line-accoredon"> 
