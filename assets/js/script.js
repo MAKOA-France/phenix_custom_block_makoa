@@ -444,12 +444,20 @@
                 jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').closest('ul').parent('li').addClass('first-level-click');
             }
         }
-        let zip = jQuery('.first-element-doc a img').attr('src');
+        let zip = jQuery('.first-left-element img').attr('src');
    
         if (zip == '/files/assets/Icon metro-file-zip.png') {
-            jQuery('.first-element-doc a img').css('background-color', '#cc4b4c')
-            jQuery('.first-element-doc a img').css('border', '#cc4b4c solid 1px')
+            jQuery('.first-left-element img').css('background-color', '#cc4b4c')
+            jQuery('.first-left-element img').css('border', '#cc4b4c solid 1px')
         }
+        let zip_right = jQuery('.right-element-doc img').attr('src');
+   
+        if (zip_right == '/files/assets/Icon metro-file-zip.png') {
+            jQuery('.right-element-doc img').css('background-color', '#cc4b4c')
+            jQuery('.right-element-doc img').css('border', '#cc4b4c solid 1px')
+        }
+
+        
     })
 
     function ajaxActivity (url, split_by) {
@@ -467,6 +475,10 @@
         });
     }
     $(document).ready(function() {
+
+        if ($('.right-element-doc').length < 1) {
+            $('.custom-icon-first-element').css('width', '15%')
+        }
 
         jQuery('.group-description').each(function() {
             var $groupDescription = jQuery(this);
