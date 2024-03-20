@@ -1182,7 +1182,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             $secondElmId = $secondElm['media_id'];
             $media = Media::load($secondElmId);
             $secondDataDoc = $custom_service->getDataSecondDocument($media);
-            unset($all_documents[$first_title][1]);   *///Commenté pour le moment à decommenté si on en a besoin
+            unset($all_documents[$first_title][1]);   *///TODO Commenté pour le moment à decommenté si on en a besoin
             //end recuperation ****----------
             
             $allowToEdit = $custom_service->checkIfUserCanEditDoc ();
