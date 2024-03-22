@@ -1062,8 +1062,13 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             }
           }
           $firstParagraph = $documents[0]['#paragraph'];
-          
+          if (!$firstParagraph->hasField('field_texte_formate')) {
+            return;
+          }
           $accroche = $firstParagraph ? $custom_service->getNodeFieldValue($firstParagraph, 'field_texte_formate') : '';
+          if (!$firstParagraph->hasField('field_contenu')) {
+            return;
+          }
           $contenu = $firstParagraph ? $custom_service->getNodeFieldValue($firstParagraph, 'field_contenu') : '';
           foreach ($documents as $index => $value) {
             if (is_numeric($index)) {
