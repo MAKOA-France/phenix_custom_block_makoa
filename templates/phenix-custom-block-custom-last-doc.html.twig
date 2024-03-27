@@ -125,7 +125,7 @@
     {% endfor %}
     {% if (tmp != id_para)%}
       <div class="btn-download-files">
-        <a href="/media_download_all/paragraph/{{ id_para }}/field_document" class="media-download-all">Télécharger les fichiers <i class="fa fa-file-archive" aria-hidden="true"></i></a>
+        <a href="/media_download_all/paragraph/{{ id_para }}/field_document" download="nom-du-fichier.zip" class="media-download-all">Télécharger les fichiers <i class="fa fa-file-archive" aria-hidden="true"></i></a>
       </div>
     {% endif %} 
     {% set tmp = id_para %}
@@ -134,7 +134,7 @@
   {% endfor %}
   
   {% if content.event_id %}
-    <a href="/media_download_all/civicrm_event/{{content.event_id}}/field_documents" class="media-download-all downloda-all-event-doc">Télécharger tous les fichiers (zip)</a>
+    <a href="/media_download_all/civicrm_event/{{content.event_id}}/field_documents"  download="nom-du-fichier.zip"  class="media-download-all downloda-all-event-doc">Télécharger tous les fichiers (zip)</a>
   {% endif %}
   <div class="line-container-moins">
 
