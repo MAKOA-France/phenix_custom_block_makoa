@@ -1011,10 +1011,22 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
       $user_roles = $current_user->getRoles();
       $current_paths = \Drupal::service('path.current')->getPath();
 
-
       /**** Affichage dans la page dernier doc les doc lié aux tags (si ce n'est pas vide on retourne sinon on affiche les paragraphes ****/
       if(!empty($custom_service->getAllLinkedDocByTags ($variables))) {
-        return $custom_service->getAllDataForDocumentLieAuxTermeFirstElement($variables);
+          $doc_id_s = $custom_service->getAllLinkedDocByTags ($variables);
+          $countedDoc = count($doc_id_s);
+          $doc_id_s = array_column($doc_id_s, 'entity_id');
+          $socialDoc = [];
+          foreach ($doc_id_s as $doc_id_) {
+            if($custom_service->isDocSocial($doc_id_)) {
+              $socialDoc[] = $doc_id_;
+            }
+          }
+  
+          $allDocIsSocial = count($socialDoc) == $countedDoc;
+          if(count($socialDoc) != $countedDoc) {
+            return $custom_service->getAllDataForDocumentLieAuxTermeFirstElement($variables);
+          }
       }
       /***** end *****/
 
