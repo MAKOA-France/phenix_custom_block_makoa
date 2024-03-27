@@ -638,17 +638,21 @@
 })(jQuery);
 
 function setDefaultQuestion () {
-    CKEDITOR.replace('edit-civicrm-1-activity-1-activity-details-value', {
-        // Add any CKEditor configuration options here if needed
-    });
+        if (typeof CKEDITOR !== 'undefined') {
+        CKEDITOR.replace('edit-civicrm-1-activity-1-activity-details-value', {
+            // Add any CKEditor configuration options here if needed
+        });
+    }
     
     // Function to set value to the CKEditor field
     function setValueToCKEditorField() {
-    const editorInstance = CKEDITOR.instances['edit-civicrm-1-activity-1-activity-details-value'];
-    if (editorInstance) {
-        // Set the value of the CKEditor instance
-        editorInstance.setData(localStorage.getItem("poser_question_question"));
-    }
+        if (typeof CKEDITOR !== 'undefined') {
+        const editorInstance = CKEDITOR.instances['edit-civicrm-1-activity-1-activity-details-value'];
+        if (editorInstance) {
+            // Set the value of the CKEditor instance
+            editorInstance.setData(localStorage.getItem("poser_question_question"));
+            }
+        }
     }
 
     // Call the function to set the value (you can trigger this event on any action)
