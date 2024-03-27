@@ -241,7 +241,7 @@ function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\Enti
       // Get an array of role IDs for the current user.
       $user_roles = $current_user->getRoles();
       $allowToEdit = false;
-      if (!in_array('administrator', $user_roles) /* || in_array('super_utilisateur', $user_roles) */ && !in_array('social', $user_roles)) {
+      if (!in_array('administrator', $user_roles) && !in_array('super_utilisateur', $user_roles) && !in_array('permanent', $user_roles) && !in_array('social', $user_roles)) {
         $response = new TrustedRedirectResponse('/');
         $response->send();
       }
@@ -1062,19 +1062,25 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             }
           }
           $firstParagraph = $documents[0]['#paragraph'];
-          if (!$firstParagraph->hasField('field_texte_formate')) {
-            return;
+          if ($firstParagraph && $firstParagraph->hasField('field_texte_formate')) {
+            // return;
+            $accroche = $firstParagraph ? $custom_service->getNodeFieldValue($firstParagraph, 'field_texte_formate') : '';
           }
-          $accroche = $firstParagraph ? $custom_service->getNodeFieldValue($firstParagraph, 'field_texte_formate') : '';
-          if (!$firstParagraph->hasField('field_contenu')) {
-            return;
+          if ($firstParagraph && $firstParagraph->hasField('field_contenu')) {
+            // return;
+            $contenu = $firstParagraph ? $custom_service->getNodeFieldValue($firstParagraph, 'field_contenu') : '';
           }
-          $contenu = $firstParagraph ? $custom_service->getNodeFieldValue($firstParagraph, 'field_contenu') : '';
+          // $expected_ip = '154.126.106.83'; // Mettez l'adresse IP souhaitée ici.
+         
           foreach ($documents as $index => $value) {
             if (is_numeric($index)) {
               $title_doc = $value['#paragraph'] ? ($value['#paragraph']->hasField('field_titre') ? $value['#paragraph']->get('field_titre')->getValue()[0]['value'] : '') : '';  //maybe need a condition if existe
               $id_document = $value['#paragraph'] ? ($value['#paragraph']->hasField('field_document') ? $value['#paragraph']->get('field_document')->getValue() : '') : '';  //maybe need a condition if existe
-              
+              //  if ($_SERVER['REMOTE_ADDR'] === $expected_ip) {
+              //   dump($value['#paragraph'], $value['#paragraph']->get('field_document')->getValue());
+              //     // Si l'adresse IP est égale à celle attendue, effectuez le dump.
+              //     // dump($documents); // Utilisez la fonction de débogage de Devel.
+              //   }
 
               if (!$id_document) {
 
@@ -1104,8 +1110,8 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
               
               $current_paragraph = $value['#paragraph'];
               $firstParagraph = $documents[0]['#paragraph'];
-              $current_paragraph_accroche = $custom_service->getNodeFieldValue($current_paragraph, 'field_texte_formate');
-              $current_paragraph_contenu = $custom_service->getNodeFieldValue($current_paragraph, 'field_contenu');
+              $current_paragraph_accroche = $current_paragraph->hasField('field_texte_formate') ? $custom_service->getNodeFieldValue($current_paragraph, 'field_texte_formate') : '';
+              $current_paragraph_contenu = $current_paragraph->hasField('field_contenu') ? $custom_service->getNodeFieldValue($current_paragraph, 'field_contenu') : '';
 
               $files = File::loadMultiple($id_document);
               $all_info = [];
@@ -1159,7 +1165,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
               // $all_documents[$title_doc] = array_column($id_document, 'target_id');
             }
           } 
-
+    
           if (!empty($all_documents)) {
 
             $get_first_element = reset($all_documents);
@@ -2178,7 +2184,7 @@ function phenix_custom_block_entity_access (\Drupal\Core\Entity\EntityInterface 
       $whiteListRole = "social";
       $permissionMedia = "field_social";
       //Pour gerer la permission des medias suivant le rôle
-      $custom_service->checkPermissionMedia($whiteListRole, $permissionMedia, $account) ;
+      // $custom_service->checkPermissionMedia($whiteListRole, $permissionMedia, $account) ;
     }
   }
 
