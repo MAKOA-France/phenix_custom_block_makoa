@@ -541,7 +541,9 @@ class CustomBlockServices {
           $is_odd = 'odd';
           $counter = 0;
           foreach ($paragraphs as $paragraph) {
-            
+            if ($paragraph->hasField('field_titre_standard')) {//Si de type video
+              $this->getTitleStandardHtml ($paragraph, $data);
+            }
             if ($paragraph->hasField('field_video')) {//Si de type video
               $this->getVideoHtml ($paragraph, $data);
             }elseif ($paragraph->hasField('field_image_media')) {//Si de type image
@@ -719,6 +721,15 @@ class CustomBlockServices {
     }
   }
 }
+
+  /**
+   * return $data contenant l'html de la video
+   */
+  private function getTitleStandardHtml ($paragraph, &$data) {
+    $title = $this->getNodeFieldValue($paragraph, 'field_titre_standard');
+    $data .= '<h2 class="text-img-title"> ' . $title . '</h2>';
+    return $data;
+  }
 
   /**
    * return $data contenant l'html de la video
