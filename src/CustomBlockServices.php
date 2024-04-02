@@ -1101,12 +1101,17 @@ public function customSearchTitreDossier (&$var) {
 
    
   if ($field->field == 'field_texte_formate' && $value) {
+    if (!$entity) {
+      return;
+    }
     $textDescription = $this->getNodeFieldValue($entity, $field->field);
 
     $termId = $this->getNodeFieldValue($entity, 'parent_id');
      
     $termObj = Term::load($termId);
-    
+    if (!$termObj) {
+      return;
+    }
     $termName = $this->getNodeFieldValue($termObj, 'name');
     
     $published_on = $this->getNodeFieldValue($termObj, 'changed');
