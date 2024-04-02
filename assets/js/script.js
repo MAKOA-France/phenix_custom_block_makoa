@@ -2,6 +2,22 @@
 
     $(window).on('load', function () {
 
+
+        if (jQuery('[name="field_gabarit_texte_et_images[value]"]').prop('checked')) {
+            jQuery('[id*=field-dossier-values]').next('.clearfix').show();
+            console.log('is checked')
+        }else {
+            jQuery('[id*=field-dossier-values]').next('.clearfix').hide();
+        }
+        jQuery('body').on('click', '[name="field_gabarit_texte_et_images[value]"]', function() {
+            console.log('is checked')
+            if (jQuery(this).prop('checked')) {
+                jQuery('[id*=field-dossier-values]').next('.clearfix').show();
+            }else {
+                jQuery('[id*=field-dossier-values]').next('.clearfix').hide();
+            }
+            // jQuery('#field-dossier-values').next('.clearfix').toggle();
+        })
         //lien vers formulaire dans l'onglet activité, vérifier si l'utilisateur clique dessus...
 /*         jQuery('body').on('click', '.boosturl', function(e) {
             e.preventDefault();
