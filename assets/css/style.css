@@ -200,6 +200,20 @@ tr:has(td > p.row-to-hide) {
 
 /**************/
 
+/* btn download all*/
+.btn-cus-retour {
+    color: #fff;
+    background-color: #140d3d;
+    border: 1px solid #140d3d;
+    font-weight: 600;
+    padding: 10px 40px;
+    border-radius: 5px;
+    margin-bottom: 24px !important;
+}
+/****/
+.text-image h2.text-img-title {
+    font-size: 20px;
+}
 /******Page detail commission ******/
 .group-detail-page .layout.layout--twocol-section.layout--twocol-section--50-50 + .layout--onecol {
     display: none !important;
