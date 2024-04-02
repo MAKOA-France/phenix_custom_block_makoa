@@ -986,7 +986,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
   // Alter the term page variables here.
   $term = $variables['elements']['#taxonomy_term'];
   if( $variables['theme_hook_original'] == 'taxonomy_term' && $variables['elements']['#view_mode'] == 'full') {
-
+    \Drupal::service('session')->set('current_term_id', $term_object_id);
     $variables['attributes']['class'][] = 'this-is-taxo-page';//Pour identifier que c'est une page de taxonomie, utile pour le js du menu
     
     //check si la page de term en question est lié a une vue ou pas (en se servant du champ field_taxonomy_views_integrator_)
