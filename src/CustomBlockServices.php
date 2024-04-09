@@ -195,7 +195,7 @@ class CustomBlockServices {
 
 
     public function createActivity ($infos) {
-      return \Civi\Api4\Activity::create(FALSE)
+      /* return \Civi\Api4\Activity::create(FALSE)
         ->addValue('activity_type_id', 60)
         ->addValue('subject', $infos['subject'])
         ->addValue('details', $infos['the_question'])
@@ -206,7 +206,7 @@ class CustomBlockServices {
         ->addValue('assignee_contact_id', [
           $infos['assignee_to'],
         ])
-        ->execute();
+        ->execute(); */
     }
 
     /**
@@ -541,7 +541,9 @@ class CustomBlockServices {
           $is_odd = 'odd';
           $counter = 0;
           foreach ($paragraphs as $paragraph) {
-            
+            if ($paragraph->hasField('field_titre_standard')) {//Si de type video
+              $this->getTitleStandardHtml ($paragraph, $data);
+            }
             if ($paragraph->hasField('field_video')) {//Si de type video
               $this->getVideoHtml ($paragraph, $data);
             }elseif ($paragraph->hasField('field_image_media')) {//Si de type image
@@ -719,6 +721,15 @@ class CustomBlockServices {
     }
   }
 }
+
+  /**
+   * return $data contenant l'html de la video
+   */
+  private function getTitleStandardHtml ($paragraph, &$data) {
+    $title = $this->getNodeFieldValue($paragraph, 'field_titre_standard');
+    $data .= '<h2 class="text-img-title"> ' . $title . '</h2>';
+    return $data;
+  }
 
   /**
    * return $data contenant l'html de la video
@@ -1097,12 +1108,17 @@ public function customSearchTitreDossier (&$var) {
 
    
   if ($field->field == 'field_texte_formate' && $value) {
+    if (!$entity) {
+      return;
+    }
     $textDescription = $this->getNodeFieldValue($entity, $field->field);
 
     $termId = $this->getNodeFieldValue($entity, 'parent_id');
      
     $termObj = Term::load($termId);
-    
+    if (!$termObj) {
+      return;
+    }
     $termName = $this->getNodeFieldValue($termObj, 'name');
     
     $published_on = $this->getNodeFieldValue($termObj, 'changed');
@@ -1525,6 +1541,8 @@ public function checkIfMediaShouldNotBeDisplayed ($query) {
   public function getAllTermRubrique () {
     // Load the taxonomy vocabulary (replace 'your_vocabulary_name' with your actual vocabulary name).
     $vid = 'rubrique';
+    $current_user = \Drupal::currentUser();
+    $user_roles = $current_user->getRoles();
     $vocabulary = \Drupal\taxonomy\Entity\Vocabulary::load($vid);
     $alltermId = [];
     if ($vocabulary) {
@@ -1547,6 +1565,9 @@ public function checkIfMediaShouldNotBeDisplayed ($query) {
         $isLinkedWithMenu = $this->isTermLinkedWithMenu($term->id());
         $isTermSocial = $this->isTermSocial($term->id());
         if ($isLinkedWithMenu && !$isTermSocial) {
+          $alltermId[] = $term->id();
+        }
+        if (((in_array('super_utilisateur', $user_roles)  || in_array('administrator', $user_roles)) || in_array('social', $user_roles))) {
           $alltermId[] = $term->id();
         }
       }
