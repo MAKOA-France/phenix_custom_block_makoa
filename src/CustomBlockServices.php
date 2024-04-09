@@ -195,7 +195,7 @@ class CustomBlockServices {
 
 
     public function createActivity ($infos) {
-      return \Civi\Api4\Activity::create(FALSE)
+      /* return \Civi\Api4\Activity::create(FALSE)
         ->addValue('activity_type_id', 60)
         ->addValue('subject', $infos['subject'])
         ->addValue('details', $infos['the_question'])
@@ -206,7 +206,7 @@ class CustomBlockServices {
         ->addValue('assignee_contact_id', [
           $infos['assignee_to'],
         ])
-        ->execute();
+        ->execute(); */
     }
 
     /**
@@ -1534,6 +1534,8 @@ public function checkIfMediaShouldNotBeDisplayed ($query) {
   public function getAllTermRubrique () {
     // Load the taxonomy vocabulary (replace 'your_vocabulary_name' with your actual vocabulary name).
     $vid = 'rubrique';
+    $current_user = \Drupal::currentUser();
+    $user_roles = $current_user->getRoles();
     $vocabulary = \Drupal\taxonomy\Entity\Vocabulary::load($vid);
     $alltermId = [];
     if ($vocabulary) {
@@ -1556,6 +1558,9 @@ public function checkIfMediaShouldNotBeDisplayed ($query) {
         $isLinkedWithMenu = $this->isTermLinkedWithMenu($term->id());
         $isTermSocial = $this->isTermSocial($term->id());
         if ($isLinkedWithMenu && !$isTermSocial) {
+          $alltermId[] = $term->id();
+        }
+        if (((in_array('super_utilisateur', $user_roles)  || in_array('administrator', $user_roles)) || in_array('social', $user_roles))) {
           $alltermId[] = $term->id();
         }
       }
