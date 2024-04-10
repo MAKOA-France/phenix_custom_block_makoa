@@ -2159,6 +2159,8 @@ function phenix_custom_block_webform_submission_presave(Drupal\webform\WebformSu
     ];
 
      $custom_service->createActivity($infos);
+     
+     $custom_service->createActivityQuestionForAdherent($infos);
   }
 }
 

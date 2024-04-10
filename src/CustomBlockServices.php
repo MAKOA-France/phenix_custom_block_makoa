@@ -193,10 +193,43 @@ class CustomBlockServices {
       return $results;
     }
 
+    public function createActivityQuestionForAdherent ($infos) {
+      // dump($info['subject'], $infos['the_question'], $infos['employer'], $infos['assignee_to']);
+      
+      
+      /* TDOO for debugging  // Get the client's IP address
+       $ip_address = $_SERVER['REMOTE_ADDR'];
+
+       // Define your IP address
+       $allowed_ip = '154.126.105.178'; // Change this to your IP address
+
+       // Check if the client's IP address matches the allowed IP address
+       if ($ip_address == $allowed_ip) {
+        
+          //  dump(,$infos,' hacking');die;
+       } */
+      
+       $adherentWhoAskedQuestion = \Drupal::request()->get('cid2');
+       if ($infos['employer']) {
+        return $results = \Civi\Api4\Activity::create(FALSE)
+        ->addValue('activity_type_id', 60)
+        ->addValue('subject', $infos['subject'])
+        ->addValue('details', $infos['the_question'])
+        ->addValue('target_contact_id', [
+          $adherentWhoAskedQuestion,
+        ])
+        ->addValue('assignee_contact_id', [
+          $infos['assignee_to'],
+        ])
+        ->addValue('source_contact_id',  $adherentWhoAskedQuestion)
+        ->execute(); 
+      }
+    }
 
     public function createActivity ($infos) {
+      // dump($info['subject'], $infos['the_question'], $infos['employer'], $infos['assignee_to']);
        if ($infos['employer']) {
-        return \Civi\Api4\Activity::create(FALSE)
+        /* return \Civi\Api4\Activity::create(FALSE)
         ->addValue('activity_type_id', 60)
         ->addValue('subject', $infos['subject'])
         ->addValue('details', $infos['the_question'])
@@ -207,9 +240,9 @@ class CustomBlockServices {
         ->addValue('assignee_contact_id', [
           $infos['assignee_to'],
         ])
-        ->execute(); 
+        ->execute();  */
       }else {
-                return \Civi\Api4\Activity::create(FALSE)
+        return \Civi\Api4\Activity::create(FALSE)
         ->addValue('activity_type_id', 60)
         ->addValue('subject', $infos['subject'])
         ->addValue('details', $infos['the_question'])
