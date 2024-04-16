@@ -2,6 +2,20 @@
 
     $(window).on('load', function () {
 
+        
+         //Responsive mettre le logo en haut pour les mobiles
+        // Récupérer la largeur de l'écran
+        let windowWidth = $(window).width();
+        // Vérifier si la largeur de l'écran est inférieure à 768 pixels (typiquement la largeur des appareils mobiles)
+        if (windowWidth < 768) {
+            // Le code à exécuter pour les appareils mobiles
+            if ($('.page-accueil-metier').length > 0 || $('.this-is-metier-detail-page').length > 0 ) {
+                jQuery('<div class="metier-mobile"><a href="/" title="Accueil" rel="home" class="site-logo"><img src="/files/Groupe%202@2x.png" alt="Accueil"></a></div>').insertBefore('.title-bar');
+            }
+            
+        }
+
+
         //lien vers formulaire dans l'onglet activité, vérifier si l'utilisateur clique dessus...
 /*         jQuery('body').on('click', '.boosturl', function(e) {
             e.preventDefault();
@@ -444,11 +458,11 @@
                 jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').closest('ul').parent('li').addClass('first-level-click');
             }
         }
-        let zip = jQuery('.first-element-doc a img').attr('src');
+        let zip = jQuery('.first-left-element img').attr('src');
    
         if (zip == '/files/assets/Icon metro-file-zip.png') {
-            jQuery('.first-element-doc a img').css('background-color', '#cc4b4c')
-            jQuery('.first-element-doc a img').css('border', '#cc4b4c solid 1px')
+            jQuery('.first-left-element img').css('background-color', '#cc4b4c')
+            jQuery('.first-left-element img').css('border', '#cc4b4c solid 1px')
         }
     })
 
@@ -468,6 +482,81 @@
     }
     $(document).ready(function() {
 
+
+       
+        
+        
+        var screenWidth = $(window).width();
+    
+        // Check if screen width is less than 992px
+        if(screenWidth < 992 || screenWidth < 768 ){
+            // Do something when screen width is less than 992px
+            console.log("Screen width is less than 992px");
+            
+
+            $('.page-accueil-metier').on('click',  function() {
+
+                console.log('click fired')
+                //gestion de l'affichage du menu
+                if ($('.custom-class-site-metier').is(':hidden')) {
+                    $('.custom-class-site-metier').show();   
+                }else {
+                    $('.custom-class-site-metier').hide();   
+                }
+            });
+
+            jQuery('.custom-class-site-metier').hide();
+            jQuery('.title-bar').show();
+            
+            $('.page-accueil-metier').on('click', function() {
+                if ($('.custom-class-site-metier').is(':hidden')) {
+                    $('.custom-class-site-metier').show();   
+                }else {
+                    $('.custom-class-site-metier').hide();   
+                }
+            });
+        }
+
+        //Permet de bien replacer le texte de description d'un detail metier en responsive
+        $('body.section-taxonomy').on('click', '.menu-icon', function() {
+
+            console.log('click fired')
+            //gestion de l'affichage du menu
+            if ($('.custom-class-site-metier').is(':hidden')) {
+                $('.custom-class-site-metier').show();   
+            }else {
+                $('.custom-class-site-metier').hide();   
+            }
+
+            if($(window).width() < 680 ){
+                $('.custom-class-site-metier').toggle();
+            }
+            if ($("#main-menu").is(":hidden")) {
+                console.log('caché', )
+                // $('.metier-m-description').css("top", "200px");
+            }else {
+                // $('.metier-m-description').css("top", "794px");
+                console.log('show', $('.custom-class-site-metier').is(':hidden'))
+                console.log('affiché')
+            }
+        })
+
+
+
+        //Page detail site metier
+
+        let curr = jQuery('.metier-div-grid-container .paragraph--type--videos > div:nth-child(2)').text();
+        let two = curr.split(',');
+        let metier = two[1] ? '<p><p class="m-metier uuuu">' + two[1] +'</p>' : '';
+        if ((typeof two[1]) == 'string') {
+            jQuery('.metier-div-grid-container .paragraph--type--videos > div:nth-child(2)').html('<p>taooooo' + two[0] + '</p>' + metier);
+        }else {
+            jQuery('.metier-div-grid-container .paragraph--type--videos > div:nth-child(2)').hide();
+        }
+        //end page detail
+
+
+        $('.nav_custom_class_metier').show();
         jQuery('.group-description').each(function() {
             var $groupDescription = jQuery(this);
             var $closestCrmSection = $groupDescription.closest('.crm-section');
@@ -663,6 +752,40 @@ function verifierElement() {
         // Arrêtez de vérifier l'élément après l'avoir trouvé
         clearInterval(verifierElementInterval);
     }
+}
+
+var verifieraddOverlayToVideo= setInterval(addOverlayToVideo, 50);
+function addOverlayToVideo() {
+    let iframe = jQuery('body').find('.video-block-cus > div > div').length;
+    
+    
+    if (iframe) {
+        
+        let iframe = jQuery('body').find('.video-block-cus > div').addClass('div-parent-overlay');
+        jQuery('body').find('.video-block-cus > div > div').prepend('<div class="custom-overlay-hide-logo"></div>');
+        console.log(jQuery('body').find('.video-block-cus > div > div').length, ' atos')
+        jQuery('.page-accueil-metier iframe').each(function(id, el) {
+            let top = jQuery(el).offset().top
+            let left = jQuery(el).offset().left
+            jQuery(el).prev().css('top', '0px');
+            jQuery(el).prev().css('left', '0px');
+        })
+
+        // Arrêtez de vérifier l'élément après l'avoir trouvé
+        console.log('test')
+        clearInterval(verifieraddOverlayToVideo);
+        
+    }
+}
+var VerifaddOverlayToVideoDetail= setInterval(addOverlayToVideoDetail, 50);
+function addOverlayToVideoDetail () {
+    let iframePageDetail = jQuery('body').find('.term-metier-viandes .paragraph.paragraph--type--videos').length;
+    
+    if (iframePageDetail) {
+        jQuery('body').find('.term-metier-viandes .paragraph.paragraph--type--videos > div > div > div ').addClass('div-parent-overlay');
+        jQuery('body').find('.term-metier-viandes .paragraph.paragraph--type--videos > div > div > div ').prepend('<div class="custom-overlay-hide-logo"></div>');
+    }
+    clearInterval(VerifaddOverlayToVideoDetail);
 }
 
 // Vérifiez périodiquement la présence de l'élément
