@@ -1635,8 +1635,236 @@ ul.chosen-results li {
 
 
 /**SITE METIER **/
+.cust-output img {
+    height: 313px;
+    width: auto;
+    max-width: 100%;
+    border-radius: 17px;
+}
+.metier-m-description p, .metier-m-description h2 {
+    text-align: center;
+}
+.metier-div-grid-container .breadcrumb.c-breadcrumb{
+    display: none;
+}
+.metier-m-description h2 {
+    font-weight: bold;
+}
+.this-is-metier-detail-page .paragraph.paragraph--type--texte-long-editeur-riche.paragraph--view-mode--default {
+    padding-top: 15px;
+}
+.this-is-metier-detail-page .medium-12.cell {
+    display: block;
+}
+.metier-div-grid-container .grid-margin-x > .medium-12 {
+    margin-left: 38px;
+}
+.metier-div-grid-container  .paragraph.paragraph--type--image-full-width img{
+    width: 96%;
+}
+.metier-link-down-doc {
+    padding-bottom: 15px;
+}
+#block-pagedetalmetierdocumentblock {
+    position: absolute;
+    top: 46%;
+    left: 65.4%;
+}
+.page-taxonomy-term-6334 #block-pagedetalmetierdocumentblock{
+    top: 48%;
+    left: 64.5%;
+}
+p.title-docmetier {
+    font-size: 13px;
+}
+.page-taxonomy-term-6341 #block-pagedetalmetierdocumentblock {
+    top: 48.5%;
+    left: 64.5%;
+}
+.page-taxonomy-term-6337 #block-pagedetalmetierdocumentblock {
+    top: 53%;
+    left: 63.5%;
+}
+.metier-div-grid-container {
+    width: 73% !important;
+    max-width: 75% !important;
+}
+.metier-div-grid-container .paragraph.paragraph--type--texte-long-editeur-riche.paragraph--view-mode--default {
+    width: 63%;
+}
+.overlay-site-metier-detail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-bottom-right-radius: 50px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 58%, rgba(0, 0, 0, 0.7) 86%, rgba(0, 0, 0, 0.7) 99%);
+}
+.doc-hr {
+    width: 80%;
+    margin-top: 0;
+}
+.metier-link-down-doc {
+    padding-left: 91px;
+}
+.metier-link-down-doc a {
+    color: black;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+.metier-link-down-doc i.fas.fa-file-download {
+    padding-right: 10px;
+}
+.metier-div-grid-container .medium-12 {
+    display: inline-flex;
+}
+.date-creation-and-file-size {
+    display: inline-flex;
+    padding-left: 89px;
+}
+p.title-docmetier {
+    width: 330%;
+    padding-right: 10px;
+}
+.img-and-title {
+    display: inline-flex;
+}
+img.detail-metier-doc-img {
+    width: 56%;
+}
+
+.date-creation-and-file-size {
+    color: #e7e0d9;
+}
+
+.date-created-docmetier, .size-docmetier {
+    font-size: 13px;
+}
+.cust-output  {
+    display: flex;
+    flex-direction: column;
+}
+.cust-output .metier-home-title-video li a {
+    margin-top: 7px;
+    position: absolute;
+}
+
+.metier-detail-document {
+    border: 1px solid #e7e0d9;
+    border-top: none;
+    border-top-left-radius: 30px;
+}
+
+.all-element-doc {
+    padding-left: 11px;
+}
+
+p.document-head-detail-metier {
+    background-color: #e7e0d9;
+    padding-top: 11px;
+    padding-bottom: 11px;
+    padding-left: 14px;
+    border-bottom-right-radius: 20px;
+    border-top-left-radius: 20px;
+    font-weight: bold;
+}
+
+#block-pagedetalmetierdocumentblock {
+    width: 21%;
+}
+.term-metier-viandes > .metier-m-description {
+    position: absolute;
+    color: white;
+    top: 346px;
+    left: 400px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    width: 54%;
+}
+.metier-div-grid-container .paragraph--type--texte-long-editeur-riche ul li {
+    list-style: none;
+    position: relative;
+    padding-left: 30px; /* Add padding to create space for custom marker */
+
+}
+.metier-div-grid-container .paragraph--type--texte-long-editeur-riche ul li::before  {
+    content: "\2714";
+    color: white;
+    background-color: #3e7269;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    font-family: 'Font Awesome 5 Free';
+    position: absolute;
+    left: 0;
+    top: 51%;
+    transform: translateY(-50%);
+    text-align: center;
+    font-size: 10px;
+    line-height: 12.5px;
+
+}
+.metier-div-grid-container .paragraph--type--videos > div:nth-child(2) {
+    background-color: #e7e0d9;
+    height: 85px;
+    padding-top: 15px;
+    font-weight: bold;
+    padding-left: 20px;
+    border-bottom-right-radius: 25px;
+    width: 97%;
+    margin-bottom: 20px;
+}
+p.m-metier {
+    text-transform: uppercase;
+    color: red;
+    font-weight: 400;
+}
+.metier-div-grid-container .paragraph--type--videos {
+    display: flex;
+    flex-direction: column;
+}
+.metier-div-hero  {
+    width: 73.5% !important;
+    left: -3px;
+    top: -48px;
+    padding-left: 0 !important;
+    margin-left: 12% !important;
+}
+.metier-div-hero .block-core {
+    display: none !important;
+}
+#main-menu.top-bar.menu-sidebar-open {
+    width: 12%;
+}
+.title-actuality {
+    font-weight: bold;
+}
+.title-actu {
+    padding-top: 20px;
+}
+.term-metier-viandes .paragraph--type--videos iframe {
+    width: 97%;
+    height: 700px;
+}
+.container-actu {
+    display: flex;
+    padding-top: 70px;
+}
 body #main-menu .grid-container nav.nav_custom_class_metier {
     display: block;
+}
+.metier-actu {
+    padding-right: 27px;
+}
+
+.each-actu img {
+    width: 21vw;
+    max-width: unset;
+    border-bottom-right-radius: 51px;
+    border-top-left-radius: 51px;
 }
 
 nav#block-menuprincipal ul.menu-site-metier >li.menu-item--expanded::after {
@@ -1653,7 +1881,7 @@ nav#block-menuprincipal ul.menu-site-metier >li.menu-item--expanded::after {
     display: flex;
     height: 145px;
     margin-left: -13px;
-    width: 76%;
+    width: 73.5%;
     color: white;
     top: 0px;
     border-bottom-right-radius: 60px;
@@ -1666,9 +1894,10 @@ nav#block-menuprincipal ul.menu-site-metier >li.menu-item--expanded::after {
     display: flex;
     align-content: flex-end;
     align-items: flex-end;
+    width: inherit;
 }
 .img-metier-head-leaf {
-    width: 19%;
+    width: 15%;
     padding-left: 7%;
     padding-bottom: 4%;
 }
@@ -1682,7 +1911,7 @@ nav#block-menuprincipal ul.menu-site-metier >li.menu-item--expanded::after {
 }
 
 .metier-each-media-video {
-    width: 30%;
+    width: 32.66%;
     display: inline-flex;
     padding-right: 21px;
 }
@@ -1695,9 +1924,149 @@ ul.metier-home-title-video li {
 .cust-output img {
     display: list-item;
 }
+
+input#edit-submit.metier-submit-newsletter {
+    background: #140d3d;
+    width: 20%;
+    border-radius: 10px;
+}
+
+.block-phenix-custom-block.block-metiernewsletterblock {
+    background: #e7e0d9;
+    padding: 24px;
+    text-align: center;
+    border-top-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    margin-top: 70px;
+    width: 98%;
+}
+ul.metier-home-title-video a {
+    color: black;
+    font-weight: bold;
+}
+.cust-text-newlsetter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-right: 73px;
+}
+.block-phenix-custom-block.block-metiernewsletterblock .metier-newsletter-input {
+    border-top-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.desc-newsletter {
+    width: 36%;
+}
+.metier-newsletter-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.metier-img-newsletter {
+    float: left;
+    width: 6%;
+}
+.this-is-metier-detail-page#main {
+    padding-top: 0;
+}
+.grid-container.metier-div-grid-container#main:before {
+    content: "";
+    background: url(/files/before-section-main.png) no-repeat center 0;
+    right: 71px;
+    width: 12%;
+    top: 263px;
+    height: 800px;
+    position: fixed;
+    background-size: contain;
+}
+
+.metier-div-hero.grid-container.full.hero.hero-taxonomy:before {
+    content: "";
+    background: url(/files/before-section-title.png) no-repeat center 0;
+    left: -28px;
+    bottom: 99px;
+    width: 150px;
+    height: 346px;
+    position: absolute;
+    background-size: contain;
+}
+.metier-div-hero.grid-container.full.hero.hero-taxonomy {
+    /* background-image: url(/sites/test-culture-viande.dev.makoa.net/files/2023-07/porc.jpg); */
+    z-index: -1;
+}
+.grid-container-metier-detail {
+    display: none;
+}
+.page-taxonomy-term-6336 #block-pagedetalmetierdocumentblock {  /* todo mise en prod */
+    top: 48.5%;
+    left: 64.5%;
+}
+
+.page-taxonomy-term-6338 #block-pagedetalmetierdocumentblock {/* todo mep */
+    left: 64.5%;
+}
+.custom-class-site-metier .is-dropdown-submenu > li {
+    width: 100%;
+}
+.custom-class-site-metier #block-menuprincipal ul .submenu.is-dropdown-submenu {
+    margin-left: 3px;
+    z-index: 10;
+}
+.metier-link-down-doc .fa-file-download::before {
+    font-size: 20px;
+}
+.ytp-chrome-top.ytp-show-cards-title {
+    display: none;
+}
+
+/*overlay pour cacher le logo*/
+ .custom-overlay-hide-logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 55px;
+    height: 56px;
+    background-color: rgba(0, 0, 0, 0.92);
+    pointer-events: none;
+    z-index: 1;
+    border-radius: 12%;
+} 
+#player .ytp-title-enable-channel-logo .ytp-title-channel {
+    display: none !important;
+}
+#player {
+    background-color: red;
+}
+.div-parent-overlay {
+    position: relative;
+
+}
+
+.metier-mobile {
+    padding: 10px 10px 10px;
+    display: flex;
+    flex-direction: row;
+    padding-top: 0;
+}
+
 /*========================================= Fin ajout document===========================================================*/
 /* Large devices (desktops) */
 @media (max-width: 1800px) {
+    /* body {
+        background-color: blueviolet !important;
+    } */
+    .custom-class-site-metier nav#block-menuprincipal ul >li.first-level-click>ul.first-sub>li:hover {
+        width: 80%;
+    }
+    .custom-class-site-metier nav#block-menuprincipal ul > li > ul > li >ul {
+        left: 160px;
+    }
+    .custom-class-site-metier nav#block-menuprincipal ul >li.first-level-click>ul.first-sub>li {
+        width: 80%;
+    }
+    .custom-class-site-metier .is-dropdown-submenu > li {
+        width: 89%;
+    }
     .all-menu-checkboxes .form-checkboxes .form-item {
         width: 25%;
     }
@@ -1724,9 +2093,174 @@ ul.metier-home-title-video li {
     .all-menu-checkboxes .form-checkboxes .form-item {
         width: 33.333%;
     }
+    .cust-output img {
+        max-width: 102%;
+        height: 315px;
+    }
+    /* body {
+        background-color: #5cc2c5 !important;
+    } */
+    .grid-container.full.site-metier-footer {
+        margin-right: 0;
+    }
+    .page-accueil-metier article.grid-container {
+        margin-right: 0;
+        margin-left: 250px;
+    }
+    /* .custom-overlay-hide-logo {
+        position: absolute;
+        width: 4.4%;
+    } */
+    .custom-class-site-metier nav#block-menuprincipal ul >li.first-level-click>ul.first-sub>li {
+        width: 107%;
+    }
+    .custom-class-site-metier nav#block-menuprincipal ul >li.first-level-click>ul.first-sub>li:hover {
+        width: 108%;
+    }
+    .custom-class-site-metier #block-menuprincipal ul .submenu.is-dropdown-submenu {
+        margin-left: 30px;
+    }
+    .metier-div-hero.grid-container.full.hero.hero-taxonomy:before {
+        left: 76px;
+        bottom: 12px;
+        width: 126px;
+    }
+    .section-accueil-metier .grid-container#main:before {
+        left: 95%;
+        position: fixed;
+    }
+    .grid-container.metier-div-grid-container#main:before {
+        width: 6%;
+        display:none;
+    }
+    .term-metier-viandes > .metier-m-description {
+        top: 175px;
+        left: 358px;
+    }
+    .metier-div-grid-container #block-pagedetalmetierdocumentblock {
+        position: absolute;
+        top: 43%;
+        left: 71%;
+    }
+    .metier-link-down-doc {
+        padding-left: 27px;
+    }
+    .metier-div-hero {
+        width: 100% !important;
+        max-width: 81% !important;
+    }
+    .metier-each-media-video {
+        width: 49%;
+        display: inline-flex;
+        padding-right: 21px;
+    }
 }
 /* Large devices (desktops) */
 @media (max-width: 1200px) {
+    /* site metier */
+    /* body {
+        background-color: #806086 !important;
+    } */
+    .page-accueil-metier article.grid-container {
+        margin-right: 0;
+        margin-left: 207px;
+    }
+    .metier-div-grid-container#main {
+        margin-right: 0px !important;
+        margin-left: 22%;
+    }
+    .term-metier-viandes > .metier-m-description {
+        top: 197px;
+        left: 282px;
+        width: 61%;
+    }
+    .this-is-metier-detail-page::before {
+        content: none !important;
+    }
+    .this-is-metier-detail-page#main {
+        padding-top: 0;
+    }
+    .grid-container.hero.hero-taxonomy {
+        width: 100%;
+        margin-right: 0 !important;
+        max-width: 100%;
+        left: 69px;
+    }
+    .metier-div-grid-container #block-pagedetalmetierdocumentblock {
+        position: absolute;
+        top: 39%;
+        left: 70%;
+        width: 28%;
+    }
+    .metier-div-grid-container::before {
+        content: none;
+    } 
+    /* body {
+        background-color: #ca669d !important;
+    } */
+    .page-accueil-metier .grid-container {
+        max-width: 78%;
+        margin-right: 19px;
+    }
+    /* .custom-overlay-hide-logo {
+        position: absolute;
+        width: 5.4%;
+        height: 2.1%;
+    } */
+    .custom-class-site-metier #block-menuprincipal ul .submenu.is-dropdown-submenu {
+        margin-left: 26px;
+    }
+    body .custom-class-site-metier#main-menu .grid-container nav {
+        padding-left: 8px;
+    }
+    .custom-class-site-metier .is-dropdown-submenu > li {
+        width: 81%;
+    }
+    .custom-class-site-metier nav#block-menuprincipal ul > li > ul > li >ul {
+        left: 113px;
+    }
+    .custom-class-site-metier nav#block-menuprincipal ul >li.first-level-click>ul.first-sub>li:hover {
+        width: 85%;
+    }
+    .custom-class-site-metier nav#block-menuprincipal ul >li.first-level-click>ul.first-sub>li {
+        width: 85%;
+    }
+    .metier-div-hero.grid-container.full.hero.hero-taxonomy:before {
+        left: -15px;
+        bottom: 12px;
+        width: 126px;
+    }
+    .section-accueil-metier div#content {
+        padding-left: 15px;
+    }
+
+    .section-accueil-metier .grid-container#main {
+        width: 100%;
+        max-width: 81.5%;
+        margin-right: 58px;
+        margin-right: 0;
+    }
+    .metier-each-media-video {
+        width: 49%;
+    }
+    .section-accueil-metier  .grid-container#main:before {
+        content: none;
+    }
+    .metier-div-grid-container .grid-margin-x > .medium-12 {
+        margin-left: 0;
+    }
+    .this-is-metier-detail-page {
+        width: 100% !important;
+        max-width: 79% !important;
+    }
+    .metier-div-grid-container .paragraph.paragraph--type--texte-long-editeur-riche.paragraph--view-mode--default {
+        width: 60%;
+    }
+    .metier-div-hero {
+        width: 80% !important;
+        max-width: none !important;
+    }
+    /* end site metier */
     .my-contact-form {
         width: 100%;
     }
@@ -1765,6 +2299,102 @@ ul.metier-home-title-video li {
 /* Medium devices (tablets) */
 @media (max-width: 992px) { 
 
+    /* body {
+        background-color: #0074BD !important;
+    } */
+    /* .custom-overlay-hide-logo {
+        position: absolute;
+        width: 7.4%;
+        height: 2.1%;
+    } */
+    .metier-each-media-video {
+        width: 100%;
+        display: inline-flex;
+        padding-right: 21px;
+    }
+    .custom-class-site-metier#main-menu {
+        height: auto;
+    }
+    .date-creation-and-file-size {
+        padding-left: 79px;
+    }
+    .section-taxonomy .title-bar {
+        background-color: #e52329;
+    }
+    .section-accueil-metier .grid-container {
+        margin: initial;
+    }
+    .grid-container-metier-detail {
+        display: none;
+    }
+    .metier-div-hero.grid-container.full.hero.hero-taxonomy {
+        width: 96% !important;
+        left: -3px;
+    }
+    .term-metier-viandes > .metier-m-description {
+        top: 170px;
+        left: 151px;
+        width: 61%;
+    }
+    .metier-div-hero.grid-container.full.hero.hero-taxonomy:before {
+        content: none;
+    }
+    .metier-div-grid-container#main {
+        margin-right: 0px !important;
+        margin-left: 7%;
+    }
+    .metier-div-grid-container #block-pagedetalmetierdocumentblock {
+        position: absolute;
+        top: 37%;
+        left: 64%;
+        width: 32%;
+    }
+    .page-taxonomy-term-6336 #block-pagedetalmetierdocumentblock {
+        top: 38.5%;
+    }
+    .page-taxonomy-term-6341 #block-pagedetalmetierdocumentblock {
+        top: 38%;
+    }
+    .page-taxonomy-term-6334 #block-pagedetalmetierdocumentblock {
+        top: 38.6%;
+    }
+    .page-taxonomy-term-6337 #block-pagedetalmetierdocumentblock {
+        top: 25.5%;
+    }
+    .this-is-metier-detail-page {
+        width: 100% !important;
+        max-width: 94% !important;
+    }
+    .metier-div-hero {
+        margin-left: 0 !important;
+        top: -22px;
+    }
+    .grid-container-metier-detail {
+        left: 0;
+        margin-left: 0 !important;
+    }
+    .custom-metier-banner {
+        width: 97.5%;
+    }
+    .grid-container-metier-detail {
+        margin-left: 0;
+    }
+    .section-accueil-metier .grid-container#main {
+        width: 100%;
+        max-width: 100%;
+    }
+    /* .custom-class-site-metier {
+        display: none !important;
+    } */
+    /* .custom-class-site-metier {todo
+        top: 56px;
+    } */
+    .custom-class-site-metier#main-menu {
+        top: 61px;
+    }
+    .page-accueil-metier .custom-class-site-metier#main-menu {
+        top: 196px;
+    }
     #progressbar li {
         cursor: pointer;
         list-style-type: none;
@@ -1822,14 +2452,151 @@ ul.metier-home-title-video li {
     }
 }
 /* Small devices (landscape phones) */
-@media (max-width: 768px) { 
+@media (max-width: 768px) {
+    /* body {
+        background-color: #c2a33d !important;
+    } */
+    .page-accueil-metier .grid-container.site-metier-footer {
+        max-width: 100%;
+    }
+    .cust-output img {
+        max-width: 102%;
+        height: auto;
+    }
+    .metier-each-media-video {
+        width: 100%;
+        display: inline-flex;
+        padding-right: 21px;
+    }
+    .metier-div-hero.grid-container.hero.hero-taxonomy {
+        width: 100%;
+        margin-right: 0 !important;
+        max-width: 100%;
+        left: 0;
+        width: 100%;
+        height: 297px;
+    }
+    .metier-div-grid-container#main {
+        margin-right: 0px !important;
+        margin-left: 14px;
+    }
+    .metier-div-grid-container #block-pagedetalmetierdocumentblock {
+        position: absolute;
+        top: 30%;
+        left: 65%;
+        width: 34%;
+    }
+    .page-taxonomy-term-6337 .metier-div-grid-container #block-pagedetalmetierdocumentblock {/* todo mep  mise en prod */
+        top: 26%;
+    }
+    .metier-div-hero.grid-container.full.hero.hero-taxonomy:before {
+        left: 0;
+        bottom: 0;
+        top: 4px;
+        width: 54px;
+    }
+    .grid-container-metier-detail {
+        display: none;
+    }
+    .section-accueil-metier .grid-container#main {
+        width: 100%;
+        max-width: 100%;
+        margin-right: 58px;
+    }
+    header .grid-x {
+        height: 82px;
+    }
+    .custom-metier-banner {
+        height: 94px;
+    }
+    .metier-div-grid-container .grid-margin-x > .medium-12 {
+        margin-left: 15px;
+    }
+    .this-is-metier-detail-page {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    .term-metier-viandes .paragraph--type--videos iframe {
+        width: 97%;
+        height: 270px;
+    }
+    #block-pagedetalmetierdocumentblock {
+        width: 100%;
+    }
+    .metier-div-grid-container .medium-12 {
+        display: flex;
+        flex-direction: column;
+    }
+    .term-metier-viandes.this-is-taxo-page {
+        position: relative;
+
+    }
+    .term-metier-viandes > .metier-m-description {
+        position: absolute;
+        color: white;
+        top: 190px;
+        left: 40px;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        width: 85%;
+        font-size: 14px;
+    } 
+    
+    .metier-div-hero.grid-container.full.hero.hero-taxonomy {
+        width: 98% !important;
+    }
+    .grid-container-metier-detail + .title-bar {
+        background-color: #e52329;
+    }
+.overlay-site-metier-detail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-bottom-right-radius: 50px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0.7) 86%, rgba(0, 0, 0, 0.7) 99%);
+}
+    .metier-div-hero {
+        top: -24px;
+        margin-left: 0% !important;
+        min-height: 193px !important;
+        width: 94% !important;
+        left: 0;
+    }
     .metier-each-media-video{
         width: 100%;
     }
+    .desc-newsletter {
+        width: 100%;
+    }
+    .metier-img-newsletter {
+        width: 11%;
+    }
+    .cust-text-newlsetter {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-right: 16px;
+    }
+    input#edit-submit.metier-submit-newsletter {
+        background: #140d3d;
+        width: 45%;
+        border-radius: 10px;
+    }
     .custom-metier-banner {
-        height: 130px;
-        margin-left: -16px;
-        width: 93%;
+        margin-left: 0;
+        width: 100%;
+        border-radius: inherit;
+    }
+    .page-accueil-metier .grid-container{
+        padding-top: 0;
+    }
+    .div-img-metier-head-leaf {
+        display: flex;
+        align-content: flex-end;
+        align-items: center;
     }
     #progressbar li {
         cursor: pointer;
@@ -1869,7 +2636,64 @@ ul.metier-home-title-video li {
 
 }
 /* Extra small devices (portrait phones) */
-@media (max-width: 680px) {    
+@media (max-width: 680px) {  
+    /* site metier*/
+    /* body {
+        background-color: #e2a6a1 !important;
+    } */
+    /* .custom-overlay-hide-logo {
+        position: absolute;
+        width: 13.4%;
+        height: 1.5%;
+    } */
+    .page-accueil-metier .site-metier-header {
+        display: none;
+    }
+    .metier-logo-cv {
+        display: none !important;
+    }
+    .page-accueil-metier  header article.grid-container {
+        padding-left: 0 !important;
+    }
+    ul.metier-home-title-video li a {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+    }
+    .cust-output .metier-home-title-video li a {
+        margin-top: 7px;
+        position: relative;
+    }
+    .metier-div-grid-container#main {
+        margin-right: 0px !important;
+        margin-left: 0%;
+    }
+    .page-taxonomy-term-6337 .metier-div-grid-container #block-pagedetalmetierdocumentblock {
+        top: 0;
+    }
+    .term-metier-viandes > .metier-m-description {
+        top: -197px;
+        width: 91%;
+        left: 10px;
+    }
+    .metier-div-grid-container #block-pagedetalmetierdocumentblock {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+    .metier-div-hero #block-pagedetalmetierdocumentblock {
+        position : relative;
+        top: 0;
+        left: 0;
+    }  
+    .metier-div-hero.grid-container.hero.hero-taxonomy {
+        left: 0;
+    }
+    .metier-div-grid-container .paragraph.paragraph--type--texte-long-editeur-riche.paragraph--view-mode--default {
+        width: 95%;
+    }
+    /* end site metier */
     .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"]::-webkit-file-upload-button,
     .custom-add-and-edit-form #edit-field-media-document-wrapper [name="files[field_media_document_0]"]::file-selector-button{
         width: max-content;
