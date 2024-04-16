@@ -3,7 +3,7 @@
 
 use Drupal\node\NodeInterface;
 use Drupal\Core\Session\AccountInterface;
-
+use \Drupal\media\Entity\Media;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Drupal\file\Entity\File;
@@ -273,7 +273,7 @@ function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\Enti
       // Get an array of role IDs for the current user.
       $user_roles = $current_user->getRoles();
       $allowToEdit = false;
-      if (!in_array('administrator', $user_roles) /* || in_array('super_utilisateur', $user_roles) */ && !in_array('social', $user_roles)) {
+      if (!in_array('administrator', $user_roles) && !in_array('super_utilisateur', $user_roles) && !in_array('permanent', $user_roles) && !in_array('social', $user_roles)) {
         $response = new TrustedRedirectResponse('/');
         $response->send();
       }
@@ -1048,7 +1048,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
   // Alter the term page variables here.
   $term = $variables['elements']['#taxonomy_term'];
   if( $variables['theme_hook_original'] == 'taxonomy_term' && $variables['elements']['#view_mode'] == 'full') {
-
+    \Drupal::service('session')->set('current_term_id', $term_object_id);
     $variables['attributes']['class'][] = 'this-is-taxo-page';//Pour identifier que c'est une page de taxonomie, utile pour le js du menu
     
     //check si la page de term en question est lié a une vue ou pas (en se servant du champ field_taxonomy_views_integrator_)
@@ -1073,10 +1073,22 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
       $user_roles = $current_user->getRoles();
       $current_paths = \Drupal::service('path.current')->getPath();
 
-
       /**** Affichage dans la page dernier doc les doc lié aux tags (si ce n'est pas vide on retourne sinon on affiche les paragraphes ****/
       if(!empty($custom_service->getAllLinkedDocByTags ($variables))) {
-        return $custom_service->getAllDataForDocumentLieAuxTermeFirstElement($variables);
+          $doc_id_s = $custom_service->getAllLinkedDocByTags ($variables);
+          $countedDoc = count($doc_id_s);
+          $doc_id_s = array_column($doc_id_s, 'entity_id');
+          $socialDoc = [];
+          foreach ($doc_id_s as $doc_id_) {
+            if($custom_service->isDocSocial($doc_id_)) {
+              $socialDoc[] = $doc_id_;
+            }
+          }
+  
+          $allDocIsSocial = count($socialDoc) == $countedDoc;
+          if(count($socialDoc) != $countedDoc) {
+            return $custom_service->getAllDataForDocumentLieAuxTermeFirstElement($variables);
+          }
       }
       /***** end *****/
 
@@ -1112,14 +1124,25 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             }
           }
           $firstParagraph = $documents[0]['#paragraph'];
-          
-          $accroche = $firstParagraph ? $custom_service->getNodeFieldValue($firstParagraph, 'field_texte_formate') : '';
-          $contenu = $firstParagraph ? $custom_service->getNodeFieldValue($firstParagraph, 'field_contenu') : '';
+          if ($firstParagraph && $firstParagraph->hasField('field_texte_formate')) {
+            // return;
+            $accroche = $firstParagraph ? $custom_service->getNodeFieldValue($firstParagraph, 'field_texte_formate') : '';
+          }
+          if ($firstParagraph && $firstParagraph->hasField('field_contenu')) {
+            // return;
+            $contenu = $firstParagraph ? $custom_service->getNodeFieldValue($firstParagraph, 'field_contenu') : '';
+          }
+          // $expected_ip = '154.126.106.83'; // Mettez l'adresse IP souhaitée ici.
+         
           foreach ($documents as $index => $value) {
             if (is_numeric($index)) {
               $title_doc = $value['#paragraph'] ? ($value['#paragraph']->hasField('field_titre') ? $value['#paragraph']->get('field_titre')->getValue()[0]['value'] : '') : '';  //maybe need a condition if existe
               $id_document = $value['#paragraph'] ? ($value['#paragraph']->hasField('field_document') ? $value['#paragraph']->get('field_document')->getValue() : '') : '';  //maybe need a condition if existe
-              
+              //  if ($_SERVER['REMOTE_ADDR'] === $expected_ip) {
+              //   dump($value['#paragraph'], $value['#paragraph']->get('field_document')->getValue());
+              //     // Si l'adresse IP est égale à celle attendue, effectuez le dump.
+              //     // dump($documents); // Utilisez la fonction de débogage de Devel.
+              //   }
 
               if (!$id_document) {
 
@@ -1149,8 +1172,8 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
               
               $current_paragraph = $value['#paragraph'];
               $firstParagraph = $documents[0]['#paragraph'];
-              $current_paragraph_accroche = $custom_service->getNodeFieldValue($current_paragraph, 'field_texte_formate');
-              $current_paragraph_contenu = $custom_service->getNodeFieldValue($current_paragraph, 'field_contenu');
+              $current_paragraph_accroche = $current_paragraph->hasField('field_texte_formate') ? $custom_service->getNodeFieldValue($current_paragraph, 'field_texte_formate') : '';
+              $current_paragraph_contenu = $current_paragraph->hasField('field_contenu') ? $custom_service->getNodeFieldValue($current_paragraph, 'field_contenu') : '';
 
               $files = File::loadMultiple($id_document);
               $all_info = [];
@@ -1163,6 +1186,9 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                   }
 
 
+                  if (!$media) {
+                    continue;
+                  }
                   $created_at = $custom_service->convertTimesptamToDate($custom_service->getNodeFieldValue($media, 'created'));
 
                   $get_description_by_id = \Drupal::database()->query('select * from  media__field_media_document where entity_id = ' . $fileId)->fetch()->field_media_document_description;
@@ -1201,7 +1227,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
               // $all_documents[$title_doc] = array_column($id_document, 'target_id');
             }
           } 
-
+    
           if (!empty($all_documents)) {
 
             $get_first_element = reset($all_documents);
@@ -1230,6 +1256,14 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             $html = ['#markup' => $media_extrait];
             $html = \Drupal::service('renderer')->render($html);
             unset($all_documents[$first_title][0]);
+
+            //Récuperation du second dernier document
+            /* $secondElm = reset($all_documents)[1];
+            $secondElmId = $secondElm['media_id'];
+            $media = Media::load($secondElmId);
+            $secondDataDoc = $custom_service->getDataSecondDocument($media);
+            unset($all_documents[$first_title][1]);   *///TODO Commenté pour le moment à decommenté si on en a besoin
+            //end recuperation ****----------
             
             $allowToEdit = $custom_service->checkIfUserCanEditDoc ();
             
@@ -1239,7 +1273,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             $file0bj = File::load($file_id);
             $file_size_readable = $custom_service->getFileSize($file0bj);
             // $display_see_other_doc = ($counted_doc > 1); TODO 
-            $display_see_other_doc = (count($all_documents) > 1 || count(reset($all_documents)));
+            $display_see_other_doc = (count($all_documents) > 2 || count(reset($all_documents)));//TODO à mettre sup à 2 car les deux seront au dessus
             
             $variables['content'] = [
               '#theme' => 'phenix_custom_block_custom_last_doc',
@@ -1264,6 +1298,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                 'contenu' => $contenu,
                 'is_adherent' => $custom_service->isAdherent(),
                 'not_adherent_or_social' => $custom_service->notAdherentOrSocial(),
+                'second_document_data' => $secondDataDoc
               ]
             ]; 
           }else {
@@ -1716,7 +1751,7 @@ function convertToNestedULWithCheckboxes($items, $default_value) {
     $class_has_child = $custom_service->hasChildren($id) || $custom_service->isRubriqueWithTxtAndImg($id) ? ' term-who-had-child' : ' term-don-t-have-child';
     $only_tag_txt_img = $custom_service->isRubriqueWithTxtAndImg($id) ? ' only-txt-and-img ' : ' ';
     $custom_icon_for_tag_txt_img = $custom_service->isRubriqueWithTxtAndImg($id) ? '  <div class="cus-tooltip"><i class="fa fa-question-circle " aria-hidden="true"></i>
-    <span class="cus-tooltiptext">Attention pour ajouter des documents allez directement sur la rubrique <a href="/taxonomy/term/' . $id . '/edit">ici</a></span>
+    <span class="cus-tooltiptext">Attention pour ajouter des documents allez directement sur la rubrique (texte + images)<a href="/taxonomy/term/' . $id . '/edit">  ici</a></span>
   </div> ' : ' ';
     $result .= '<li class=" ' . $only_tag_txt_img .  ' ifhas ' . $class_has_child . '" data-current-id="' . $id . '">
     <span class="fancytree-node fancytree-expanded fancytree-has-children fancytree-exp-e fancytree-ico-e">
@@ -1999,13 +2034,105 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
       }
     }
 
-    //Si user est social et que user n'est pas admin ou superutilsateur
-    if (((!in_array('super_utilisateur', $user_roles)  || !in_array('administrator', $user_roles)) && in_array('social', $user_roles))) {
-      //Ne pas filtre par date de 2 ans si le document est social et que le role est social
-      // $custom_service->idDocumentMoindeDeuxAnsPlusDocumentsSocial ($query);
-      //Filtre, pour les adherent, le document doit etre lié aux menu
-      // $custom_service->displayOnlyDocLinkedWithMenu($query);
+  //Si user est social et que user n'est pas admin ou superutilsateur
+  if (((in_array('super_utilisateur', $user_roles)  || in_array('administrator', $user_roles)) || in_array('social', $user_roles))) {
+    //Ne pas filtre par date de 2 ans si le document est social et que le role est social
+    // $custom_service->idDocumentMoindeDeuxAnsPlusDocumentsSocial ($query);
+    //Filtre, pour les adherent, le document doit etre lié aux menu
+    // $custom_service->displayOnlyDocLinkedWithMenu($query);
+
+
+    // $blackListGroupId = $custom_service-> getAllGroupIdWhereUserDoesntBelongAndGroupIsAfficherSurExtranet ($cid, $groupContacts);
+    // $fields = $index->getFields();
+    
+    $orGroup = $query->createConditionGroup('OR');
+
+    $keyword = \Drupal::request()->query->get('search_api_fulltext');
+    // $orGroup->addCondition('field_groupes',  $blackListGroupId,"NOT IN");
+    $allRubriq = $custom_service->getAllTermRubrique();
+    // $allRubriq[] = 6281;
+    $orGroup->addCondition('tid',  $allRubriq,"IN");
+
+    //Countournement du probleme de reherche  ==> Recuperer les id elements qui sont like 'field_titre';
+    $whiteListParagraphe = $custom_service->getIdParagraphesWhereTitreLikeKeyWord ($keyword);
+    //recuperer tous les id de paragraphes qui est resseble ("like")au mot clés like 'field_texte_formate'
+    $idParagraphes = $custom_service->getAllIdParagrapheWhenContentLikeKeyword ($keyword);
+    //Merger avec le whitelist paragraphe
+    $whiteListParagraphe = array_merge($whiteListParagraphe, $idParagraphes);
+    $whiteListParagraphe = array_unique($whiteListParagraphe);
+    
+    if ($whiteListParagraphe) {
+      $orGroup->addCondition('id',  $whiteListParagraphe, 'IN');
     }
+    
+    //Filtre, pour les adherent, le document doit etre lié aux menu
+    $whiteListeDocumentId = [];
+    //document lié aux termes via ajout document
+    $sql = 'select DISTINCT entity_id from media__field_tag';
+    $sqlQuery = \Drupal::database()->query($sql)->fetchAll();
+    $whiteListeDocumentViaAddDocId = array_column($sqlQuery, 'entity_id');
+    
+    
+    //document lié aux termes via paragraphes
+    $sql = 'SELECT DISTINCT field_document_target_id FROM paragraph__field_document';
+    $sqlQuery = \Drupal::database()->query($sql)->fetchAll();
+    $whiteListeDocumentViaParagrapheId = array_column($sqlQuery, 'field_document_target_id');
+
+    //Merger les deux array après
+    $whiteListeIds = array_merge($whiteListeDocumentViaAddDocId, $whiteListeDocumentViaParagrapheId);
+    // $orGroup->addCondition('mid',  array_values($whiteListeIds),"IN");
+
+
+
+    //Filter si le document date de plus 2 ans
+    // $orGroup = $custom_service->checkIfMediaShouldNotBeDisplayed($orGroup);
+    // Get the entity type manager service.
+    $entity_type_manager = \Drupal::entityTypeManager();
+
+    // Specify the media type you want to query.
+    $media_type = 'document';
+
+    // Get the media entity type.
+    $media_entity_type = $entity_type_manager->getDefinition('media');
+
+    // Get the current date in the site's timezone.
+    $current_date = new DrupalDateTime('now');
+
+    // Set the current date to the start of the week (Sunday).
+    $current_date->modify('-2 years');
+
+    // Get the timestamp for the start of the current week.
+    $current_week_start_timestamp = $current_date->getTimestamp();
+
+    // Use the entity query to retrieve media entities of the specified type created today.
+    $query_get_document = $entity_type_manager->getStorage($media_entity_type->id())->getQuery();
+    $result = $query_get_document
+      ->condition('bundle', $media_type)
+      ->condition('created', $current_week_start_timestamp, '>')
+      ->execute();
+    $result = array_values($result);
+
+    $whiteList = array_values($whiteListeIds);
+    $intersection = array_intersect($whiteList, $result);
+      
+      //Si user a un rôle social | admin | SU on ajouter aussi les id doc de type social
+      $docSimplePlusSocial = array_merge($intersection, $custom_service->allDocumentIdSocial());
+      $orGroup->addCondition('mid',  $docSimplePlusSocial,"IN");
+
+    $query->addConditionGroup($orGroup);
+    //Filtrer les doc par role social (les utilisateurs qui ont le rôle social/admin seulement peuvent voir les documents social )
+    // $custom_service->filterBysocial($query);
+
+
+
+
+
+
+
+
+
+
+  }
     
       
     // $whitelist = getTermWhoDontHaveLinkMenu();//unused pour le moment
@@ -2094,6 +2221,8 @@ function phenix_custom_block_webform_submission_presave(Drupal\webform\WebformSu
     ];
 
      $custom_service->createActivity($infos);
+     
+     $custom_service->createActivityQuestionForAdherent($infos);
   }
 }
 
@@ -2211,7 +2340,7 @@ function phenix_custom_block_entity_access (\Drupal\Core\Entity\EntityInterface 
       $whiteListRole = "social";
       $permissionMedia = "field_social";
       //Pour gerer la permission des medias suivant le rôle
-      $custom_service->checkPermissionMedia($whiteListRole, $permissionMedia, $account) ;
+      // $custom_service->checkPermissionMedia($whiteListRole, $permissionMedia, $account) ;
     }
   }
 

@@ -33,7 +33,7 @@ class WebformController extends ControllerBase
     ->execute()->first()['hash'];
 
     
-    $urlBackLink = '/form/poser-une-question?cid2=' . $getId . '?&token=' . $idHash;
+    $urlBackLink = '/form/poser-une-question?cid2=' . $getId . '&token=' . $idHash;
 
     return new JsonResponse(['back_link' => $urlBackLink]);
   }

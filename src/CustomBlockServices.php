@@ -3,7 +3,7 @@
 
 namespace Drupal\phenix_custom_block;
 
-use Drupal\media\Entity\Media;
+use \Drupal\media\Entity\Media;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -193,9 +193,43 @@ class CustomBlockServices {
       return $results;
     }
 
+    public function createActivityQuestionForAdherent ($infos) {
+      // dump($info['subject'], $infos['the_question'], $infos['employer'], $infos['assignee_to']);
+      
+      
+      /* TDOO for debugging  // Get the client's IP address
+       $ip_address = $_SERVER['REMOTE_ADDR'];
+
+       // Define your IP address
+       $allowed_ip = '154.126.105.178'; // Change this to your IP address
+
+       // Check if the client's IP address matches the allowed IP address
+       if ($ip_address == $allowed_ip) {
+        
+          //  dump(,$infos,' hacking');die;
+       } */
+      
+       $adherentWhoAskedQuestion = \Drupal::request()->get('cid2');
+       if ($infos['employer']) {
+        return $results = \Civi\Api4\Activity::create(FALSE)
+        ->addValue('activity_type_id', 60)
+        ->addValue('subject', $infos['subject'])
+        ->addValue('details', $infos['the_question'])
+        ->addValue('target_contact_id', [
+          $adherentWhoAskedQuestion,
+        ])
+        ->addValue('assignee_contact_id', [
+          $infos['assignee_to'],
+        ])
+        ->addValue('source_contact_id',  $adherentWhoAskedQuestion)
+        ->execute(); 
+      }
+    }
 
     public function createActivity ($infos) {
-      return \Civi\Api4\Activity::create(FALSE)
+      // dump($info['subject'], $infos['the_question'], $infos['employer'], $infos['assignee_to']);
+       if ($infos['employer']) {
+        /* return \Civi\Api4\Activity::create(FALSE)
         ->addValue('activity_type_id', 60)
         ->addValue('subject', $infos['subject'])
         ->addValue('details', $infos['the_question'])
@@ -206,7 +240,21 @@ class CustomBlockServices {
         ->addValue('assignee_contact_id', [
           $infos['assignee_to'],
         ])
-        ->execute();
+        ->execute();  */
+      }else {
+        /* return \Civi\Api4\Activity::create(FALSE)
+        ->addValue('activity_type_id', 60)
+        ->addValue('subject', $infos['subject'])
+        ->addValue('details', $infos['the_question'])
+        ->addValue('target_contact_id', [
+          $infos['employer'],
+        ])
+        // ->addValue('source_contact_id', $infos['employer'])
+        ->addValue('assignee_contact_id', [
+          $infos['assignee_to'],
+        ])
+        ->execute();  */
+      } 
     }
 
     /**
@@ -541,7 +589,9 @@ class CustomBlockServices {
           $is_odd = 'odd';
           $counter = 0;
           foreach ($paragraphs as $paragraph) {
-            
+            if ($paragraph->hasField('field_titre_standard')) {//Si de type video
+              $this->getTitleStandardHtml ($paragraph, $data);
+            }
             if ($paragraph->hasField('field_video')) {//Si de type video
               $this->getVideoHtml ($paragraph, $data);
             }elseif ($paragraph->hasField('field_image_media')) {//Si de type image
@@ -719,6 +769,15 @@ class CustomBlockServices {
     }
   }
 }
+
+  /**
+   * return $data contenant l'html de la video
+   */
+  private function getTitleStandardHtml ($paragraph, &$data) {
+    $title = $this->getNodeFieldValue($paragraph, 'field_titre_standard');
+    $data .= '<h2 class="text-img-title"> ' . $title . '</h2>';
+    return $data;
+  }
 
   /**
    * return $data contenant l'html de la video
@@ -942,6 +1001,12 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
      
       $seeMoreDoc = $this->getAllOtherDocInfo ($media_entities, $term_name) ? true : false;
       $allowToEdit = $this->checkIfUserCanEditDoc ();
+      
+
+      //Recuperer le second document
+      // $allInfoDoc = $this->getDataSecondDocument($media_entities[0]); //TODO Commenté pour le moment à decommenté si on en a besoin
+      
+
       return $var['content'] = [
         '#theme' => 'phenix_custom_block_last_doc_automatique',
         '#cache' => ['max-age' => 0],
@@ -964,6 +1029,7 @@ public function getAllDataForDocumentLieAuxTermeFirstElement (&$var) {
           'can_edit_doc' => $allowToEdit,
           'filiere' => $filieres,
           'term_id' => $term_object_id,
+          'second_document_data' => $allInfoDoc,
           'is_adherent' => $this->isAdherent(),
           'not_adherent_or_social' => $this->notAdherentOrSocial(),
         ], 
@@ -1090,12 +1156,17 @@ public function customSearchTitreDossier (&$var) {
 
    
   if ($field->field == 'field_texte_formate' && $value) {
+    if (!$entity) {
+      return;
+    }
     $textDescription = $this->getNodeFieldValue($entity, $field->field);
 
     $termId = $this->getNodeFieldValue($entity, 'parent_id');
      
     $termObj = Term::load($termId);
-    
+    if (!$termObj) {
+      return;
+    }
     $termName = $this->getNodeFieldValue($termObj, 'name');
     
     $published_on = $this->getNodeFieldValue($termObj, 'changed');
@@ -1518,6 +1589,8 @@ public function checkIfMediaShouldNotBeDisplayed ($query) {
   public function getAllTermRubrique () {
     // Load the taxonomy vocabulary (replace 'your_vocabulary_name' with your actual vocabulary name).
     $vid = 'rubrique';
+    $current_user = \Drupal::currentUser();
+    $user_roles = $current_user->getRoles();
     $vocabulary = \Drupal\taxonomy\Entity\Vocabulary::load($vid);
     $alltermId = [];
     if ($vocabulary) {
@@ -1540,6 +1613,9 @@ public function checkIfMediaShouldNotBeDisplayed ($query) {
         $isLinkedWithMenu = $this->isTermLinkedWithMenu($term->id());
         $isTermSocial = $this->isTermSocial($term->id());
         if ($isLinkedWithMenu && !$isTermSocial) {
+          $alltermId[] = $term->id();
+        }
+        if (((in_array('super_utilisateur', $user_roles)  || in_array('administrator', $user_roles)) || in_array('social', $user_roles))) {
           $alltermId[] = $term->id();
         }
       }
@@ -2096,7 +2172,8 @@ public function NePasAfficherDansOption (&$options) {
 public function sortTermIdByDateCreation ($res, $isTermSocial = false) {
   $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($res);
   if ($docs) {
-
+    $current_user = \Drupal::currentUser();
+    $user_roles = $current_user->getRoles();
     uasort($docs, function($a, $b) {
       $timestampA = $a->get('created')->value;
       $timestampB = $b->get('created')->value;
@@ -2106,6 +2183,10 @@ public function sortTermIdByDateCreation ($res, $isTermSocial = false) {
     $newres = [];
     foreach($docs as $d ) {
       $two_years_ago_timestamp = strtotime('-2 years', $current_timestamp);
+      //si c'est un admin on autorise 
+      if ((in_array('super_utilisateur', $user_roles) || in_array('admin_client', $user_roles) /* && !in_array('permanent', $user_roles) */ || in_array('administrator', $user_roles))) {
+        $newres[] = $d->id();
+      }
       if (($d->get('created')->value <= $two_years_ago_timestamp) && !$isTermSocial) {//si le document date d'il y a deux ans on ne l'affiche pas (sauf pour le rôle social)
         continue;
       }else {
@@ -2399,6 +2480,49 @@ public function notAdherentOrSocial  () {
       return false;
     }
   } 
+
+  /**
+   * 
+   */
+  public function getDataSecondDocument ($media) {
+
+      $file_type = 'application/pdf';//default
+      if ($media) {
+        $media_extrait = getNodeFieldValue ($media, 'field_resume');
+        $title = getNodeFieldValue($media, 'field_titre_public') ? getNodeFieldValue($media, 'field_titre_public') : getNodeFieldValue($media, 'name');
+        $first_element_file_id = getNodeFieldValue($media, 'field_media_document');
+        $first_file_document = File::load($first_element_file_id);
+        $first_file_extension = getNodeFieldValue($first_file_document, 'filemime');
+        $file_type = $this->getFileTypeExtension($first_file_extension);
+      }
+      $file_id = $this->getNodeFieldValue($media, 'field_media_document');
+      $file0bj = File::load($file_id);
+      $file_size_readable = $this->getFileSize($file0bj);
+
+      $allowToEdit = $this->checkIfUserCanEditDoc ();
+
+      // // Convert the size to a human-readable format
+      $file_size_readable = round($file_size_bytes / 1024, 2);
+      $filiere_label = $this->getFiliereLabels($media);
+      $typeDoc = $this->getTypeDocument ($media);
+
+      return [
+        'title' => $title,// le titre
+        'type_doc' => $typeDoc, // le type de document,
+        'file_size' => $file_size_readable,// la taille du document
+        'filiere' => $filiere_label,//filiere
+        'file_type' => $file_type,
+        'second_element_id' => $media->id(),
+        'date_doc' => $this->convertTimesptamToDate($this->getNodeFieldValue($media, 'created'))
+      ];
+      
+    //condition si le premier element contient au moins deux document
+    // if (reset($allDoc))
+    //quels sont les éléments à recuperer
+   
+    
+    //l'identifiant pour le lien edit et pour le téléchargemnt
+  }
   
   public function getIdParagraphesWhereTitreLikeKeyWord($keyWord) {
     //Récuperer le term parent qui est lié à ce paragraphe

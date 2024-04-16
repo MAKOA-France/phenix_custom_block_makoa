@@ -16,6 +16,22 @@
         }
 
 
+
+        if (jQuery('[name="field_gabarit_texte_et_images[value]"]').prop('checked')) {
+            jQuery('[id*=field-dossier-values]').next('.clearfix').show();
+            console.log('is checked')
+        }else {
+            jQuery('[id*=field-dossier-values]').next('.clearfix').hide();
+        }
+        jQuery('body').on('click', '[name="field_gabarit_texte_et_images[value]"]', function() {
+            console.log('is checked')
+            if (jQuery(this).prop('checked')) {
+                jQuery('[id*=field-dossier-values]').next('.clearfix').show();
+            }else {
+                jQuery('[id*=field-dossier-values]').next('.clearfix').hide();
+            }
+            // jQuery('#field-dossier-values').next('.clearfix').toggle();
+        })
         //lien vers formulaire dans l'onglet activité, vérifier si l'utilisateur clique dessus...
 /*         jQuery('body').on('click', '.boosturl', function(e) {
             e.preventDefault();
@@ -464,6 +480,14 @@
             jQuery('.first-left-element img').css('background-color', '#cc4b4c')
             jQuery('.first-left-element img').css('border', '#cc4b4c solid 1px')
         }
+        let zip_right = jQuery('.right-element-doc img').attr('src');
+   
+        if (zip_right == '/files/assets/Icon metro-file-zip.png') {
+            jQuery('.right-element-doc img').css('background-color', '#cc4b4c')
+            jQuery('.right-element-doc img').css('border', '#cc4b4c solid 1px')
+        }
+
+        
     })
 
     function ajaxActivity (url, split_by) {
@@ -482,9 +506,6 @@
     }
     $(document).ready(function() {
 
-
-       
-        
         
         var screenWidth = $(window).width();
     
@@ -557,6 +578,11 @@
 
 
         $('.nav_custom_class_metier').show();
+
+        if ($('.right-element-doc').length < 1) {
+            $('.custom-icon-first-element').css('width', '15%')
+        }
+
         jQuery('.group-description').each(function() {
             var $groupDescription = jQuery(this);
             var $closestCrmSection = $groupDescription.closest('.crm-section');
@@ -715,17 +741,21 @@
 })(jQuery);
 
 function setDefaultQuestion () {
-    CKEDITOR.replace('edit-civicrm-1-activity-1-activity-details-value', {
-        // Add any CKEditor configuration options here if needed
-    });
+        if (typeof CKEDITOR !== 'undefined') {
+        CKEDITOR.replace('edit-civicrm-1-activity-1-activity-details-value', {
+            // Add any CKEditor configuration options here if needed
+        });
+    }
     
     // Function to set value to the CKEditor field
     function setValueToCKEditorField() {
-    const editorInstance = CKEDITOR.instances['edit-civicrm-1-activity-1-activity-details-value'];
-    if (editorInstance) {
-        // Set the value of the CKEditor instance
-        editorInstance.setData(localStorage.getItem("poser_question_question"));
-    }
+        if (typeof CKEDITOR !== 'undefined') {
+        const editorInstance = CKEDITOR.instances['edit-civicrm-1-activity-1-activity-details-value'];
+        if (editorInstance) {
+            // Set the value of the CKEditor instance
+            editorInstance.setData(localStorage.getItem("poser_question_question"));
+            }
+        }
     }
 
     // Call the function to set the value (you can trigger this event on any action)

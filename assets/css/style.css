@@ -192,6 +192,21 @@ tr:has(td > p.row-to-hide) {
 /******/
 
 /*****Page dernier document ******/
+.two-elements {
+    display: inline-flex;
+}
+.custom-icon-first-element {
+    width: 32px;
+}
+a.custom-icon-first-element.right-element-doc {
+    width: 32%;
+}
+a.custom-icon-first-element.right-element-doc img{
+    width: 89%;
+}
+.first-element-doc a.custom-icon-first-element {
+    width: 33%;
+}
 .edit-doc-button {
     text-transform: uppercase;
     font-size: .75rem;
@@ -204,6 +219,20 @@ tr:has(td > p.row-to-hide) {
 
 /**************/
 
+/* btn download all*/
+.btn-cus-retour {
+    color: #fff;
+    background-color: #140d3d;
+    border: 1px solid #140d3d;
+    font-weight: 600;
+    padding: 10px 40px;
+    border-radius: 5px;
+    margin-bottom: 24px !important;
+}
+/****/
+.text-image h2.text-img-title {
+    font-size: 20px;
+}
 /******Page detail commission ******/
 .group-detail-page .layout.layout--twocol-section.layout--twocol-section--50-50 + .layout--onecol {
     display: none !important;
@@ -2452,7 +2481,12 @@ ul.metier-home-title-video a {
     }
 }
 /* Small devices (landscape phones) */
+
 @media (max-width: 768px) {
+    .two-elements {
+        display: inline-flex;
+        flex-direction: column;
+    }
     /* body {
         background-color: #c2a33d !important;
     } */
@@ -2598,6 +2632,7 @@ ul.metier-home-title-video a {
         align-content: flex-end;
         align-items: center;
     }
+
     #progressbar li {
         cursor: pointer;
         list-style-type: none;
