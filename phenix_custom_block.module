@@ -30,6 +30,14 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
           'path' => $path . '/templates',
           'template' => 'my-account-block'
         ],
+        'metier_detail_document' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates/metier',
+          'template' => 'metier-detail-document'
+        ],
         'metier_home_content_video' => [
           'variables' => [
           'content' => Null,
@@ -37,6 +45,22 @@ function phenix_custom_block_theme($existing, $type, $theme, $path)
           'render element' => 'children',
           'path' => $path . '/templates/metier',
           'template' => 'metier-home-content-video'
+        ],
+        'metier_actu' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates/metier',
+          'template' => 'metier-actu'
+        ],
+        'metier_newsletter' => [
+          'variables' => [
+          'content' => Null,
+          ],
+          'render element' => 'children',
+          'path' => $path . '/templates/metier',
+          'template' => 'metier-newsletter'
         ],
         'my_group' => [
           'variables' => [
@@ -973,10 +997,26 @@ function phenix_custom_block_preprocess_menu(&$variables) {
  */
 function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
   
+  $custom_service = \Drupal::service('phenix_custom_block.view_services');
   $variables['#cache']['max-age'] = 0;
 
+  if (isset($variables['elements']['#taxonomy_term'])) {
+    $vid = $custom_service->getNodeFieldValue($variables['elements']['#taxonomy_term'], 'vid');
+    if ($vid == 'metiers_viande_com') {
+      $variables['content']['description']['#attributes']['class'][] = 'metier-m-description';//Permet d'ajouter une classe pour la description
+      $dossier = $variables['content']['field_dossier_'];
+    // dump($variables['content']['field_dossier_']);
+    foreach ($variables['content']['field_dossier_'] as $key => $doss) {
+      if (is_int($key)) {
+        if ($doss['#paragraph']->hasField('field_fichier')) {
+          unset($variables['content']['field_dossier_'][$key]);
+        }
+      }
+    }
+      unset($variables['content']['field_image']);//ne pas afficher le detail pour l'image d'illustration
+    }
+  }
 
-  $custom_service = \Drupal::service('phenix_custom_block.view_services');
   // Load the current node or entity.
   $db = \Drupal::database();
 
@@ -987,6 +1027,20 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
     $term_machine_name = $custom_service->getNodeFieldValue($term_object, 'vid');
     if ($term_machine_name == 'metiers_viande_com') {
       $variables['attributes']['class'][] = 'term-metier-viandes';
+      $variables['elements']['#taxonomy_term']->toArray()['description'][0]['_attributes']['class'][]= 'tessssssss';
+      $current_description_value = $custom_service->getNodeFieldValue($term_object, 'description');
+      // dump($term_object, $current_description_value, ' TRUOL');
+      // if (strpos($current_description_value, 'metier-description') === false)  {
+        // $term_object->setDescription();
+        // dump($current_description_value);
+        // $current_description_value = str_replace('<h2>', '<h2 class="rrrrrrrrrrrr">', $current_description_value);
+        // $variables['elements']['#taxonomy_term']->set('description', [
+        //   'value' =>  $current_description_value,
+        //   'format' => 'basic_html', // Spécifiez le format de texte si nécessaire
+        // ]);
+        // $variables['elements']['#taxonomy_term']->save();
+      // }
+      // // Enregistre le terme mis à jour.
     }
   }
 
