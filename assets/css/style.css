@@ -2000,7 +2000,7 @@ ul.metier-home-title-video a {
 }
 .grid-container.metier-div-grid-container#main:before {
     content: "";
-    background: url(/files/before-section-main.png) no-repeat center 0;
+    background: url(/files/before-section-main-metier.png) no-repeat center 0;
     right: 71px;
     width: 12%;
     top: 263px;
