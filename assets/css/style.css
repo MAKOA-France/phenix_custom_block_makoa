@@ -1665,7 +1665,32 @@ ul.chosen-results li {
     margin-bottom: 5px;
 }
 
+
 /**SITE METIER **/
+/*Taille de la police */
+.custom-class-site-metier.top-bar li a {
+    margin: .5rem 0;
+    padding: .2rem .7rem;
+    text-transform: uppercase;
+    font-size: .90rem;
+}
+div#block-b-zf-page-title h1 {
+    font-weight: 600;
+}
+.this-is-metier-detail-page h1, .metier-home-title-video a  {
+    font-size: 18px;
+}
+.this-is-metier-detail-page p {
+    font-size: 18px;
+}
+.this-is-metier-detail-page h1 {
+    font-size: 2.4rem;
+}
+.metier-m-description h1 {
+    text-align: center;
+}
+
+/* end POLICE */
 .cust-output img {
     height: 313px;
     width: auto;
@@ -1706,7 +1731,7 @@ ul.chosen-results li {
     left: 64.5%;
 }
 p.title-docmetier {
-    font-size: 13px;
+    font-size: 15px;
 }
 .page-taxonomy-term-6341 #block-pagedetalmetierdocumentblock {
     top: 48.5%;
@@ -1926,6 +1951,7 @@ nav#block-menuprincipal ul.menu-site-metier >li.menu-item--expanded::after {
 }
 .cust-txt-banner-home {
     padding-left: 7%;
+    font-weight: bold;
 }
 .div-img-metier-head-leaf {
     display: flex;
@@ -2352,6 +2378,9 @@ ul.metier-home-title-video a {
 }
 /* Medium devices (tablets) */
 @media (max-width: 992px) { 
+    .page-accueil-metier .title-bar {
+        background: #e52329;
+    }
     .cust-output img {
         max-width: 129%;
         height: 486px;
@@ -2488,11 +2517,11 @@ ul.metier-home-title-video a {
         top: 56px;
     } */
     .custom-class-site-metier#main-menu {
-        top: 61px;
+        top: 220px;
     }
     .page-accueil-metier .custom-class-site-metier#main-menu {
         /* top: 196px; */
-        top: 218px;
+        top: 353px;
     }
     #progressbar li {
         cursor: pointer;
@@ -2553,6 +2582,27 @@ ul.metier-home-title-video a {
 /* Small devices (landscape phones) */
 
 @media (max-width: 768px) {
+    /* taille police respo*/
+    .custom-class-site-metier.top-bar li a {
+        margin: .5rem 0;
+        padding: .2rem .7rem;
+        text-transform: uppercase;
+        font-size: .85rem;
+    }
+
+    .this-is-metier-detail-page h1, .metier-home-title-video a ,.this-is-metier-detail-page p  {
+        font-size: 16px;
+    }
+
+    .this-is-metier-detail-page h1 {
+        font-size: 2.1rem;
+    }
+
+    .metier-div-grid-container .paragraph--type--videos > div:nth-child(2) {
+        height: 97px;
+    }
+
+    /*end */
     .page-accueil-metier .site-metier-header {
         display: block;
     }
