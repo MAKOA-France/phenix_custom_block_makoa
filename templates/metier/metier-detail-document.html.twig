@@ -6,14 +6,14 @@
                 <div class="all-element-doc">
                     <div class="img-and-title">
                         {{ ele.img_link }}
-                        <p class="title-docmetier">{{ele.filename}} </p>
                     </div>
                     <div class="date-creation-and-file-size">
-                            <p class="date-created-docmetier">Date : {{ele.created_at }} </p>
-                            <p class="size-docmetier"> | {{ele.size}} </p>
-                    </div>
-                    <div class="metier-link-down-doc">
-                        {{ ele.link }}
+                        <p class="title-docmetier">{{ele.filename}} </p>
+                        <p><span class="date-created-docmetier">Date : {{ele.created_at }} </span>
+                        <span class="size-docmetier"> | {{ele.size}} Ko</span></p>
+                        <div class="metier-link-down-doc">
+                            {{ ele.link }}
+                        </div>
                     </div>
                 </div>
             {% if not loop.last and loop.length > 1 %}
