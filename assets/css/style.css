@@ -2130,6 +2130,9 @@ ul.metier-home-title-video a {
     .all-menu-checkboxes .form-checkboxes .form-item {
         width: 33.333%;
     }
+    .custom-metier-banner {
+        width: 86.5%;
+    }
     .cust-output img {
         max-width: 102%;
         height: 315px;
@@ -2353,9 +2356,22 @@ ul.metier-home-title-video a {
         max-width: 129%;
         height: 486px;
     }
+    .section-accueil-metier article.grid-container {
+        margin-left: 0;
+    }
+    .custom-metier-banner {
+        width: 102%;
+    }
+    .custom-metier-banner {
+        width: 101.5%;
+    }
     /* body {
         background-color: #0074BD !important;
     } */
+    .custom-metier-banner {
+        top: 169px;
+        border-bottom-right-radius: 0;
+    }
     .metier-logo-cv {
         display: none !important;
     }
@@ -2456,7 +2472,7 @@ ul.metier-home-title-video a {
         margin-left: 0 !important;
     }
     .custom-metier-banner {
-        width: 97.5%;
+        width: 102.5%;
     }
     .grid-container-metier-detail {
         margin-left: 0;
@@ -2537,6 +2553,9 @@ ul.metier-home-title-video a {
 /* Small devices (landscape phones) */
 
 @media (max-width: 768px) {
+    .page-accueil-metier .site-metier-header {
+        display: block;
+    }
     .two-elements {
         display: inline-flex;
         flex-direction: column;

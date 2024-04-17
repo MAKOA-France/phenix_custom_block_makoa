@@ -9,14 +9,21 @@
         // Vérifier si la largeur de l'écran est inférieure à 768 pixels (typiquement la largeur des appareils mobiles)
         if (windowWidth < 992 && windowWidth > 768) {
             if ($('.page-accueil-metier').length > 0 || $('.this-is-metier-detail-page').length > 0 ) {
-                jQuery('<div class="metier-mobile"><a href="/" title="Accueil" rel="home" class="site-logo"><img src="/files/Groupe%202@2x.png" alt="Accueil"></a></div>').insertBefore('.title-bar');
+                if ($('.page-accueil-metier').length > 0) {console.log(' here')
+                    jQuery('<div class="metier-mobile"><a href="/" title="Accueil" rel="home" class="site-logo"><img src="/files/Groupe%202@2x.png" alt="Accueil"></a></div>').insertBefore('article.grid-container');
+                }else {
+                    jQuery('<div class="metier-mobile"><a href="/" title="Accueil" rel="home" class="site-logo"><img src="/files/Groupe%202@2x.png" alt="Accueil"></a></div>').insertBefore('.title-bar');
+                }
             }
         }
         if (windowWidth < 768) {
             // Le code à exécuter pour les appareils mobiles
             if ($('.page-accueil-metier').length > 0 || $('.this-is-metier-detail-page').length > 0 ) {
+                if ($('.page-accueil-metier').length > 0) {console.log(' here')
+                jQuery('<div class="metier-mobile"><a href="/" title="Accueil" rel="home" class="site-logo"><img src="/files/Groupe%202@2x.png" alt="Accueil"></a></div>').insertBefore('article.grid-container');
+            }else {
                 jQuery('<div class="metier-mobile"><a href="/" title="Accueil" rel="home" class="site-logo"><img src="/files/Groupe%202@2x.png" alt="Accueil"></a></div>').insertBefore('.title-bar');
-            }
+            }            }
             
         }
 
