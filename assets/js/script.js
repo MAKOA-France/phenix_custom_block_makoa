@@ -7,6 +7,11 @@
         // Récupérer la largeur de l'écran
         let windowWidth = $(window).width();
         // Vérifier si la largeur de l'écran est inférieure à 768 pixels (typiquement la largeur des appareils mobiles)
+        if (windowWidth < 992 && windowWidth > 768) {
+            if ($('.page-accueil-metier').length > 0 || $('.this-is-metier-detail-page').length > 0 ) {
+                jQuery('<div class="metier-mobile"><a href="/" title="Accueil" rel="home" class="site-logo"><img src="/files/Groupe%202@2x.png" alt="Accueil"></a></div>').insertBefore('.title-bar');
+            }
+        }
         if (windowWidth < 768) {
             // Le code à exécuter pour les appareils mobiles
             if ($('.page-accueil-metier').length > 0 || $('.this-is-metier-detail-page').length > 0 ) {
@@ -517,7 +522,17 @@
 
             $('.page-accueil-metier').on('click',  function() {
 
-                console.log('click fired')
+                
+                if($(window).width() < 992 && $(window).width() > 768 ){
+                    if ($('.custom-class-site-metier').is(':hidden')) {
+                        console.log('miafna')
+                        $('.custom-class-site-metier').show();   
+                    }else {
+                        console.log('mpotra')
+                        $('.custom-class-site-metier').hide();   
+                    }
+                }
+    
                 //gestion de l'affichage du menu
                 if ($('.custom-class-site-metier').is(':hidden')) {
                     $('.custom-class-site-metier').show();   
@@ -541,7 +556,7 @@
         //Permet de bien replacer le texte de description d'un detail metier en responsive
         $('body.section-taxonomy').on('click', '.menu-icon', function() {
 
-            console.log('click fired')
+            console.log('click fired menu icon')
             //gestion de l'affichage du menu
             if ($('.custom-class-site-metier').is(':hidden')) {
                 $('.custom-class-site-metier').show();   
@@ -570,7 +585,7 @@
         let two = curr.split(',');
         let metier = two[1] ? '<p><p class="m-metier uuuu">' + two[1] +'</p>' : '';
         if ((typeof two[1]) == 'string') {
-            jQuery('.metier-div-grid-container .paragraph--type--videos > div:nth-child(2)').html('<p>taooooo' + two[0] + '</p>' + metier);
+            jQuery('.metier-div-grid-container .paragraph--type--videos > div:nth-child(2)').html('<p>' + two[0] + '</p>' + metier);
         }else {
             jQuery('.metier-div-grid-container .paragraph--type--videos > div:nth-child(2)').hide();
         }
