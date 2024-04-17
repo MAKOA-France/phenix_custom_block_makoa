@@ -1661,7 +1661,9 @@ ul.chosen-results li {
 .page-civicrm-bulletin-de-cotisation-infomration-contact .medium-12.cell {
     z-index: 4;
 }
-
+.date-creation-and-file-size p {
+    margin-bottom: 5px;
+}
 
 /**SITE METIER **/
 .cust-output img {
