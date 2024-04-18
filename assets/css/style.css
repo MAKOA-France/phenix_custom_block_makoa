@@ -1839,7 +1839,7 @@ p.document-head-detail-metier {
 .term-metier-viandes > .metier-m-description {
     position: absolute;
     color: white;
-    top: 346px;
+    top: 310px;
     left: 400px;
     display: inline-flex;
     flex-direction: column;
@@ -2397,6 +2397,20 @@ ul.metier-home-title-video a {
     /* body {
         background-color: #0074BD !important;
     } */
+    #footer.site-metier-footer {
+        margin-left: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+    #footer.site-metier-footer .footer-left {
+        width: 65%;
+    }
+    #footer.site-metier-footer .footer-center {
+        width: 50%;
+    }
+    .cust-output ul.metier-home-title-video {
+        padding-bottom: 25px;
+    }
     .custom-metier-banner {
         top: 169px;
         border-bottom-right-radius: 0;
