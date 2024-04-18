@@ -1691,6 +1691,16 @@ div#block-b-zf-page-title h1 {
 }
 
 /* end POLICE */
+
+
+.page-taxonomy-term-6330 #block-pagedetalmetierdocumentblock {
+    top: 2%;
+    width: 31%;
+}
+.page-taxonomy-term-6330  .metier-div-grid-container  .medium-12.cell {
+    position: relative;
+}
+
 .cust-output img {
     height: 313px;
     width: auto;
@@ -2690,13 +2700,20 @@ ul.metier-home-title-video a {
     .metier-div-grid-container .grid-margin-x > .medium-12 {
         margin-left: 15px;
     }
-    .this-is-metier-detail-page {
+    .this-is-metier-detail-page, .metier-div-grid-container {
         width: 100% !important;
         max-width: 100% !important;
     }
     .term-metier-viandes .paragraph--type--videos iframe {
         width: 97%;
         height: 270px;
+    }
+    .page-taxonomy-term-6330 .grid-margin-x.align-middle{
+        display: none;
+    }
+    .custom-metier-banner {
+        top: 94px;
+        border-bottom-right-radius: 0;
     }
     #block-pagedetalmetierdocumentblock {
         width: 100%;
@@ -2834,7 +2851,7 @@ ul.metier-home-title-video a {
         height: 1.5%;
     } */
     .page-accueil-metier .site-metier-header {
-        display: none;
+        display: block;
     }
     .metier-logo-cv {
         display: none !important;
