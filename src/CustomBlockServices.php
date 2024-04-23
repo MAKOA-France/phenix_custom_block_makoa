@@ -226,6 +226,70 @@ class CustomBlockServices {
       }
     }
 
+    /**
+     * 
+     */
+    public function sitePublicTerms () {
+      $checked_site_public_term_parent = [];
+      $entity_type_manager = \Drupal::service('entity_type.manager');
+
+      // Get the entity type manager service.
+      $entity_type_manager = \Drupal::service('entity_type.manager');
+
+      // Specify the vocabulary machine name.
+      $vocabulary_machine_name = 'rubrique';
+
+      // Load the vocabulary.
+      $vocabulary = $entity_type_manager->getStorage('taxonomy_vocabulary')->load($vocabulary_machine_name);
+
+      if ($vocabulary) {
+        // Get the ID of the vocabulary.
+        $vid = $vocabulary->id();
+
+        // Get all level 1 terms of the specified vocabulary.
+        $storage = $entity_type_manager->getStorage('taxonomy_term');
+        $level_1_terms = $storage->loadTree($vid, 4966, 1, TRUE);
+        // Loop through the level 1 terms.
+        foreach ($level_1_terms as $term) {
+          // vérifier si le domain "site public " est coché
+          $isSitePublic = $this->getNodeFieldValue($term, 'field_domain_acces');
+          if ($isSitePublic) {
+            $checked_site_public_term_parent[] = $term->id();
+          }
+        }
+      }
+      return $checked_site_public_term_parent;
+    }
+
+    public function getAllTermChild () {
+
+      //récuperer les termes de premier niveau qui on "site public" coché
+
+      // Obtenez le service EntityTypeManager.
+      $allChild = [];
+      
+      $checked_site_public_term_parent = $this->sitePublicTerms();
+      $entity_type_manager = \Drupal::service('entity_type.manager');
+      foreach ($checked_site_public_term_parent as $termId) {
+        $parent_term = Term::load($termId);
+          if ($parent_term) {
+            // Obtenez l'ID du vocabulaire.
+            $vid = $parent_term->bundle();
+            
+            // Obtenez tous les termes enfants du terme parent.
+            $storage = $entity_type_manager->getStorage('taxonomy_term');
+            $child_terms = $storage->loadTree($vid, $termId, NULL, TRUE);
+            // Parcourez les termes enfants.
+            foreach ($child_terms as $child_term) {
+                // Faites quelque chose avec chaque terme enfant.
+                // Par exemple, affichez le nom du terme enfant.
+                $allChild[]  = $child_term->id();
+              }
+          }
+      }
+      return $allChild;
+  }
+
     public function createActivity ($infos) {
       // dump($info['subject'], $infos['the_question'], $infos['employer'], $infos['assignee_to']);
        if ($infos['employer']) {
