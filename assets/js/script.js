@@ -2,7 +2,8 @@
 
     $(window).on('load', function () {
 
-        
+
+       
          //Responsive mettre le logo en haut pour les mobiles
         // Récupérer la largeur de l'écran
         let windowWidth = $(window).width();
@@ -814,7 +815,8 @@ function addOverlayToVideo() {
     if (iframe) {
         
         let iframe = jQuery('body').find('.video-block-cus > div').addClass('div-parent-overlay');
-        jQuery('body').find('.video-block-cus > div > div').prepend('<div class="custom-overlay-hide-logo"></div>');
+        jQuery('body').find('.video-block-cus > div > div').prepend('<div class="custom-overlay-hide-logo"></div>');//Pour cacher le logo fedev de la video
+        jQuery('body').find('.video-block-cus').prepend('<div class="custom-overlay-hide-youtube-link"></div>');//Pour cacher le lien youtube de la video , bouton settings et bouton de sous titre
         console.log(jQuery('body').find('.video-block-cus > div > div').length, ' atos')
         jQuery('.page-accueil-metier iframe').each(function(id, el) {
             let top = jQuery(el).offset().top
@@ -835,7 +837,7 @@ function addOverlayToVideoDetail () {
     
     if (iframePageDetail) {
         jQuery('body').find('.term-metier-viandes .paragraph.paragraph--type--videos > div > div > div ').addClass('div-parent-overlay');
-        jQuery('body').find('.term-metier-viandes .paragraph.paragraph--type--videos > div > div > div ').prepend('<div class="custom-overlay-hide-logo"></div>');
+        jQuery('body').find('.term-metier-viandes .paragraph.paragraph--type--videos > div > div > div ').prepend('<div class="custom-overlay-hide-logo"></div><div class="custom-overlay-hide-youtube-link-detail"></div>');
     }
     clearInterval(VerifaddOverlayToVideoDetail);
 }
