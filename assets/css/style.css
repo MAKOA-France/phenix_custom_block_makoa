@@ -1677,7 +1677,7 @@ ul.chosen-results li {
 div#block-b-zf-page-title h1 {
     font-weight: 600;
 }
-.this-is-metier-detail-page h1, .metier-home-title-video a  {
+.this-is-metier-detail-page h1, .metier-home-title-video a , .term-metier-viandes .metier-m-description h1 {
     font-size: 18px;
 }
 .this-is-metier-detail-page p {
@@ -1688,6 +1688,18 @@ div#block-b-zf-page-title h1 {
 }
 .metier-m-description h1 {
     text-align: center;
+}
+.site-metier-footer .footer-company-about {
+    color: white !important;
+}
+.site-metier-footer .footer-left {
+    border-top-left-radius: 34px;
+}
+.site-metier-footer .footer-company-details {
+    background-color: #e52329;
+    color: white;
+    padding: 11px;
+    border-top-left-radius: 65px;
 }
 
 /* end POLICE */
@@ -2151,17 +2163,29 @@ ul.metier-home-title-video a {
     display: none;
 }
 
+.custom-overlay-hide-sharing {
+    position: absolute;
+    left: 0;
+    width: -webkit-fill-available;
+    height: 37px;
+    background-color: black;
+    z-index: 555;
+    border-radius: 0;
+    top: 543px;
+}
+
 /*overlay pour cacher le logo*/
  .custom-overlay-hide-logo {
     position: absolute;
     top: 0;
     left: 0;
-    width: 55px;
-    height: 56px;
+    width: -webkit-fill-available;
+    height: 60px;
     background-color: rgba(0, 0, 0, 0.92);
     pointer-events: none;
     z-index: 1;
-    border-radius: 12%;
+    border-top-left-radius: 22%;
+    border-top-right-radius: 22%;
 } 
 #player .ytp-title-enable-channel-logo .ytp-title-channel {
     display: none !important;
@@ -2559,6 +2583,17 @@ ul.metier-home-title-video a {
         left: 64%;
         width: 32%;
     }
+
+    .custom-overlay-hide-youtube-link {
+        right: 50px;
+    }
+    .page-taxonomy-term-6342 #block-pagedetalmetierdocumentblock {
+        position: absolute;
+        top: 0%;
+        left: 73%;
+        width: 52%;
+    }
+
     .page-taxonomy-term-6336 #block-pagedetalmetierdocumentblock {
         top: 38.5%;
     }
@@ -2665,6 +2700,16 @@ ul.metier-home-title-video a {
 /* Small devices (landscape phones) */
 
 @media (max-width: 768px) {
+    nav#block-menuprincipal ul >li.first-level-click>ul.first-sub>li.menu-item--expanded.second-level-active, nav#block-menuprincipal ul >li.first-level-click>ul.first-sub>li:hover, nav#block-menuprincipal ul >li.premier-niv>ul.metier-first-menu>li:hover {
+        background-color: unset !important;
+    }
+    .section-accueil-metier a.site-logo {
+        background-color: #e52329;
+    } 
+    body .dialog-off-canvas-main-canvas .metier-div-grid-container .metier-m-description p,
+    body .dialog-off-canvas-main-canvas .metier-div-grid-container .metier-m-description h2 {
+        font-size: 18px;
+    }
     /* taille police respo*/
     .custom-class-site-metier.top-bar li a {
         margin: .5rem 0;
