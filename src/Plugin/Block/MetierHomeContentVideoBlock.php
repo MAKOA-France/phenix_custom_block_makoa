@@ -98,7 +98,7 @@ class MetierHomeContentVideoBlock extends BlockBase implements ContainerFactoryP
         //generer un url 
         $url = Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $childId]);
         // Generate the link using the URL object.
-        $link = Link::fromTextAndUrl(t('En savoir plus...'), $url)->toRenderable();
+        $link = Link::fromTextAndUrl($metierObject->getName() . ', ' .t(' en savoir plus...'), $url)->toRenderable();
 
         // Get the alias of the term link.
         // $alias = \Drupal::service('path_alias.manager')->getAliasByPath($url->getInternalPath());
