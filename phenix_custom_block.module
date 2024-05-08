@@ -1371,7 +1371,7 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
   \Drupal::cache()->invalidateAll();
   $form['#cache']['max-age'] = 0;
   
-  if (((strpos($base_url, 'metiers-viande.dev.makoa.net')) !== false) || (strpos($base_url, 'metiers-viande.makoa4.makoa.net') !== false)){//ne pas permettre au domaine metier d'acceder au formulaire poser question
+  if (((strpos($base_url, 'metiers-viande.com')) !== false) || (strpos($base_url, 'metiers-viande.makoa4.makoa.net') !== false)){//ne pas permettre au domaine metier d'acceder au formulaire poser question
     if ($form['#id'] == 'webform-submission-poser-une-question-add-form') {
       $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://test-culture-viande.dev.makoa.net/');
       $response->send();
@@ -2267,6 +2267,14 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
     $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://metiers-viande.makoa4.makoa.net/accueil-metier');
     $response->send();
   } 
+  if (($currentUrl == '/') &&  $domain == 'metiers-viande.com') {
+    $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://metiers-viande.com/accueil-metier');
+    $response->send();
+  } 
+  if (($currentUrl == '/') &&  $domain == 'www.metiers-viande.com') {
+    $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://www.metiers-viande.com/accueil-metier');
+    $response->send();
+  } 
 
   if ($account->isAnonymous()) {
     if ((strpos($domain, 'test-culture') !== false) || (strpos($domain, 'phenix.cultureviande') !== false)) {
@@ -2304,7 +2312,7 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
   if ($account->isAnonymous()) {
     $base_url = \Drupal::request()->getSchemeAndHttpHost();
     
-    if ((((strpos($base_url, 'metiers-viande.dev.makoa.net')) !== false) || (strpos($base_url, 'metiers-viande.makoa4.makoa.net') !== false)) && $entity->hasField('vid')
+    if ((((strpos($base_url, 'metiers-viande.com')) !== false) || (strpos($base_url, 'metiers-viande.makoa4.makoa.net') !== false)) && $entity->hasField('vid')
     ) {
       $termType = $custom_service->getNodeFieldValue($entity, 'vid');
       if ($termType == 'metiers_viande_com') {
