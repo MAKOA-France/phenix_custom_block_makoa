@@ -1673,6 +1673,9 @@ ul.chosen-results li {
 
 /**SITE METIER **/
 /*Taille de la police */
+.page-taxonomy-term-6332 article.grid-container {
+    display: none;
+}
 .custom-class-site-metier.top-bar li a {
     margin: .5rem 0;
     padding: .2rem .7rem;
@@ -2500,6 +2503,10 @@ ul.metier-home-title-video a {
 }
 /* Medium devices (tablets) */
 @media (max-width: 992px) { 
+    
+    .site-extranet-cv  + .title-bar {
+        display: none !important;
+    }
     .metier-mobile a.site-logo {
         background-color: #e52329;
     }
