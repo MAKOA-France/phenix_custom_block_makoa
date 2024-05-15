@@ -2258,7 +2258,6 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
   $domain = \Drupal::request()->getHost();
   // Get the requested URL path.
   $currentUrl = \Drupal::request()->getRequestUri();
-
   if (($currentUrl == '/') &&  $domain == 'metiers-viande.dev.makoa.net') {
     $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://metiers-viande.dev.makoa.net/accueil-metier');
     $response->send();
@@ -2266,14 +2265,19 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
   if (($currentUrl == '/') &&  $domain == 'metiers-viande.makoa4.makoa.net') {
     $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://metiers-viande.makoa4.makoa.net/accueil-metier');
     $response->send();
+  }
+  /**Redirection vers la page d'accueil */ 
+  if (($currentUrl == '/') &&  $domain == 'cultureviande.dev.makoa.net') {
+    $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://cultureviande.dev.makoa.net/accueil-public');
+    $response->send();
   } 
-
+  
   if ($account->isAnonymous()) {
     if ((strpos($domain, 'test-culture') !== false) || (strpos($domain, 'phenix.cultureviande') !== false)) {
       return \Drupal\Core\Access\AccessResult::forbidden();
     }
     
-    if (in_array($node->id(), [41250, 41248, 41249, 96])) {//TODO mettre le bon id pour MEP
+    if (in_array($node->id(), [41250, 41248, 41249, 96, 632])) {//TODO mettre le bon id pour MEP
       if (in_array($op, ['view'])) {
           return \Drupal\Core\Access\AccessResult::allowed();
       }
@@ -2303,7 +2307,22 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
   if ($account->isAnonymous()) {
     $base_url = \Drupal::request()->getSchemeAndHttpHost();
-    
+  
+    //check si c'est le site public
+    if ((strpos($base_url, 'cultureviande.')) !== false) {
+      //Ajouter une condition pour que les termes qui ont comme parent "communication" & "interprofession" & "culture viande" soient accéssible sur le site public
+      $allWhiteListIds = $custom_service->getAllTermChild();
+      if (in_array($entity->id(), $allWhiteListIds)) {
+        if ($operation == 'view') {
+          return \Drupal\Core\Access\AccessResult::allowed();
+        }
+      }else {
+        $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/');
+        $response->send();
+      }
+    }
+
+
     if ((((strpos($base_url, 'metiers-viande.dev.makoa.net')) !== false) || (strpos($base_url, 'metiers-viande.makoa4.makoa.net') !== false)) && $entity->hasField('vid')
     ) {
       $termType = $custom_service->getNodeFieldValue($entity, 'vid');

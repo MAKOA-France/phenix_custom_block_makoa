@@ -363,6 +363,20 @@ class CustomBlockServices {
     });
   }
 
+  public function textPresentationFormulaire () {
+    return '<div class="txt-pres"><p>Ce formulaire récapitule les informations déjà enregistrées dans la base Culture Viande
+    (entreprise, dirigeants, contacts et abonnements).</p>
+<p>Vous pouvez y apporter des modifications et y ajouter des contacts.</p>
+
+<p>Pour la partie "Données Économiques", merci de renseigner les onglets :</p>
+<p>Effectif, Chiffre d\'affaires, Agréments sanitaires, Abattages, Achat de viandes, Découpe-Transformation, Produits commercialisés, Activités, Certifications</p>
+
+<p>Ces informations sont essentielles car elles détermineront la représentativité de Culture Viande pour les 4 années à venir. Elles conditionneront sa capacité à porter
+     vos messages politiques, économiques et sociaux auprès des pouvoirs publics et des partenaires sociaux pour l\'accomplissement de ses missions : Représenter, Défendre, Fédérer, Servir et Promouvoir.</p>
+
+    </div>';
+  }
+
   /**
    * Filtrer la vue "Mes commissions" par groupes auxquels le contact appartient
    */
