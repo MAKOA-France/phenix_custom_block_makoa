@@ -843,5 +843,32 @@ function addOverlayToVideoDetail () {
     clearInterval(VerifaddOverlayToVideoDetail);
 }
 
+//Formulaire donnée eco - onglet produit commerciaux
+var VerifProduitCommTable = setInterval(makeTdBold, 100);
+function makeTdBold () {
+    let tableProdCom = jQuery('.page-civicrm-donnees-economique-entreprise-produit-commercialises table.table-striped tbody tr td:nth-child(2) span').length;
+    console.log('testo ooo', tableProdCom)
+           
+    function isSingleDigit(text) {
+        // Utiliser une expression régulière pour trouver tous les chiffres dans le texte
+                       var digits = text.match(/\d/g);
+                       // Vérifier si la longueur du tableau de chiffres est égale à 1
+                       return digits !== null && digits.length === 1;
+       }
+    if (jQuery('.page-civicrm-donnees-economique-entreprise-produit-commercialises table.table-striped tbody tr td:nth-child(2) span').length) {console.log('foz')
+        jQuery('.page-civicrm-donnees-economique-entreprise-produit-commercialises table.table-striped tbody tr td:nth-child(2) span').each(function (el, id) {
+
+            if (isSingleDigit(jQuery(id).text())) {
+                jQuery(this).css({'font-weight': 'bold', 'color': 'rgb(217 135 78)'});
+                console.log("MISY" + jQuery(id).text());
+            } else {
+                console.log("Le texte ne contient pas un seul chiffre." + jQuery(id).text());
+            }
+        })    
+        clearInterval(VerifProduitCommTable);
+    }
+}
+
+
 // Vérifiez périodiquement la présence de l'élément
 var verifierElementInterval = setInterval(verifierElement, 50);

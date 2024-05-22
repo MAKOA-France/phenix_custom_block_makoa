@@ -196,6 +196,12 @@ tr:has(td > p.row-to-hide) {
   }
 /******/
 
+[class*="page-civicrm-donnees-eco"] h2.af-text + p{
+    color: #dc001d;
+  font-weight: 600;
+  margin-bottom: 1rem;
+ }
+
 /*****Page dernier document ******/
 .two-elements {
     display: inline-flex;
@@ -340,6 +346,33 @@ a.custom-icon-first-element.right-element-doc img{
 .page-recherche .views-element-container nav.pager .pager__items .pager__item--next {
     margin-left: unset !important;
 }
+[class*="page-civicrm-donnees-eco"] af-field.ng-isolate-scope.af-field-type-check-box {
+    width: 49%;
+  }
+[class*="page-civicrm-donnees-eco"] ul[id*="activites-activites-details-1"], [class*="page-civicrm-donnees-eco"] ul[id*="circuits-circuits-details-2"],  [class*="page-civicrm-donnees-eco"] ul[id*="produits-produits-details-3"]{
+    width: 100%;
+}
+[name="produits.produits_details"] .crm-af-field.ng-scope {
+    width: 98%;
+}
+[name="produits.produits_details"] {
+    /* max-width: 33.5%; */
+}
+[name="Fili_res.Fili_res"] .crm-checkbox-list.ng-scope {
+    width: 98%;
+    box-shadow: 0 0 10px;
+}
+[class*="page-civicrm-donnees-eco"]  [id="fili-res-fili-res-4"] {
+    width: 100%;
+    height: 400px;
+}
+[class*="page-civicrm-donnees-eco"]  .crm-container ul.crm-checkbox-list li label {
+  display: block !important;
+  padding: 2px 0 2px 22px;
+  margin: 0;
+    margin-bottom: 0px;
+  word-break: initial;
+}
   
   #progressbar li:first-child:after {
     content: none;
@@ -348,11 +381,11 @@ a.custom-icon-first-element.right-element-doc img{
     display: none;
 }
   #progressbar li.active {
-    color: #ffc22c;
+    color: #e52329;
   }
 
   .active .progress-bar-link {
-    color: #ffc22c;
+    color: #e52329;
   }
   .progress-bar-link {
     color: #679b9b;
@@ -360,7 +393,7 @@ a.custom-icon-first-element.right-element-doc img{
   
   #progressbar li.active:before,
   #progressbar li.active:after {
-    background: #ffc22c;
+    background: #e52329;
     color: white;
   }
   
@@ -524,9 +557,14 @@ a.custom-icon-first-element.right-element-doc img{
 
 .page-civicrm-gdpr .conteneur-custom-group {
   display: inline-table;
-  width: 14%;
+  width: 100%;
 }
-
+.conteneur-custom-group span.group-description {
+    border-bottom: black solid 2px;
+    padding-bottom: 1px !important;
+    padding-right: 40px !important;
+    width: 100%;
+}
 .page-civicrm-gdpr .crm-container .crm-section .content {
   margin-left: 0;
 }
