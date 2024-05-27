@@ -704,6 +704,16 @@ class CustomBlockServices {
     return Media::load($video_id);
   }
 
+  public function isTabAlreadyVisited ($tabName) {
+    //vérifier si le nom de l'onglet est dans la session
+    $visited = '';
+    $sessionTab = \Drupal::service('session')->get('form_tab_visited');
+    if (in_array($tabName, $sessionTab)) {
+      $visited = ' tab-visited-form ';
+    }
+    return $visited;
+  }
+
   /**
    * Permet de recuperer l'html qui doit être rendu pour les textes formattés
    */
