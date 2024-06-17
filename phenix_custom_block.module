@@ -524,7 +524,7 @@ function phenix_custom_block_preprocess_page(&$variables)
         break;
       case (strpos($current_path, 'donnees-economique-entreprise-achat-viande') !== false ):
         $already = \Drupal::service('session')->get('form_tab_visited');
-        $tab_visited['9'] = 'Achat de viandes';
+        $tab_visited['9'] = 'Achats de viandes';
         $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
@@ -735,6 +735,22 @@ function phenix_custom_block_preprocess_page(&$variables)
       $visitedTABs = \Drupal::service('session')->get('form_tab_visited');
       $text_presentation = (count ($visitedTABs) < 2) ? $custom_service->textPresentationFormulaire() : '';
       
+      $dirigeants = ['co-Dirigeant(e)'/* , 'co-gérant(e)' */, 'Directeur(trice)'/* , 'Directeur Général (trice-e)' */,'Dirigeant(e)'];
+
+
+      $dirigeants = \Civi\Api4\OptionValue::get(FALSE)
+        ->addWhere('option_group_id', '=', 103)
+        ->addWhere('value', 'IN', [59, 1, 60, 78, 15, 87, 171, 39, 85])
+        ->addOrderBy('weight', 'ASC')
+        ->addOrderBy('label', 'ASC')
+        ->execute()->getIterator();
+        $dirigeants = iterator_to_array($dirigeants);
+        $dirigeants = array_column($dirigeants, 'label');
+
+      // Encode the array to JSON with special characters escaped
+      $dirigeants = implode('##', $dirigeants);
+
+
       $variables['page']['highlighted']['#markup'] = '<h2>Synthèse et Données Economiques : ' . $custom_service->getContactNameById($cid) . '</h2><br> ' . $text_presentation .'
 
       <ul id="progressbar">
@@ -742,12 +758,12 @@ function phenix_custom_block_preprocess_page(&$variables)
       <li data-org-id="' . $current_cid . '" href-attribute="/civicrm/donnees-economique-entreprise-effectif-annuel?cs=' . $checksum . '#?id=' . $current_cid . '" class="effectif-menu-class ' . $custom_service->isActive('donnees-economique-entreprise-effectif-annuel') . '  ' . $custom_service->isTabAlreadyVisited("Effectif") . '"  class="active"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-effectif-annuel?cs=' . $checksum . '#?id=' . $current_cid . '">Effectif</a></li>
       <li  href-attribute="/civicrm/donnees-economique-entreprise-donnee-generale?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('donnee-generale') . '' . $custom_service->isTabAlreadyVisited("Effectif") . '" id="donnee-eoconomique-entreprise-donnee-generale"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-donnee-generale?cs=' . $checksum . '#?id=' . $current_cid . '">Chiffre d\'affaires</a></li>
       <li  href-attribute="/civicrm/donnees-economique-entreprise-agrement-sanitaire?cs=' . $checksum . '#?id=' . $current_cid . '"  class="' . $custom_service->isActive('agrement-sanitaire') . '' . $custom_service->isTabAlreadyVisited("Agréments sanitaires") . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-agrement-sanitaire?cs=' . $checksum . '#?id=' . $current_cid . '">Agréments sanitaires</a></li>
-      <li  href-attribute="/civicrm/bulletin-de-cotisation-dirigeants?cs=' . $checksum . '#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-dirigeants') . '' . $custom_service->isTabAlreadyVisited("Dirigeants") . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation-dirigeants?cs=' . $checksum . '#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $current_cid . '">Dirigeants</a></li>
-      <li  href-attribute="/civicrm/bulletin-cotisation-contact-entreprise?cs=' . $checksum . '#?id=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-contact-entreprise') . '' . $custom_service->isTabAlreadyVisited("Contacts") . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/bulletin-cotisation-contact-entreprise?cs=' . $checksum . '#?id=' . $current_cid . '">Contacts</a></li>
+      <li  href-attribute="/civicrm/bulletin-de-cotisation-dirigeants?cs=' . $checksum . '#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $current_cid . '"  class="tab-dirigeants  ' . $custom_service->isActive('cotisation-dirigeants') . '' . $custom_service->isTabAlreadyVisited("Dirigeants") . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation-dirigeants?cs=' . $checksum . '#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $current_cid . '" data-dirigeants="' .$dirigeants. '">Dirigeants</a></li>
+      <li  href-attribute="/civicrm/bulletin-cotisation-contact-entreprise?cs=' . $checksum . '#?id=' . $current_cid . '"  class="tab-contacts  ' . $custom_service->isActive('cotisation-contact-entreprise') . '' . $custom_service->isTabAlreadyVisited("Contacts") . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/bulletin-cotisation-contact-entreprise?cs=' . $checksum . '#?id=' . $current_cid . '" data-contacts="' . $dirigeants . '">Contacts</a></li>
       <li  href-attribute="/civicrm/buttetin-cotisation-liste-abonnement?cs=' . $checksum . '#?id=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-liste-abonnement') . '' . $custom_service->isTabAlreadyVisited("Abonnements") . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/buttetin-cotisation-liste-abonnement?cs=' . $checksum . '#?id=' . $current_cid . '">Abonnements</a></li>
       
       <li  href-attribute="/civicrm/donnees-economique-entreprise-abattages?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('abattages') . '' . $custom_service->isTabAlreadyVisited("Abattages") . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-abattages?cs=' . $checksum . '#?id=' . $current_cid . '">Abattages</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-achat-viande?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('achat-viande') . '' . $custom_service->isTabAlreadyVisited("Achat de viandes") . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-achat-viande?cs=' . $checksum . '#?id=' . $current_cid . '">Achat de viandes</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-achat-viande?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('achat-viande') . '' . $custom_service->isTabAlreadyVisited("Achat de viandes") . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-achat-viande?cs=' . $checksum . '#?id=' . $current_cid . '">Achats de viandes</a></li>
       <li  href-attribute="/civicrm/donnees-economique-entreprise-transformation-decoupe?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('transformation-decoupe') . '' . $custom_service->isTabAlreadyVisited("Découpe et Transformation") . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-transformation-decoupe?cs=' . $checksum . '#?id=' . $current_cid . '"> Découpe et Transformation</a></li>
       <li  href-attribute="/civicrm/donnees-economique-entreprise-produit-commercialises?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('produit-commercial') . '' . $custom_service->isTabAlreadyVisited("Produits commercialisés") . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-produit-commercialises?cs=' . $checksum . '#?id=' . $current_cid . '">Produits commercialisés</a></li>
       <li  href-attribute="/civicrm/donnees-economique-entreprise-formulaire-certification?cs=' . $checksum . '#?Organization1=' . $current_cid . '" class="' . $custom_service->isActive('formulaire-certification') . '' . $custom_service->isTabAlreadyVisited("Activités") . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-formulaire-certification?cs=' . $checksum . '#?Organization1=' . $current_cid . '">Activités</a></li>
@@ -1310,7 +1326,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
               $parent_term = $taxonomyTerm->get('parent')->entity;
                 // Get the base URL of the Drupal site including the protocol.
                 $base_url = \Drupal::request()->getSchemeAndHttpHost();
-                if (strpos($base_url, 'metiers-viande.') === false) {
+                if (strpos($base_url, 'metiers-viande.') === false && strpos($base_url, \Drupal\phenix_custom_block\CustomBlockServices::DOMAIN_SITE_PUB) === false) {
                   return $variables['content']['field_dossier'][0]['#suffix'] = '<a class="btn-add-meeting-empty" style="width: fit-content" href="/media/add/document?term_id=' . $term->id() . '"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
                   ';
                 }
@@ -2327,6 +2343,8 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
       $allWhiteListIds = $custom_service->getAllTermChild();
       //TODO TEST 
       $allWhiteListIds[] = 6349;
+      $allWhiteListIds[] = 6371;//TODO POUR MEP rubrique "exports" 
+      $allWhiteListIds[] = 6372;//TODO POUR MEP rubrique "exports" 
       if (in_array($entity->id(), $allWhiteListIds)) {
         if ($operation == 'view') {
           return \Drupal\Core\Access\AccessResult::allowed();
