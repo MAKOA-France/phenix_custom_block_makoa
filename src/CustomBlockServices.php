@@ -36,6 +36,8 @@ class CustomBlockServices {
    */
   protected $configFactory;
 
+  const DOMAIN_SITE_PUB = 'cultureviande.dev.makoa.net';
+
   /**
    * Constructor.
    *
@@ -373,7 +375,7 @@ class CustomBlockServices {
 
 <p>Ces informations sont essentielles car elles détermineront la représentativité de Culture Viande pour les 4 années à venir. Elles conditionneront sa capacité à porter
      vos messages politiques, économiques et sociaux auprès des pouvoirs publics et des partenaires sociaux pour l\'accomplissement de ses missions : Représenter, Défendre, Fédérer, Servir et Promouvoir.</p>
-
+<i>Culture Viande garantit à l’entreprise déclarante la confidentialité des données individuelles</i>
     </div>';
   }
 
