@@ -15,6 +15,12 @@
     padding-left: 30px;
     padding-bottom: 20px;
 }
+.toHidde {
+    display: none !important;
+}
+.toShow {
+    display: block !important;
+}
 .page-civicrm-bulletin-cotisation-contact-entreprise .af-button.btn-info, .page-civicrm-buttetin-cotisation-liste-abonnement .af-button.btn-info,
 .page-civicrm-bulletin-de-cotisation-dirigeants .af-button.btn-info, .page-civicrm-donnees-economique-entreprise-effectif-annuel .af-button.btn-info {
     border-radius: 20px 0 !important;
