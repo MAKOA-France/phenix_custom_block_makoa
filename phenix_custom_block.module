@@ -2358,7 +2358,7 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
         }
       }else {
         $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/');
-        // $response->send();
+        $response->send();
       }
     }
 
