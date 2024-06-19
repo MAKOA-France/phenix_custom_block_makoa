@@ -278,7 +278,7 @@ function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\Enti
         $response->send();
       }
     }
-
+return;dump('die');
     if ($hasChildren) {
       
       // Load your term.
@@ -2343,15 +2343,22 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
       $allWhiteListIds = $custom_service->getAllTermChild();
       //TODO TEST 
       $allWhiteListIds[] = 6349;
-      $allWhiteListIds[] = 6371;//TODO POUR MEP rubrique "exports" 
-      $allWhiteListIds[] = 6372;//TODO POUR MEP rubrique "exports" 
-      if (in_array($entity->id(), $allWhiteListIds)) {
+      
+
+      //Vérifier si c'est coché pour site public (cultureviande_dev_makoa_net TODO MEP)
+      $domainAccessValue = $entity->get('field_domain_acces')->getValue() ? array_column( $entity->get('field_domain_acces')->getValue(), 'target_id') : false;
+
+      // $allWhiteListIds[] = 6371;//TODO POUR MEP rubrique "exports"   TODO ALL CHECKED PROMU EN HOME ATAO WHITELIST
+      // $allWhiteListIds[] = 6372;//TODO POUR MEP rubrique "exports" 
+      // dump($domainAccessValue, $operation);
+      
+      if (in_array($entity->id(), $allWhiteListIds) || in_array('cultureviande_dev_makoa_net', $domainAccessValue)) {
         if ($operation == 'view') {
           return \Drupal\Core\Access\AccessResult::allowed();
         }
       }else {
         $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/');
-        $response->send();
+        // $response->send();
       }
     }
 
