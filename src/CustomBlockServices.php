@@ -37,6 +37,7 @@ class CustomBlockServices {
   protected $configFactory;
 
   const DOMAIN_SITE_PUB = 'cultureviande.dev.makoa.net';
+  const SITE_PUB_ID_PAGE_ACTU = 41280;
 
   /**
    * Constructor.
