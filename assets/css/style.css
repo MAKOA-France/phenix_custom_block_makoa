@@ -21,6 +21,10 @@
 .toShow {
     display: block !important;
 }
+.page-civicrm-donnees-economique-entreprise-achat-viande table.table.table-striped thead th {
+    text-align: center !important;
+    justify-content: center;
+}
 .page-civicrm-bulletin-cotisation-contact-entreprise .af-button.btn-info, .page-civicrm-buttetin-cotisation-liste-abonnement .af-button.btn-info,
 .page-civicrm-bulletin-de-cotisation-dirigeants .af-button.btn-info, .page-civicrm-donnees-economique-entreprise-effectif-annuel .af-button.btn-info {
     border-radius: 20px 0 !important;
