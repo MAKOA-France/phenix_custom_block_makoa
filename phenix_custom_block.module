@@ -278,8 +278,9 @@ function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\Enti
         $response->send();
       }
     }
-return;dump('die');
-    if ($hasChildren) {
+
+    //ne pas rediriger vers la rubrique enfant pour CV PUBLIC 
+    if ($hasChildren && !in_array('cultureviande_dev_makoa_net', array_column($termObj->get('field_domain_acces')->getValue(), 'target_id'))) {
       
       // Load your term.
       // $term_id = 123; // Replace with the actual term ID.
@@ -2304,19 +2305,33 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
     if ((strpos($domain, 'test-culture') !== false) || (strpos($domain, 'phenix.cultureviande') !== false)  || (strpos($domain, 'test-cv') !== false) ) {
       return \Drupal\Core\Access\AccessResult::forbidden();
     }
-    
-    if (in_array($node->id(), [41250, 41248, 41249, 96, 632, 41251, 41252, 41253])) {//TODO mettre le bon id pour MEP
-      if (in_array($op, ['view'])) {
-          return \Drupal\Core\Access\AccessResult::allowed();
+
+    //Page site public 
+    //si le node est de type site public
+    if ((strpos($domain, 'cultureviande.') !== false)) {
+      if ($node->getType() == 'page' && in_array($node->id(), [\Drupal\phenix_custom_block\CustomBlockServices::SITE_PUB_ID_PAGE_ACTU])) {
+        return \Drupal\Core\Access\AccessResult::allowed();
       }
+      if ($node->getType() == 'actualite_public'){
+        return \Drupal\Core\Access\AccessResult::allowed();
+      }
+    }
+    if (strpos($domain, 'cultureviande.') === false) {
+      
+      if (in_array($node->id(), [41250, 41248, 41249, 96, 632, 41251, 41252, 41253, 41267])) {//TODO mettre le bon id pour MEP
+        if (in_array($op, ['view'])) {
+          return \Drupal\Core\Access\AccessResult::allowed();
+        }
       if (in_array($op, ['delete', 'update', 'view all revisions'])) {
         return \Drupal\Core\Access\AccessResult::forbidden();
       }
       return \Drupal\Core\Access\AccessResult::allowed();
     }else {
-        // return \Drupal\Core\Access\AccessResult::forbidden();
+      
+      // return \Drupal\Core\Access\AccessResult::forbidden();
         $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/accueil-metier');
         $response->send();
+      }
     }
   }
 }
