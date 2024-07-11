@@ -286,6 +286,8 @@ class CustomBlockServices {
             foreach ($child_terms as $child_term) {
                 // Faites quelque chose avec chaque terme enfant.
                 // Par exemple, affichez le nom du terme enfant.
+
+                //TODO FILTRER PAR COCHEE CV PUB
                 $allChild[]  = $child_term->id();
               }
           }
