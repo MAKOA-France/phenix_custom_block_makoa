@@ -846,9 +846,9 @@ function addOverlayToVideoDetail () {
 var VerifFormulaire = setInterval(customizeTHtitle, 50);
 function customizeTHtitle () {
     console.log('test');
-    if (jQuery('table thead th').length) {
+    if (jQuery('.page-civicrm-donnees-economique-entreprise-achat-viande table thead th').length) {
 
-        jQuery('table thead th').each(function (el, id) { 
+        jQuery('.page-civicrm-donnees-economique-entreprise-achat-viande table thead th').each(function (el, id) { 
             let curr = jQuery(id).text();
             console.log(curr,  ' mandol');
             jQuery(id).html(curr)
