@@ -35,14 +35,20 @@
         //     jQuery('[id*=field-dossier-values]').next('.clearfix').show();
         //     console.log('is checked')
         // }else {
+        //     // jQuery('[id*=field-dossier-values]').next('.clearfix').hide(); // todo cacher le btn paragraphes 
+        // }
+        // if (jQuery('[name="field_gabarit_texte_et_images[value]"]').prop('checked')) {
+        //     jQuery('[id*=field-dossier-values]').next('.clearfix').show();
+        //     console.log('is checked')
+        // }else {
         //     jQuery('[id*=field-dossier-values]').next('.clearfix').hide();
         // }
         jQuery('body').on('click', '[name="field_gabarit_texte_et_images[value]"]', function() {
             console.log('is checked')
             if (jQuery(this).prop('checked')) {
-                jQuery('[id*=field-dossier-values]').next('.clearfix').show();
+                // jQuery('[id*=field-dossier-values]').next('.clearfix').show(); // todo cacher le btn paragraphes 
             }else {
-                jQuery('[id*=field-dossier-values]').next('.clearfix').hide();
+                // jQuery('[id*=field-dossier-values]').next('.clearfix').hide(); // todo cacher le btn paragraphes 
             }
             // jQuery('#field-dossier-values').next('.clearfix').toggle();
         })
@@ -534,10 +540,8 @@
                 
                 if($(window).width() < 992 && $(window).width() > 768 ){
                     if ($('.custom-class-site-metier').is(':hidden')) {
-                        console.log('miafna')
                         $('.custom-class-site-metier').show();   
                     }else {
-                        console.log('mpotra')
                         $('.custom-class-site-metier').hide();   
                     }
                 }

@@ -2256,15 +2256,17 @@ function phenix_custom_block_webform_submission_presave(Drupal\webform\WebformSu
 function phenix_custom_block_media_access(\Drupal\Core\Entity\EntityInterface $entity, $operation, \Drupal\Core\Session\AccountInterface $account) {
   if ($account->isAnonymous()) {
     if ($entity instanceof Drupal\media\Entity\Media) {
-      if (($entity->bundle() == 'remote_video') || ($entity->bundle() == 'image')) {
-        //vérifier si le media video est lié à un paragraphe qui est aussi lié à un terme de type "site metier" (SI OUI on autorise sinon ON BLOQUE)
-        
-        //QUERY qui recupere l'id du term qui est lié à la video ===> select DOS.entity_id from paragraph__field_video as Para LEFT JOIN taxonomy_term__field_dossier_ as DOS ON Para.entity_id = DOS.field_dossier__target_id where Para.field_video_target_id = 29819;
-        return \Drupal\Core\Access\AccessResult::allowed();
+    if ($operation == 'view') {
+        if (($entity->bundle() == 'remote_video') || ($entity->bundle() == 'image')) {
+          //vérifier si le media video est lié à un paragraphe qui est aussi lié à un terme de type "site metier" (SI OUI on autorise sinon ON BLOQUE)
+          
+          //QUERY qui recupere l'id du term qui est lié à la video ===> select DOS.entity_id from paragraph__field_video as Para LEFT JOIN taxonomy_term__field_dossier_ as DOS ON Para.entity_id = DOS.field_dossier__target_id where Para.field_video_target_id = 29819;
+          return \Drupal\Core\Access\AccessResult::allowed();
+        }
+        if (\Drupal::request()->query->get('mcd')) {//s'il y a du parametre mcd dans le mail on autorise
+          return \Drupal\Core\Access\AccessResult::allowed();
+        }
       }
-    }
-    if (\Drupal::request()->query->get('mcd')) {//s'il y a du parametre mcd dans le mail on autorise
-      return \Drupal\Core\Access\AccessResult::allowed();
     }
     //  return  \Drupal\Core\Access\AccessResult::forbidden(); //commenté pour l'instant car les adherent ne peuvent pas acceder aux telechargement de document si on met "forbidden"
   }
