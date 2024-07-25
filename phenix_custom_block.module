@@ -2291,6 +2291,10 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
     $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://cultureviande.dev.makoa.net/accueil-public');
     $response->send();
   } 
+  if (($currentUrl == '/') &&  $domain == 'cultureviande.makoa4.makoa.net/') {
+    $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://cultureviande.makoa4.makoa.net/accueil-public');
+    $response->send();
+  } 
   
   if (($currentUrl == '/') &&  $domain == 'metiers-viande.com') {
     $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://metiers-viande.com/accueil-metier');
