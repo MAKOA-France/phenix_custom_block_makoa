@@ -2371,7 +2371,7 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
       // $allWhiteListIds[] = 6372;//TODO POUR MEP rubrique "exports" 
       // dump($domainAccessValue, $operation);
       
-      if (in_array($entity->id(), $allWhiteListIds) || in_array('cultureviande_dev_makoa_net', $domainAccessValue)) {
+      if (in_array($entity->id(), $allWhiteListIds) || in_array(CustomBlockServices::DOMAIN_DEV, $domainAccessValue) || in_array(CustomBlockServices::DOMAIN_PROD, $domainAccessValue)) {
         if ($operation == 'view') {
           return \Drupal\Core\Access\AccessResult::allowed();
         }

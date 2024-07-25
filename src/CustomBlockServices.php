@@ -38,6 +38,8 @@ class CustomBlockServices {
 
   const DOMAIN_SITE_PUB = 'cultureviande.dev.makoa.net';
   const SITE_PUB_ID_PAGE_ACTU = 41280;
+  const DOMAIN_DEV = 'cultureviande_dev_makoa_net';
+  const DOMAIN_PROD = 'cultureviande_makoa4_makoa_net';
 
   /**
    * Constructor.
