@@ -36,6 +36,9 @@ class CustomBlockServices {
    */
   protected $configFactory;
 
+  const DOMAIN_SITE_PUB = 'cultureviande.dev.makoa.net';
+  const SITE_PUB_ID_PAGE_ACTU = 41280;
+
   /**
    * Constructor.
    *
@@ -226,6 +229,72 @@ class CustomBlockServices {
       }
     }
 
+    /**
+     * 
+     */
+    public function sitePublicTerms () {
+      $checked_site_public_term_parent = [];
+      $entity_type_manager = \Drupal::service('entity_type.manager');
+
+      // Get the entity type manager service.
+      $entity_type_manager = \Drupal::service('entity_type.manager');
+
+      // Specify the vocabulary machine name.
+      $vocabulary_machine_name = 'rubrique';
+
+      // Load the vocabulary.
+      $vocabulary = $entity_type_manager->getStorage('taxonomy_vocabulary')->load($vocabulary_machine_name);
+
+      if ($vocabulary) {
+        // Get the ID of the vocabulary.
+        $vid = $vocabulary->id();
+
+        // Get all level 1 terms of the specified vocabulary.
+        $storage = $entity_type_manager->getStorage('taxonomy_term');
+        $level_1_terms = $storage->loadTree($vid, 4966, 1, TRUE);
+        // Loop through the level 1 terms.
+        foreach ($level_1_terms as $term) {
+          // vérifier si le domain "site public " est coché
+          $isSitePublic = $this->getNodeFieldValue($term, 'field_domain_acces');
+          if ($isSitePublic) {
+            $checked_site_public_term_parent[] = $term->id();
+          }
+        }
+      }
+      return $checked_site_public_term_parent;
+    }
+
+    public function getAllTermChild () {
+
+      //récuperer les termes de premier niveau qui on "site public" coché
+
+      // Obtenez le service EntityTypeManager.
+      $allChild = [];
+      
+      $checked_site_public_term_parent = $this->sitePublicTerms();
+      $entity_type_manager = \Drupal::service('entity_type.manager');
+      foreach ($checked_site_public_term_parent as $termId) {
+        $parent_term = Term::load($termId);
+          if ($parent_term) {
+            // Obtenez l'ID du vocabulaire.
+            $vid = $parent_term->bundle();
+            
+            // Obtenez tous les termes enfants du terme parent.
+            $storage = $entity_type_manager->getStorage('taxonomy_term');
+            $child_terms = $storage->loadTree($vid, $termId, NULL, TRUE);
+            // Parcourez les termes enfants.
+            foreach ($child_terms as $child_term) {
+                // Faites quelque chose avec chaque terme enfant.
+                // Par exemple, affichez le nom du terme enfant.
+
+                //TODO FILTRER PAR COCHEE CV PUB
+                $allChild[]  = $child_term->id();
+              }
+          }
+      }
+      return $allChild;
+  }
+
     public function createActivity ($infos) {
       // dump($info['subject'], $infos['the_question'], $infos['employer'], $infos['assignee_to']);
        if ($infos['employer']) {
@@ -297,6 +366,20 @@ class CustomBlockServices {
     return array_filter($array, function ($value) {
         return $value !== false;
     });
+  }
+
+  public function textPresentationFormulaire () {
+    return '<div class="txt-pres"><p>Ce formulaire récapitule les informations déjà enregistrées dans la base Culture Viande
+    (entreprise, dirigeants, contacts et abonnements).</p>
+<p>Vous pouvez y apporter des modifications et y ajouter des contacts.</p>
+
+<p>Pour la partie "Données Économiques", merci de renseigner les onglets :</p>
+<p>Effectif, Chiffre d\'affaires, Agréments sanitaires, Abattages, Achat de viandes, Découpe-Transformation, Produits commercialisés, Activités, Certifications</p>
+
+<p>Ces informations sont essentielles car elles détermineront la représentativité de Culture Viande pour les 4 années à venir. Elles conditionneront sa capacité à porter
+     vos messages politiques, économiques et sociaux auprès des pouvoirs publics et des partenaires sociaux pour l\'accomplissement de ses missions : Représenter, Défendre, Fédérer, Servir et Promouvoir.</p>
+<i>Culture Viande garantit à l’entreprise déclarante la confidentialité des données individuelles</i>
+    </div>';
   }
 
   /**
@@ -624,6 +707,16 @@ class CustomBlockServices {
   public function load_video_by_id($video_id) {
     // Load a single video by its ID.
     return Media::load($video_id);
+  }
+
+  public function isTabAlreadyVisited ($tabName) {
+    //vérifier si le nom de l'onglet est dans la session
+    $visited = '';
+    $sessionTab = \Drupal::service('session')->get('form_tab_visited');
+    if (in_array($tabName, $sessionTab)) {
+      $visited = ' tab-visited-form ';
+    }
+    return $visited;
   }
 
   /**

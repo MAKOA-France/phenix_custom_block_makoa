@@ -10,7 +10,8 @@
         // Vérifier si la largeur de l'écran est inférieure à 768 pixels (typiquement la largeur des appareils mobiles)
         if (windowWidth < 992 && windowWidth > 768) {
             if ($('.page-accueil-metier').length > 0 || $('.metier-div-grid-container').length > 0 ) {
-                if ($('.page-accueil-metier').length > 0) {console.log(' here')
+                if ($('.page-accueil-metier').length > 0) {
+                    console.log(' here')
                     jQuery('<div class="metier-mobile"><a href="/" title="Accueil" rel="home" class="site-logo"><img src="/files/Groupe_2.png" alt="Accueil"></a></div>').insertBefore('article.grid-container');
                 }else {
                     jQuery('<div class="metier-mobile"><a href="/" title="Accueil" rel="home" class="site-logo"><img src="/files/Groupe_2.png" alt="Accueil"></a></div>').insertBefore('.title-bar');
@@ -30,12 +31,18 @@
 
 
 
-        if (jQuery('[name="field_gabarit_texte_et_images[value]"]').prop('checked')) {
-            jQuery('[id*=field-dossier-values]').next('.clearfix').show();
-            console.log('is checked')
-        }else {
-            // jQuery('[id*=field-dossier-values]').next('.clearfix').hide(); // todo cacher le btn paragraphes 
-        }
+        // if (jQuery('[name="field_gabarit_texte_et_images[value]"]').prop('checked')) {
+        //     jQuery('[id*=field-dossier-values]').next('.clearfix').show();
+        //     console.log('is checked')
+        // }else {
+        //     // jQuery('[id*=field-dossier-values]').next('.clearfix').hide(); // todo cacher le btn paragraphes 
+        // }
+        // if (jQuery('[name="field_gabarit_texte_et_images[value]"]').prop('checked')) {
+        //     jQuery('[id*=field-dossier-values]').next('.clearfix').show();
+        //     console.log('is checked')
+        // }else {
+        //     jQuery('[id*=field-dossier-values]').next('.clearfix').hide();
+        // }
         jQuery('body').on('click', '[name="field_gabarit_texte_et_images[value]"]', function() {
             console.log('is checked')
             if (jQuery(this).prop('checked')) {
@@ -839,6 +846,94 @@ function addOverlayToVideoDetail () {
         jQuery('body').find('.term-metier-viandes .paragraph.paragraph--type--videos > div > div > div ').prepend('<div class="custom-overlay-hide-logo"><div class="custom-overlay-hide-sharing"></div><div class="custom-overlay-hide-youtube-link-detail"></div>');
     }
     clearInterval(VerifaddOverlayToVideoDetail);
+}
+var VerifFormulaire = setInterval(customizeTHtitle, 50);
+function customizeTHtitle () {
+    console.log('test');
+    if (jQuery('.page-civicrm-donnees-economique-entreprise-achat-viande table thead th').length) {
+
+        jQuery('.page-civicrm-donnees-economique-entreprise-achat-viande table thead th').each(function (el, id) { 
+            let curr = jQuery(id).text();
+            console.log(curr,  ' mandol');
+            jQuery(id).html(curr)
+            console.log(curr,  ' ts afk');
+        })
+        clearInterval(VerifFormulaire);
+    }
+    if (!jQuery('.page-civicrm-donnees-economique-entreprise-achat-viande').length){
+        clearInterval(VerifFormulaire);
+    }
+}
+
+//Formulaire donnée eco - onglet produit commerciaux
+var VerifProduitCommTable = setInterval(makeTdBold, 100);
+function makeTdBold () {
+    let tableProdCom = jQuery('.page-civicrm-donnees-economique-entreprise-produit-commercialises table.table-striped tbody tr td:nth-child(2) span').length;
+    console.log('testo ooo', tableProdCom)
+           
+    function isSingleDigit(text) {
+        // Utiliser une expression régulière pour trouver tous les chiffres dans le texte
+                       var digits = text.match(/\d/g);
+                       // Vérifier si la longueur du tableau de chiffres est égale à 1
+                       return digits !== null && digits.length === 1;
+       }
+    if (jQuery('.page-civicrm-donnees-economique-entreprise-produit-commercialises table.table-striped tbody tr td:nth-child(2) span').length) {
+        jQuery('.page-civicrm-donnees-economique-entreprise-produit-commercialises table.table-striped tbody tr td:nth-child(2) span').each(function (el, id) {
+
+            if (isSingleDigit(jQuery(id).text())) {
+                jQuery(this).css({'font-weight': 'bold', 'color': 'rgb(217 135 78)'});
+                console.log("MISY" + jQuery(id).text());
+            } else {
+                console.log("Le texte ne contient pas un seul chiffre." + jQuery(id).text());
+            }
+        })    
+    }
+    clearInterval(VerifProduitCommTable);
+}
+
+//Formulaire pour adherent : onglet contact
+var VerifFormTabContactCustomizeContactColumnSelect = setInterval(FormTabContactCustomizeContactColumnSelect, 50);
+function FormTabContactCustomizeContactColumnSelect () {
+    if (jQuery('.page-civicrm-bulletin-cotisation-contact-entreprise .select2-drop.select2-drop-multi.select2-drop-active.crm-public').length) {
+
+        jQuery('.page-civicrm-bulletin-cotisation-contact-entreprise .select2-drop.select2-drop-multi.select2-drop-active.crm-public li').each(function (el, id) { 
+            // let curr = jQuery(id).text();
+            let whiteListId = jQuery('.tab-contacts a').attr('data-contacts').split('##');
+            var index = jQuery.inArray(jQuery(id).find('div').text(), whiteListId);
+            if (index > -1) {
+                jQuery(id).addClass('toShow');
+            }else {
+                jQuery(id).addClass('toHidde');
+            }
+        });
+
+    }
+
+    if (!jQuery('.page-civicrm-bulletin-cotisation-contact-entreprise').length){
+        clearInterval(VerifFormTabContactCustomizeContactColumnSelect);
+    }
+}
+//Formulaire pour adherent : onglet  dirigeant
+var VerifFormTabContactCustomizeDirigeantsColumnSelect = setInterval(FormTabContactCustomizeDirigeantsColumnSelect, 500);
+function FormTabContactCustomizeDirigeantsColumnSelect () {
+    if (jQuery('.page-civicrm-bulletin-de-cotisation-dirigeants .select2-drop.select2-drop-multi.select2-drop-active.crm-public').length) {
+        jQuery('.page-civicrm-bulletin-de-cotisation-dirigeants .select2-drop.select2-drop-multi.select2-drop-active.crm-public li').each(function (el, id) { 
+            
+            let whiteListId = jQuery('.tab-dirigeants a').attr('data-dirigeants').split('##');
+          
+
+            var index = jQuery.inArray(jQuery(id).find('div').text(), whiteListId);
+            if (index > -1) {
+                jQuery(id).addClass('toShow');
+            }else {
+                jQuery(id).addClass('toHidde');
+            }
+        })
+    }
+
+    if (!jQuery('.page-civicrm-bulletin-de-cotisation-dirigeants').length){
+        clearInterval(VerifFormTabContactCustomizeDirigeantsColumnSelect);
+    }
 }
 
 // Vérifiez périodiquement la présence de l'élément

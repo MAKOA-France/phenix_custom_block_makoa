@@ -279,7 +279,8 @@ function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\Enti
       }
     }
 
-    if ($hasChildren) {
+    //ne pas rediriger vers la rubrique enfant pour CV PUBLIC 
+    if ($hasChildren && !in_array('cultureviande_dev_makoa_net', array_column($termObj->get('field_domain_acces')->getValue(), 'target_id'))) {
       
       // Load your term.
       // $term_id = 123; // Replace with the actual term ID.
@@ -476,79 +477,79 @@ function phenix_custom_block_preprocess_page(&$variables)
     switch ($current_path) {
       case (strpos($current_path, 'bulletin-de-cotisation-infomration-contact') !== false ):
         $already = \Drupal::service('session')->get('form_tab_visited');
-        $tab_visited['1'] = 'entreprise';
+        $tab_visited['1'] = 'Entreprise';
         $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
       case (strpos($current_path, 'donnees-economique-entreprise-effectif-annuel') !== false ):
         $already = \Drupal::service('session')->get('form_tab_visited');
-        $tab_visited['2'] = 'effectif';
+        $tab_visited['2'] = 'Effectif';
         $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
       case (strpos($current_path, 'bulletin-de-cotisation-dirigeants') !== false ):
         $already = \Drupal::service('session')->get('form_tab_visited');
-        $tab_visited['3'] = 'dirigeants';
+        $tab_visited['3'] = 'Dirigeants';
         $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
       case (strpos($current_path, 'buttetin-cotisation-liste-abonnement') !== false ):
         $already = \Drupal::service('session')->get('form_tab_visited');
-        $tab_visited['4'] = 'abonnements';
+        $tab_visited['4'] = 'Abonnements';
         $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
       case (strpos($current_path, 'bulletin-cotisation-contact-entreprise') !== false ):
         $already = \Drupal::service('session')->get('form_tab_visited');
-        $tab_visited['5'] = 'contact entreprise';
+        $tab_visited['5'] = 'Contacts';
         $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
       case (strpos($current_path, 'donnees-economique-entreprise-agrement-sanitaire') !== false ):
         $already = \Drupal::service('session')->get('form_tab_visited');
-        $tab_visited['6'] = 'agrement sanitaire';
+        $tab_visited['6'] = 'Agréments sanitaires';
         $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
       case (strpos($current_path, 'donnees-economique-entreprise-donnee-generale') !== false ):
         $already = \Drupal::service('session')->get('form_tab_visited');
-        $tab_visited['7'] = 'donnee generale';
+        $tab_visited['7'] = 'Chiffre d\'affaires';
         $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
       case (strpos($current_path, 'donnees-economique-entreprise-abattages') !== false ):
         $already = \Drupal::service('session')->get('form_tab_visited');
-        $tab_visited['8'] = 'abattage';
+        $tab_visited['8'] = 'Abattages';
         $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
       case (strpos($current_path, 'donnees-economique-entreprise-achat-viande') !== false ):
         $already = \Drupal::service('session')->get('form_tab_visited');
-        $tab_visited['9'] = 'achat viande';
+        $tab_visited['9'] = 'Achats de viandes';
         $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
       case (strpos($current_path, 'donnees-economique-entreprise-transformation-decoupe') !== false ):
         $already = \Drupal::service('session')->get('form_tab_visited');
-        $tab_visited['10'] = 'decoupe';
+        $tab_visited['10'] = 'Découpe et Transformation';
         $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
       case (strpos($current_path, 'donnees-economique-entreprise-produit-commercialises') !== false ):
         $already = \Drupal::service('session')->get('form_tab_visited');
-        $tab_visited['11'] = 'produit commercialisés';
+        $tab_visited['11'] = 'Produits commercialisés';
         $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
       case (strpos($current_path, 'donnees-economique-entreprise-formulaire-certification') !== false ):
         $already = \Drupal::service('session')->get('form_tab_visited');
-        $tab_visited['12'] = 'activités';
+        $tab_visited['12'] = 'Activités';
         $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
       case (strpos($current_path, 'donnees-economique-entreprise-detail-activity-certification') !== false ):
         $already = \Drupal::service('session')->get('form_tab_visited');
-        $tab_visited['13'] = 'certification';
+        $tab_visited['13'] = 'Certifications';
         $tab_visited = !empty($already) ? array_unique(array_merge($already, $tab_visited)) : $tab_visited;
         \Drupal::service('session')->set('form_tab_visited', $tab_visited);
         break;
@@ -682,7 +683,7 @@ function phenix_custom_block_preprocess_page(&$variables)
         $variables['page']['highlighted']['info_organisation'] = ['#type' => 'fieldset', '#attributes' => ['class' => ['c-fieldset']]];
         $variables['page']['highlighted']['info_organisation']['organization_name'] = [
           '#type' => 'textfield',
-          '#title' => t('Nom de l\'organisation'),
+          '#title' => t('Société'),
           '#size' => 20,
           '#maxlength' => 255,
           '#value' => $orgName,
@@ -723,8 +724,8 @@ function phenix_custom_block_preprocess_page(&$variables)
       if ($missing_values) {
         $missing_tab = implode(', ', $missing_values);
         
-        $success_div = '<div class=" custom-msg-tabs messages messages--warning">
-        <h2 class="visually-hidden">Message d\'état</h2>Les onglets suivant n\'ont pas encore été renseignés : ' . $missing_tab . '</div><br>';
+        /* $success_div = '<div class=" custom-msg-tabs messages messages--warning">
+        <h2 class="visually-hidden">Message d\'état</h2>Les onglets suivant n\'ont pas encore été renseignés : ' . $missing_tab . '</div><br>'; */
       }
 
       $current_cid = CRM_Core_Session::singleton()->get('userID');
@@ -732,23 +733,42 @@ function phenix_custom_block_preprocess_page(&$variables)
 
       $checksum = $cid ? $custom_service->getChecksum($cid) : '';
       
-      $variables['page']['highlighted']['#markup'] = '<h2>Synthèse et Données Economiques : ' . $custom_service->getContactNameById($cid) . '</h2><br><p>Merci de renseigner les 13 onglets.</p>
-      '. $success_div . '
-      <ul id="progressbar">
-      <li  href-attribute="civicrm/bulletin-de-cotisation-infomration-contact?cs=' . $checksum . '#?Organization1=' . $current_cid . '" class="' . $custom_service->isActive('civicrm/bulletin-de-cotisation-infomration-contact') . '"  class="active"><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation-infomration-contact?cs=' . $checksum . '#?Organization1=' . $current_cid . '">Entreprise</a></li>
-      <li data-org-id="' . $current_cid . '" href-attribute="/civicrm/donnees-economique-entreprise-effectif-annuel?cs=' . $checksum . '#?id=' . $current_cid . '" class="effectif-menu-class ' . $custom_service->isActive('donnees-economique-entreprise-effectif-annuel') . '"  class="active"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-effectif-annuel?cs=' . $checksum . '#?id=' . $current_cid . '">Effectifs</a></li>
-      <li  href-attribute="/civicrm/bulletin-de-cotisation-dirigeants?cs=' . $checksum . '#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-dirigeants') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation-dirigeants?cs=' . $checksum . '#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $current_cid . '">Dirigeants</a></li>
-      <li  href-attribute="/civicrm/buttetin-cotisation-liste-abonnement?cs=' . $checksum . '#?id=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-liste-abonnement') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/buttetin-cotisation-liste-abonnement?cs=' . $checksum . '#?id=' . $current_cid . '">Abonnements</a></li>
+      $visitedTABs = \Drupal::service('session')->get('form_tab_visited');
+      $text_presentation = (count ($visitedTABs) < 2) ? $custom_service->textPresentationFormulaire() : '';
       
-      <li  href-attribute="/civicrm/bulletin-cotisation-contact-entreprise?cs=' . $checksum . '#?id=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-contact-entreprise') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/bulletin-cotisation-contact-entreprise?cs=' . $checksum . '#?id=' . $current_cid . '">Contacts</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-agrement-sanitaire?cs=' . $checksum . '#?id=' . $current_cid . '"  class="' . $custom_service->isActive('agrement-sanitaire') . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-agrement-sanitaire?cs=' . $checksum . '#?id=' . $current_cid . '">Agréments sanitaires</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-donnee-generale?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('donnee-generale') . '" id="donnee-eoconomique-entreprise-donnee-generale"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-donnee-generale?cs=' . $checksum . '#?id=' . $current_cid . '">Données Générales</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-abattages?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('abattages') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-abattages?cs=' . $checksum . '#?id=' . $current_cid . '">Abattages</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-achat-viande?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('achat-viande') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-achat-viande?cs=' . $checksum . '#?id=' . $current_cid . '">Achat de viande</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-transformation-decoupe?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('transformation-decoupe') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-transformation-decoupe?cs=' . $checksum . '#?id=' . $current_cid . '"> Découpe et Transformation</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-produit-commercialises?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('produit-commercial') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-produit-commercialises?cs=' . $checksum . '#?id=' . $current_cid . '">Produits commerciaux</a></li>
-      <li  href-attribute="/civicrm/donnees-economique-entreprise-formulaire-certification?cs=' . $checksum . '#?Organization1=' . $current_cid . '" class="' . $custom_service->isActive('formulaire-certification') . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-formulaire-certification?cs=' . $checksum . '#?Organization1=' . $current_cid . '">Détail des activités</a></li>
-      <li data-tab-session="' . json_encode(\Drupal::service('session')->get('form_tab_visited')) . '" href-attribute="/civicrm/donnees-economique-entreprise-detail-activity-certification?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('detail-activity-certification') . '" ><a data-set="'.  htmlspecialchars($all_datas, ENT_QUOTES, 'UTF-8') .'" class="tab-certification progress-bar-link" href="/civicrm/donnees-economique-entreprise-detail-activity-certification?cs=' . $checksum . '#?id=' . $current_cid . '">Certifications</a></li>
+      $dirigeants = ['co-Dirigeant(e)'/* , 'co-gérant(e)' */, 'Directeur(trice)'/* , 'Directeur Général (trice-e)' */,'Dirigeant(e)'];
+
+
+      $dirigeants = \Civi\Api4\OptionValue::get(FALSE)
+        ->addWhere('option_group_id', '=', 103)
+        ->addWhere('value', 'IN', [59, 1, 60, 78, 15, 87, 171, 39, 85])
+        ->addOrderBy('weight', 'ASC')
+        ->addOrderBy('label', 'ASC')
+        ->execute()->getIterator();
+        $dirigeants = iterator_to_array($dirigeants);
+        $dirigeants = array_column($dirigeants, 'label');
+
+      // Encode the array to JSON with special characters escaped
+      $dirigeants = implode('##', $dirigeants);
+
+
+      $variables['page']['highlighted']['#markup'] = '<h2>Synthèse et Données Economiques : ' . $custom_service->getContactNameById($cid) . '</h2><br> ' . $text_presentation .'
+
+      <ul id="progressbar">
+      <li  href-attribute="civicrm/bulletin-de-cotisation-infomration-contact?cs=' . $checksum . '#?Organization1=' . $current_cid . '" class="' . $custom_service->isActive('civicrm/bulletin-de-cotisation-infomration-contact') . '  ' . $custom_service->isTabAlreadyVisited("Entreprise") . '"  class="active"><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation-infomration-contact?cs=' . $checksum . '#?Organization1=' . $current_cid . '">Entreprise</a></li>
+      <li data-org-id="' . $current_cid . '" href-attribute="/civicrm/donnees-economique-entreprise-effectif-annuel?cs=' . $checksum . '#?id=' . $current_cid . '" class="effectif-menu-class ' . $custom_service->isActive('donnees-economique-entreprise-effectif-annuel') . '  ' . $custom_service->isTabAlreadyVisited("Effectif") . '"  class="active"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-effectif-annuel?cs=' . $checksum . '#?id=' . $current_cid . '">Effectif</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-donnee-generale?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('donnee-generale') . '' . $custom_service->isTabAlreadyVisited("Effectif") . '" id="donnee-eoconomique-entreprise-donnee-generale"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-donnee-generale?cs=' . $checksum . '#?id=' . $current_cid . '">Chiffre d\'affaires</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-agrement-sanitaire?cs=' . $checksum . '#?id=' . $current_cid . '"  class="' . $custom_service->isActive('agrement-sanitaire') . '' . $custom_service->isTabAlreadyVisited("Agréments sanitaires") . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-agrement-sanitaire?cs=' . $checksum . '#?id=' . $current_cid . '">Agréments sanitaires</a></li>
+      <li  href-attribute="/civicrm/bulletin-de-cotisation-dirigeants?cs=' . $checksum . '#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $current_cid . '"  class="tab-dirigeants  ' . $custom_service->isActive('cotisation-dirigeants') . '' . $custom_service->isTabAlreadyVisited("Dirigeants") . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/bulletin-de-cotisation-dirigeants?cs=' . $checksum . '#?Contact_Custom_indiviual_contact_fonction_entity_id_01.entreprise=' . $current_cid . '" data-dirigeants="' .$dirigeants. '">Dirigeants</a></li>
+      <li  href-attribute="/civicrm/bulletin-cotisation-contact-entreprise?cs=' . $checksum . '#?id=' . $current_cid . '"  class="tab-contacts  ' . $custom_service->isActive('cotisation-contact-entreprise') . '' . $custom_service->isTabAlreadyVisited("Contacts") . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/bulletin-cotisation-contact-entreprise?cs=' . $checksum . '#?id=' . $current_cid . '" data-contacts="' . $dirigeants . '">Contacts</a></li>
+      <li  href-attribute="/civicrm/buttetin-cotisation-liste-abonnement?cs=' . $checksum . '#?id=' . $current_cid . '"  class="' . $custom_service->isActive('cotisation-liste-abonnement') . '' . $custom_service->isTabAlreadyVisited("Abonnements") . '" id="doonee-economique-entreprise-agrement-sanitaire"><a class="progress-bar-link" href="/civicrm/buttetin-cotisation-liste-abonnement?cs=' . $checksum . '#?id=' . $current_cid . '">Abonnements</a></li>
+      
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-abattages?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('abattages') . '' . $custom_service->isTabAlreadyVisited("Abattages") . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-abattages?cs=' . $checksum . '#?id=' . $current_cid . '">Abattages</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-achat-viande?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('achat-viande') . '' . $custom_service->isTabAlreadyVisited("Achat de viandes") . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-achat-viande?cs=' . $checksum . '#?id=' . $current_cid . '">Achats de viandes</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-transformation-decoupe?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('transformation-decoupe') . '' . $custom_service->isTabAlreadyVisited("Découpe et Transformation") . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-transformation-decoupe?cs=' . $checksum . '#?id=' . $current_cid . '"> Découpe et Transformation</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-produit-commercialises?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('produit-commercial') . '' . $custom_service->isTabAlreadyVisited("Produits commercialisés") . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-produit-commercialises?cs=' . $checksum . '#?id=' . $current_cid . '">Produits commercialisés</a></li>
+      <li  href-attribute="/civicrm/donnees-economique-entreprise-formulaire-certification?cs=' . $checksum . '#?Organization1=' . $current_cid . '" class="' . $custom_service->isActive('formulaire-certification') . '' . $custom_service->isTabAlreadyVisited("Activités") . '" ><a class="progress-bar-link" href="/civicrm/donnees-economique-entreprise-formulaire-certification?cs=' . $checksum . '#?Organization1=' . $current_cid . '">Activités</a></li>
+      <li data-tab-session="' . json_encode(\Drupal::service('session')->get('form_tab_visited')) . '" href-attribute="/civicrm/donnees-economique-entreprise-detail-activity-certification?cs=' . $checksum . '#?id=' . $current_cid . '" class="' . $custom_service->isActive('detail-activity-certification') . '' . $custom_service->isTabAlreadyVisited("Certifications") . '" ><a data-set="'.  htmlspecialchars($all_datas, ENT_QUOTES, 'UTF-8') .'" class="tab-certification progress-bar-link" href="/civicrm/donnees-economique-entreprise-detail-activity-certification?cs=' . $checksum . '#?id=' . $current_cid . '">Certifications</a></li>
       </ul>';
 
 
@@ -1307,7 +1327,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
               $parent_term = $taxonomyTerm->get('parent')->entity;
                 // Get the base URL of the Drupal site including the protocol.
                 $base_url = \Drupal::request()->getSchemeAndHttpHost();
-                if (strpos($base_url, 'metiers-viande.') === false) {
+                if (strpos($base_url, 'metiers-viande.') === false && strpos($base_url, \Drupal\phenix_custom_block\CustomBlockServices::DOMAIN_SITE_PUB) === false) {
                   return $variables['content']['field_dossier'][0]['#suffix'] = '<a class="btn-add-meeting-empty" style="width: fit-content" href="/media/add/document?term_id=' . $term->id() . '"><i class="fa fa-plus-circle"></i>Ajouter un document</a>
                   ';
                 }
@@ -2260,7 +2280,6 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
   $domain = \Drupal::request()->getHost();
   // Get the requested URL path.
   $currentUrl = \Drupal::request()->getRequestUri();
-
   if (($currentUrl == '/') &&  $domain == 'metiers-viande.dev.makoa.net') {
     $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://metiers-viande.dev.makoa.net/accueil-metier');
     $response->send();
@@ -2268,7 +2287,17 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
   if (($currentUrl == '/') &&  $domain == 'metiers-viande.makoa4.makoa.net') {
     $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://metiers-viande.makoa4.makoa.net/accueil-metier');
     $response->send();
+  }
+  /**Redirection vers la page d'accueil */ 
+  if (($currentUrl == '/') &&  $domain == 'cultureviande.dev.makoa.net') {
+    $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://cultureviande.dev.makoa.net/accueil-public');
+    $response->send();
   } 
+  if (($currentUrl == '/') &&  $domain == 'cultureviande.makoa4.makoa.net/') {
+    $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://cultureviande.makoa4.makoa.net/accueil-public');
+    $response->send();
+  } 
+  
   if (($currentUrl == '/') &&  $domain == 'metiers-viande.com') {
     $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://metiers-viande.com/accueil-metier');
     $response->send();
@@ -2279,22 +2308,36 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
   } 
 
   if ($account->isAnonymous()) {
-    if ((strpos($domain, 'test-culture') !== false) || (strpos($domain, 'phenix.cultureviande') !== false)) {
+    if ((strpos($domain, 'test-culture') !== false) || (strpos($domain, 'phenix.cultureviande') !== false)  || (strpos($domain, 'test-cv') !== false) ) {
       return \Drupal\Core\Access\AccessResult::forbidden();
     }
-    
-    if (in_array($node->id(), [41250, 41248, 41249, 96])) {//TODO mettre le bon id pour MEP
-      if (in_array($op, ['view'])) {
-          return \Drupal\Core\Access\AccessResult::allowed();
+
+    //Page site public 
+    //si le node est de type site public
+    if ((strpos($domain, 'cultureviande.') !== false)) {
+      if ($node->getType() == 'page' && in_array($node->id(), [\Drupal\phenix_custom_block\CustomBlockServices::SITE_PUB_ID_PAGE_ACTU])) {
+        return \Drupal\Core\Access\AccessResult::allowed();
       }
+      if ($node->getType() == 'actualite_public'){
+        return \Drupal\Core\Access\AccessResult::allowed();
+      }
+    }
+    if (strpos($domain, 'cultureviande.') === false) {
+      
+      if (in_array($node->id(), [41250, 41248, 41249, 96, 632, 41251, 41252, 41253, 41267])) {//TODO mettre le bon id pour MEP
+        if (in_array($op, ['view'])) {
+          return \Drupal\Core\Access\AccessResult::allowed();
+        }
       if (in_array($op, ['delete', 'update', 'view all revisions'])) {
         return \Drupal\Core\Access\AccessResult::forbidden();
       }
       return \Drupal\Core\Access\AccessResult::allowed();
     }else {
-        // return \Drupal\Core\Access\AccessResult::forbidden();
+      
+      // return \Drupal\Core\Access\AccessResult::forbidden();
         $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/accueil-metier');
         $response->send();
+      }
     }
   }
 }
@@ -2313,7 +2356,34 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
   if ($account->isAnonymous()) {
     $base_url = \Drupal::request()->getSchemeAndHttpHost();
-    
+
+  
+    //check si c'est le site public
+    if ((strpos($base_url, 'cultureviande.')) !== false) {
+      //Ajouter une condition pour que les termes qui ont comme parent "communication" & "interprofession" & "culture viande" soient accéssible sur le site public
+      $allWhiteListIds = $custom_service->getAllTermChild();
+      //TODO TEST 
+      $allWhiteListIds[] = 6349;
+      
+
+      //Vérifier si c'est coché pour site public (cultureviande_dev_makoa_net TODO MEP)
+      $domainAccessValue = $entity->get('field_domain_acces')->getValue() ? array_column( $entity->get('field_domain_acces')->getValue(), 'target_id') : false;
+
+      // $allWhiteListIds[] = 6371;//TODO POUR MEP rubrique "exports"   TODO ALL CHECKED PROMU EN HOME ATAO WHITELIST
+      // $allWhiteListIds[] = 6372;//TODO POUR MEP rubrique "exports" 
+      // dump($domainAccessValue, $operation);
+      
+      if (in_array($entity->id(), $allWhiteListIds) || in_array('cultureviande_dev_makoa_net', $domainAccessValue)) {
+        if ($operation == 'view') {
+          return \Drupal\Core\Access\AccessResult::allowed();
+        }
+      }else {
+        $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/');
+        $response->send();
+      }
+    }
+
+
     if ((((strpos($base_url, 'metiers-viande.com')) !== false) || (strpos($base_url, 'metiers-viande.makoa4.makoa.net') !== false)) && $entity->hasField('vid')
     ) {
       $termType = $custom_service->getNodeFieldValue($entity, 'vid');
@@ -2328,8 +2398,12 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
         $response->send();
       }
     }else{
-      $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/');
-      $response->send();
+      if ((strpos($base_url, 'cultureviande.')) === false) {
+
+        //TODO POUR LE SITE PUBLIC
+        $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/');
+        $response->send();
+      }
     }
   } 
 }
