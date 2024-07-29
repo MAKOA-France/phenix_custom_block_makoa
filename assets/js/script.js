@@ -2,6 +2,13 @@
 
     $(window).on('load', function () {
 
+        //ne pas afficher l'image qui s'affiche juste après le body
+        if (jQuery('.cv-body-site-pub').length) {
+            var imgAfterBody = $('body > img:first-child');
+            if (imgAfterBody.length) {
+                imgAfterBody.hide();
+            }
+        }
 
        
          //Responsive mettre le logo en haut pour les mobiles
