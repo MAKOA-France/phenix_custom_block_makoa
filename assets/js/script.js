@@ -876,7 +876,6 @@ function customizeTHtitle () {
 var VerifProduitCommTable = setInterval(makeTdBold, 100);
 function makeTdBold () {
     let tableProdCom = jQuery('.page-civicrm-donnees-economique-entreprise-produit-commercialises table.table-striped tbody tr td:nth-child(2) span').length;
-    console.log('testo ooo', tableProdCom)
            
     function isSingleDigit(text) {
         // Utiliser une expression régulière pour trouver tous les chiffres dans le texte
