@@ -376,10 +376,15 @@ function redirectTerm ($term_chil , $term) {
   $path = reset($child_terms)->toUrl()->toString(); 
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
   $term_parent = Term::load($custom_service->getNodeFieldValue($term, 'parent'));
-  if ($term_parent && $custom_service->getNodeFieldValue($term_parent, 'name') == 'Accueil') {
-    // Redirect the user to the specified URL.
-    $response = new TrustedRedirectResponse($path);
-    $response->send();
+
+    //Condition si ce n'est pas le site extranet 
+    $base_url = \Drupal::request()->getSchemeAndHttpHost();
+  if (strpos($base_url, CustomBlockServices::DOMAIN_SITE_PUB) === false  && strpos($base_url, CustomBlockServices::DOMAIN_SITE_PUB_PROD) === false  ) {
+    if ($term_parent && $custom_service->getNodeFieldValue($term_parent, 'name') == 'Accueil') {
+      // Redirect the user to the specified URL.
+      $response = new TrustedRedirectResponse($path);
+      $response->send();
+    }
   }
 }
 
