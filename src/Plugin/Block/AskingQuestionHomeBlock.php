@@ -35,7 +35,7 @@ class AskingQuestionHomeBlock  extends BlockBase  {
     $user_id = $current_user->id();
     $email = $current_user->getEmail();
     $cid = $custom_service->getContactIdByEmail($email);
-
+    \Drupal::service('civicrm')->initialize();
     $idHash = \Civi\Api4\Contact::get(FALSE)
     ->selectRowCount()
     ->addSelect('hash')

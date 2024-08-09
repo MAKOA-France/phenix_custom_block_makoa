@@ -2285,6 +2285,7 @@ function phenix_custom_block_media_access(\Drupal\Core\Entity\EntityInterface $e
 function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterface $account) {
   $domain = \Drupal::request()->getHost();
   // Get the requested URL path.
+  
   $currentUrl = \Drupal::request()->getRequestUri();
   if (($currentUrl == '/') &&  $domain == 'metiers-viande.dev.makoa.net') {
     $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://metiers-viande.dev.makoa.net/accueil-metier');
@@ -2300,8 +2301,16 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
     $response->send();
   } 
   if (($currentUrl == '/') &&  $domain == 'cultureviande.makoa4.makoa.net') {
-    $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://cultureviande.makoa4.makoa.net/accueil-public');
-    $response->send();
+    // Define the IP address to match
+    $allowed_ip = '102.17.181.93';
+
+    // Get the client's IP address considering possible proxies
+    $client_ip = $_SERVER['REMOTE_ADDR'];
+    if ($client_ip == $allowed_ip) {
+      // dump($currentUrl, $domain);
+    }
+    $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://cultureviande.makoa4.makoa.net/accueil-public', 301);
+    return $response->send();
   } 
   
   if (($currentUrl == '/') &&  $domain == 'metiers-viande.com') {
