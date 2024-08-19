@@ -2273,6 +2273,17 @@ function phenix_custom_block_media_access(\Drupal\Core\Entity\EntityInterface $e
           return \Drupal\Core\Access\AccessResult::allowed();
         }
       }
+
+      //Si c'est un media de type document
+      if ($entity->bundle() == 'document') {
+        $base_url = \Drupal::request()->getSchemeAndHttpHost();
+
+        if ((strpos($base_url, 'phenix.cultureviande')) !== false) {
+          return \Drupal\Core\Access\AccessResult::forbidden();
+        }else {
+          return \Drupal\Core\Access\AccessResult::allowed();
+        }
+      }
     }
     //  return  \Drupal\Core\Access\AccessResult::forbidden(); //commenté pour l'instant car les adherent ne peuvent pas acceder aux telechargement de document si on met "forbidden"
   }
@@ -2420,6 +2431,16 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
         $response->send();
       }
     }
+
+    //Pour le site extranet
+    if (((strpos($base_url, 'phenix.cultureviande')) !== false) && $entity->hasField('vid')
+    ) {
+      $domainAccessValue = $entity->get('field_domain_acces')->getValue() ? array_column( $entity->get('field_domain_acces')->getValue(), 'target_id') : false;
+      if (in_array('phenix_cultureviande_fr', $domainAccessValue)) {
+         $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/');
+         $response->send();
+      }
+    }
   } 
 }
 
@@ -2459,6 +2480,12 @@ function phenix_custom_block_entity_access (\Drupal\Core\Entity\EntityInterface 
       }
     }
 
+  }
+
+  if ($account->isAnonymous()) {
+    if (($entity->id() == 'poser_une_question') && ($entity instanceof Drupal\webform\Entity\Webform)) {
+      return  \Drupal\Core\Access\AccessResult::forbidden();
+    }
   }
     
 }
