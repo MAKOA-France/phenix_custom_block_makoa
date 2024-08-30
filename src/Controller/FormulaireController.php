@@ -473,7 +473,7 @@ class FormulaireController extends ControllerBase
   }
 
   /**
-   * TODO HERE 
+   * Recuperation de l'id de l'organisation
    */
   public function getOrganisationId () {
     

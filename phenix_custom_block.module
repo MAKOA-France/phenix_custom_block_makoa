@@ -265,7 +265,6 @@ function phenix_custom_block_entity_view(array &$build, \Drupal\Core\Entity\Enti
     $taxonomy_term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
     
    
-    //TODO RESTRICTION DOC QUI EST LIE A UN TERME SOCIAL NE DOIT PAS ETRE ACCESSIBLE QUE POUR LE ROLE SOCIAL A VERIFIER 
     $termObj = Term::load($tid);
     $isTermSocial = $custom_service->getNodeFieldValue($termObj, 'field_social');
     if ($termObj &&  $isTermSocial) {
@@ -1220,7 +1219,6 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
                   $get_description_by_id = \Drupal::database()->query('select * from  media__field_media_document where entity_id = ' . $fileId)->fetch()->field_media_document_description;
                   $size_of_file = filesize('/var/aegir/platforms/civicrm-d9/' . $file->createFileUrl());
                   $media_name = getNodeFieldValue($media, 'field_titre_public') ? getNodeFieldValue($media, 'field_titre_public') : getNodeFieldValue($media, 'name');
-                  //todo find link
 
                   //recupere le type de document 
                   $type_doc = $custom_service->getTypeDocument ($media);
@@ -1288,7 +1286,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             $secondElmId = $secondElm['media_id'];
             $media = Media::load($secondElmId);
             $secondDataDoc = $custom_service->getDataSecondDocument($media);
-            unset($all_documents[$first_title][1]);   *///TODO Commenté pour le moment à decommenté si on en a besoin
+            unset($all_documents[$first_title][1]);   *///
             //end recuperation ****----------
             
             $allowToEdit = $custom_service->checkIfUserCanEditDoc ();
@@ -1299,7 +1297,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             $file0bj = File::load($file_id);
             $file_size_readable = $custom_service->getFileSize($file0bj);
             // $display_see_other_doc = ($counted_doc > 1); TODO 
-            $display_see_other_doc = (count($all_documents) > 2 || count(reset($all_documents)));//TODO à mettre sup à 2 car les deux seront au dessus
+            $display_see_other_doc = (count($all_documents) > 2 || count(reset($all_documents)));
             
             $variables['content'] = [
               '#theme' => 'phenix_custom_block_custom_last_doc',
@@ -1620,7 +1618,7 @@ use Drupal\Core\Render\Markup;
 function phenix_custom_block_preprocess_media(array &$variables) {
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
   // Check if the media type is "document" (you can replace 'document' with the actual media type machine name).
-  if ($variables['media']->bundle() == 'document') {//TODO MORE CONDITION
+  if ($variables['media']->bundle() == 'document') {//ajouter beuacoup lus de  CONDITION
     // Load the file entity associated with the media.
     $media = $variables['media'];
     if ($media->hasField('field_media_document')) {
@@ -1820,7 +1818,6 @@ function phenix_custom_block_views_pre_render(\Drupal\views\ViewExecutable $view
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
   
   if($view->id() == 'rechercher') {
-    //todo something here
     // unset($view->result[0]);  ==> this work but to exclude some result but it's a bad idea, the good way to do this is in the query_alter 
   }
   
@@ -1946,7 +1943,6 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
   
   
 
-  //TODO  select * from menu_link_content_data where description like '%kkk%';
   //Search API recherche de document, recherche de termes, recherche de contenu aussi
   if ($view->storage->get('id') == 'rechercher' && $view->current_display == 'page_1') {
     $index = \Drupal::entityTypeManager()->getStorage('search_api_index')->load('contenu');
@@ -2350,7 +2346,7 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
     }
     if (strpos($domain, 'cultureviande.') === false) {
       
-      if (in_array($node->id(), [41250, 41248, 41249, 96, 632, 41251, 41252, 41253, 41267])) {//TODO mettre le bon id pour MEP
+      if (in_array($node->id(), [41250, 41248, 41249, 96, 632, 41251, 41252, 41253, 41267])) {
         if (in_array($op, ['view'])) {
           return \Drupal\Core\Access\AccessResult::allowed();
         }
@@ -2388,16 +2384,11 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
     if ((strpos($base_url, 'cultureviande.')) !== false) {
       //Ajouter une condition pour que les termes qui ont comme parent "communication" & "interprofession" & "culture viande" soient accéssible sur le site public
       $allWhiteListIds = $custom_service->getAllTermChild();
-      //TODO TEST 
       $allWhiteListIds[] = 6349;
       
 
-      //Vérifier si c'est coché pour site public (cultureviande_dev_makoa_net TODO MEP)
       $domainAccessValue = $entity->get('field_domain_acces')->getValue() ? array_column( $entity->get('field_domain_acces')->getValue(), 'target_id') : false;
 
-      // $allWhiteListIds[] = 6371;//TODO POUR MEP rubrique "exports"   TODO ALL CHECKED PROMU EN HOME ATAO WHITELIST
-      // $allWhiteListIds[] = 6372;//TODO POUR MEP rubrique "exports" 
-      // dump($domainAccessValue, $operation);
       
       if (in_array($entity->id(), $allWhiteListIds) || in_array(CustomBlockServices::DOMAIN_DEV, $domainAccessValue) || in_array(CustomBlockServices::DOMAIN_PROD, $domainAccessValue)) {
         if ($operation == 'view') {
@@ -2426,7 +2417,6 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
     }else{
       if ((strpos($base_url, 'cultureviande.')) === false) {
 
-        //TODO POUR LE SITE PUBLIC
         $response = new \Symfony\Component\HttpFoundation\RedirectResponse('/');
         $response->send();
       }

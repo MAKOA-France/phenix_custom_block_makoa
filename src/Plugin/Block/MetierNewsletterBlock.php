@@ -74,7 +74,7 @@ class MetierNewsletterBlock extends BlockBase implements ContainerFactoryPluginI
     $form = \Drupal::formBuilder()->getForm('Drupal\phenix_custom_block\Form\MetierNewlsetterForm');
     $current_host = \Drupal::request()->getHost();
 
-    return;//TODO NE RIEN AFFICHER POUR LE MOMENT
+    return;//retourner sans utiliser le theme
     return [
         '#theme' => 'metier_newsletter',
         '#cache' => ['max-age' => 0],

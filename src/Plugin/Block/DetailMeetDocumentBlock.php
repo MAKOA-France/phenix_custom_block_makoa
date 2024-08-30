@@ -127,7 +127,7 @@ class DetailMeetDocumentBlock  extends BlockBase  {
     $allInfoDocs = [];
     $db = \Drupal::database();
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
-    $res = $db->query('select field_documents_target_id from civicrm_event__field_documents where entity_id  = ' . $groupId)->fetchAll();//TODO USE ABOVE FUNCTION
+    $res = $db->query('select field_documents_target_id from civicrm_event__field_documents where entity_id  = ' . $groupId)->fetchAll();
     $res = $this->getAllDocs($groupId, false);
     
     $docs = \Drupal::service('entity_type.manager')->getStorage('media')->loadMultiple($res);

@@ -114,7 +114,7 @@ class MetierActuBlock extends BlockBase implements ContainerFactoryPluginInterfa
       
     }
 
-    return; //TODO NE RIEN AFFICHER POU RLE MOMENT
+    return; //juste ajouter du retourn sans le theme
     return [
         '#theme' => 'metier_actu',
         '#cache' => ['max-age' => 0],

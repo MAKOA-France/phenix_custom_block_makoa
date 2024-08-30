@@ -42,7 +42,7 @@
         //     jQuery('[id*=field-dossier-values]').next('.clearfix').show();
         //     console.log('is checked')
         // }else {
-        //     // jQuery('[id*=field-dossier-values]').next('.clearfix').hide(); // todo cacher le btn paragraphes 
+        //     // jQuery('[id*=field-dossier-values]').next('.clearfix').hide(); // n'est plus nécéssaire 
         // }
         // if (jQuery('[name="field_gabarit_texte_et_images[value]"]').prop('checked')) {
         //     jQuery('[id*=field-dossier-values]').next('.clearfix').show();
@@ -53,9 +53,9 @@
         jQuery('body').on('click', '[name="field_gabarit_texte_et_images[value]"]', function() {
             console.log('is checked')
             if (jQuery(this).prop('checked')) {
-                // jQuery('[id*=field-dossier-values]').next('.clearfix').show(); // todo cacher le btn paragraphes 
+                // jQuery('[id*=field-dossier-values]').next('.clearfix').show(); // gabarit text plus image cacher le btn paragraphes 
             }else {
-                // jQuery('[id*=field-dossier-values]').next('.clearfix').hide(); // todo cacher le btn paragraphes 
+                // jQuery('[id*=field-dossier-values]').next('.clearfix').hide(); // gabarit text plus image cacher le btn paragraphes 
             }
             // jQuery('#field-dossier-values').next('.clearfix').toggle();
         })
@@ -132,8 +132,6 @@
                 url: '/formulaire/donnee-economique',
                 data: {contact_id: organization1Value, url: location.href},
                 success: (successResult, val, ee) => {
-                    //Todo rediriger vers le bon onglet
-                    console.log(successResult.url)
                     location.href = successResult.url // + "?cs=" + successResult.checksum + "&_authx=" + successResult.res + "&_authxSes=1#?Organization1=" + organization1Value;
                 },
                 error: function(error) {
@@ -484,8 +482,8 @@
          }
  
         //Menu lors du chargement de la page
-        //TODO condition si C une page taxo : tip ajout attribut pour permettre d'identifier la page
-        //TODO condition s'il y a du paramettre dans l'url (peut etre la condition du dessus suffira)
+        // condition si C une page taxo : tip ajout attribut pour permettre d'identifier la page
+        // condition s'il y a du paramettre dans l'url (peut etre la condition du dessus suffira)
         let currentURL = window.location.pathname + window.location.search;
         
         if ($('.page-taxonomys').length){

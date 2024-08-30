@@ -290,7 +290,7 @@ class CustomBlockServices {
                 // Faites quelque chose avec chaque terme enfant.
                 // Par exemple, affichez le nom du terme enfant.
 
-                //TODO FILTRER PAR COCHEE CV PUB
+                // FILTRER PAR COCHEE CV PUB
                 $allChild[]  = $child_term->id();
               }
           }
@@ -769,7 +769,7 @@ class CustomBlockServices {
         $file_info = File::load($file_id);
         
         $file_type = $this->getNodeFieldValue($file_info, 'filemime');
-        $file_type = $file_type == 'application/pdf' ? 'pdf-3.png' : 'pdf-2.png';//todo mettre switch et ajouter tous les types de fichiers
+        $file_type = $file_type == 'application/pdf' ? 'pdf-3.png' : 'pdf-2.png';
         $all_doc_info[$file_id]['file_type'] = $file_type;
         
         $type_de_document = $this->getTypeDocument ($media);
@@ -777,7 +777,6 @@ class CustomBlockServices {
         
          // // Get the file size in bytes
         $file_url = $this->getNodeFieldValue($file_info, 'uri');
-        // TODO "public://documents/2628.pdf"
         $file_size_bytes = filesize('/var/aegir/platforms/civicrm-d9/' . $file_url);
         
         // // Convert the size to a human-readable format
@@ -1680,7 +1679,7 @@ public function checkIfMediaShouldNotBeDisplayed ($query) {
 }
 
   /**
-   * TODO CHECK TERM IF SOCIAL AND THEN ESCAPE
+   * Recuperation de tous les rubriques
    */
   public function getAllTermRubrique () {
     // Load the taxonomy vocabulary (replace 'your_vocabulary_name' with your actual vocabulary name).
@@ -1803,7 +1802,6 @@ public function filterBysocial($query) {
 
 
 ///CHeck si le document est lié avec une rubrique social VIA PARAGRAPHES
-//TODO Unused function pour le moment
 // private function checkIfDocumentIsLinkedWithTermSocial ($idDoc) {
 //   $queryGetDossierId = \Drupal::database()->query('select entity_id from paragraph__field_document where field_document_target_id = ' . $idDoc);  
 //   $queryGetDossierId = $queryGetDossierId->fetch()->entity_id;
@@ -1823,7 +1821,6 @@ public function filterBysocial($query) {
 
 
 ///CHeck si le document est lié avec une rubrique social VIA DOCUMENT TAGS
-//TODO UNUSED function pour le moment 
 /* private function checkIfDocumentIsLinkedWithTermSocialByTag ($idDoc) {
   $queryGetDossierId = \Drupal::database()->query('select field_tag_target_id from media__field_tag where entity_id = ' . $idDoc);  
   $queryTermIds = $queryGetDossierId->fetchAll();
@@ -2426,7 +2423,7 @@ public function notAdherentOrSocial  () {
   }
 
   public function allValueCertificationInPreviousYearByContact ($cid) {
-    //todo previous year
+    //année precedent
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
     $get_all_values = \Civi\Api4\Contact::get(FALSE)
       ->addSelect('custom_certifications_mgd.cert_certif')
@@ -2449,7 +2446,7 @@ public function notAdherentOrSocial  () {
   }
 
   public function allValueDecoupeInPreviousYearByContact ($cid) {
-    //todo previous year
+    //année precedent
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
     $get_all_values = \Civi\Api4\Contact::get(FALSE)
       ->addSelect('custom_prod_decoupe.decoupe_type_viandes')
@@ -2465,7 +2462,7 @@ public function notAdherentOrSocial  () {
   }
 
   public function allValueProduitCommercialiseInPreviousYearByContact ($cid) {
-    //todo previous year
+        //année precedent
     $get_all_values = \Civi\Api4\Contact::get(FALSE)
       ->addSelect( 'custom_commercialisation.com_type_produit_commercial')
       ->addJoin('Custom_commercialisation AS custom_commercialisation', 'LEFT')
@@ -2480,7 +2477,7 @@ public function notAdherentOrSocial  () {
   }
 
   public function allValueAchatInPreviousYearByContact ($cid) {
-    //todo previous year
+        //année precedent
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
     $get_all_values = \Civi\Api4\Contact::get(FALSE)
     ->addSelect('custom_prod_approv_achat.achat_type_viandes')
@@ -2494,7 +2491,7 @@ public function notAdherentOrSocial  () {
     return $get_all_values;
   }
   public function allValueAbattageInPreviousYearByContact ($cid) {
-    //todo previous year
+        //année precedent
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
     $prev_year = $this->getPreviousOnlyYear();
     $get_all_values = \Civi\Api4\Contact::get(FALSE)
@@ -2508,7 +2505,7 @@ public function notAdherentOrSocial  () {
     return $get_all_values;
   }
   public function allValueAgrementSanitaireDefaultValue ($cid) {
-    //todo previous year
+       //année precedent
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
     $prev_year = $this->getPreviousOnlyYear();
     $get_all_values = \Civi\Api4\Contact::get(FALSE)

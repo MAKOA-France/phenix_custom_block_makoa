@@ -100,7 +100,7 @@ class DetailGroupBlock  extends BlockBase  {
     $allInfoDocs = [];
     $db = \Drupal::database();
     $custom_service = \Drupal::service('phenix_custom_block.view_services');
-    $res = $db->query('select * from media__field_groupes where field_groupes_target_id  = ' . $groupId)->fetchAll();//TODO USE ABOVE FUNCTION
+    $res = $db->query('select * from media__field_groupes where field_groupes_target_id  = ' . $groupId)->fetchAll();
     $res = $this->getAllDocs($groupId);
 
 
@@ -121,10 +121,10 @@ class DetailGroupBlock  extends BlockBase  {
       $fileValue = $custom_service->getNodeFieldValue($firstDoc, 'field_media_document');
       $file = File::load($fileValue);
       $fileType = $custom_service->getNodeFieldValue($file, 'filemime');
-      $fileType = $fileType =='application/pdf' ? 'pdf-3.png' : 'pdf-2.png';//todo mettre switch et ajouter tous les types de fichiers
+      $fileType = $fileType =='application/pdf' ? 'pdf-3.png' : 'pdf-2.png';
       $allInfoDocs['type_file'] = $this->getFileType($firstDoc);
 
-      // // Get the file size in bytes   TODO GET FILE PATH
+      // // Get the file size in bytes    GET FILE PATH
       $file_uri = $custom_service->getNodeFieldValue($file, 'uri');
       $file_path = file_create_url($file_uri);
       $file_size_bytes = filesize($file_path);
@@ -186,7 +186,7 @@ class DetailGroupBlock  extends BlockBase  {
     $fileValue = $custom_service->getNodeFieldValue($media, 'field_media_document');
     $file = File::load($fileValue);
     $fileType = $custom_service->getNodeFieldValue($file, 'filemime');
-    $fileType = $fileType =='application/pdf' ? 'pdf-3.png' : 'pdf-2.png';//todo mettre switch et ajouter tous les types de fichiers
+    $fileType = $fileType =='application/pdf' ? 'pdf-3.png' : 'pdf-2.png';//fichier d'affichage du doc ,  mettre switch et ajouter tous les types de fichiers
     return $fileType;
   }
   
