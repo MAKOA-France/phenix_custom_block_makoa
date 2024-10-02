@@ -260,7 +260,9 @@ class CustomBlockServices {
           // vérifier si le domain "site public " est coché
           $isSitePublic = $this->getNodeFieldValue($term, 'field_domain_acces');
           if ($isSitePublic) {
-            $checked_site_public_term_parent[] = $term->id();
+            if (($term->id() != 6349) && ($term->id() != 6271)) {
+              $checked_site_public_term_parent[] = $term->id();
+            }
           }
         }
       }
