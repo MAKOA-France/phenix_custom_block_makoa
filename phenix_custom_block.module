@@ -1023,7 +1023,28 @@ function phenix_custom_block_preprocess_menu(&$variables) {
 function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
   
   $custom_service = \Drupal::service('phenix_custom_block.view_services');
+  $custom_pub_service = \Drupal::service('phenix_cv_public.view_services');
   $variables['#cache']['max-age'] = 0;
+  $term_object = $variables['elements']['#taxonomy_term'];
+  $base_url = \Drupal::request()->getSchemeAndHttpHost();
+  $hasDomainPublic = (
+    $term_object->hasField('field_domain_acces') // Check if the field 'field_domain_acces' exists on the $term_object.
+    && $term_object->get('field_domain_acces')->getValue() // Ensure the field has a value (i.e., it is not empty).
+    && in_array(
+        'cultureviande_makoa4_makoa_net', // The value to search for in the array.
+        array_column($term_object->get('field_domain_acces')->getValue(), 'target_id') // Get the 'target_id' from all the field values.
+    )
+  );
+
+$isSitePubFiliereOrTHematic = in_array($term_object->id(), $custom_pub_service->allFiliereandExpertisesTerm());
+
+$isLastDocSitePub = ($hasDomainPublic && !$isSitePubFiliereOrTHematic);
+
+$client_ip = $_SERVER['REMOTE_ADDR']; // Get the client's IP address
+
+    
+  $pageCultureViandes = [6244, 6245, 6246, 6319, 6247, 6248, 6361, 5541];
+  if ((strpos($base_url, 'phenix.cultureviande') !== false)  || ((strpos($base_url, 'cultureviande.makoa4.makoa.net') !== false) && $isLastDocSitePub)) {
 
   if (isset($variables['elements']['#taxonomy_term'])) {
     $vid = $custom_service->getNodeFieldValue($variables['elements']['#taxonomy_term'], 'vid');
@@ -1045,7 +1066,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
   // Load the current node or entity.
   $db = \Drupal::database();
 
-  $term_object = $variables['elements']['#taxonomy_term'];
+
 
   //ajouter une classe specifique pour les terms de type metier 
   if ($term_object) {
@@ -1135,6 +1156,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
           
           //S'il n'y a pas de document on return 
           $there_is_no_document = count($documents)  < 4;
+          
           if ($there_is_no_document) {
             if ($custom_service->notAdherentOrSocial()) {
               $taxonomyTerm = \Drupal::routeMatch()->getParameter('taxonomy_term');
@@ -1251,6 +1273,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
               // $all_documents[$title_doc] = array_column($id_document, 'target_id');
             }
           } 
+         
     
           if (!empty($all_documents)) {
 
@@ -1298,6 +1321,8 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
             $file_size_readable = $custom_service->getFileSize($file0bj);
             // $display_see_other_doc = ($counted_doc > 1); TODO 
             $display_see_other_doc = (count($all_documents) > 2 || count(reset($all_documents)));
+
+           
             
             $variables['content'] = [
               '#theme' => 'phenix_custom_block_custom_last_doc',
@@ -1343,6 +1368,7 @@ function phenix_custom_block_preprocess_taxonomy_term(&$variables) {
 
   }
   
+}
 }
 
 // Function to format bytes into a human-readable size (KB, MB, GB, etc.)
@@ -1574,6 +1600,20 @@ function phenix_custom_block_form_alter(&$form, \Drupal\Core\Form\FormStateInter
     //remove commission from list 
     unset($all_option['6270']);
     $custom_service->NePasAfficherDansOption($all_option);
+
+    //Page ajout/edit document => permet de changer l'arborescence des rubriques si c'est le site public
+    $base_url = \Drupal::request()->getSchemeAndHttpHost();
+    if ((strpos($base_url, 'cultureviande.makoa4.makoa.net')) !== false) {
+      $new_all_option = [];
+      foreach ($all_option as $termide => $e_option) {
+        $termo = Term::load($termide);
+        //si le domain acces inclu "domain public"
+        if ($termo->hasField('field_domain_acces') && $termo->get('field_domain_acces')->getValue() &&   in_array('cultureviande_makoa4_makoa_net', array_column($termo->get('field_domain_acces')->getValue(), 'target_id'))) {
+          $new_all_option[$termide] = $e_option;
+        }
+      }
+      $all_option = $new_all_option;
+    }      
     
     
     $form['field_groupes']['#prefix'] = convertToNestedULWithCheckboxes($all_option, $default_value_tags);
@@ -2309,13 +2349,7 @@ function phenix_custom_block_node_access(NodeInterface $node, $op, AccountInterf
   } 
   if (($currentUrl == '/') &&  $domain == 'cultureviande.makoa4.makoa.net') {
     // Define the IP address to match
-    $allowed_ip = '102.17.181.93';
-
-    // Get the client's IP address considering possible proxies
-    $client_ip = $_SERVER['REMOTE_ADDR'];
-    if ($client_ip == $allowed_ip) {
-      // dump($currentUrl, $domain);
-    }
+    
     $response = new \Symfony\Component\HttpFoundation\RedirectResponse('https://cultureviande.makoa4.makoa.net/accueil-public', 301);
     return $response->send();
   } 
@@ -2384,7 +2418,7 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
     if ((strpos($base_url, 'cultureviande.')) !== false) {
       //Ajouter une condition pour que les termes qui ont comme parent "communication" & "interprofession" & "culture viande" soient accéssible sur le site public
       $allWhiteListIds = $custom_service->getAllTermChild();
-      $allWhiteListIds[] = 6349;
+      // $allWhiteListIds[] = 6349;
       
 
       $domainAccessValue = $entity->get('field_domain_acces')->getValue() ? array_column( $entity->get('field_domain_acces')->getValue(), 'target_id') : false;
