@@ -1040,7 +1040,6 @@ $isSitePubFiliereOrTHematic = in_array($term_object->id(), $custom_pub_service->
 
 $isLastDocSitePub = ($hasDomainPublic && !$isSitePubFiliereOrTHematic);
 
-$client_ip = $_SERVER['REMOTE_ADDR']; // Get the client's IP address
 
     
   $pageCultureViandes = [6244, 6245, 6246, 6319, 6247, 6248, 6361, 5541];
@@ -1185,7 +1184,6 @@ $client_ip = $_SERVER['REMOTE_ADDR']; // Get the client's IP address
             if (is_numeric($index)) {
               $title_doc = $value['#paragraph'] ? ($value['#paragraph']->hasField('field_titre') ? $value['#paragraph']->get('field_titre')->getValue()[0]['value'] : '') : '';  //maybe need a condition if existe
               $id_document = $value['#paragraph'] ? ($value['#paragraph']->hasField('field_document') ? $value['#paragraph']->get('field_document')->getValue() : '') : '';  //maybe need a condition if existe
-              //  if ($_SERVER['REMOTE_ADDR'] === $expected_ip) {
               //   dump($value['#paragraph'], $value['#paragraph']->get('field_document')->getValue());
               //     // Si l'adresse IP est égale à celle attendue, effectuez le dump.
               //     // dump($documents); // Utilisez la fonction de débogage de Devel.
@@ -1982,7 +1980,6 @@ function phenix_custom_block_views_query_alter(\Drupal\views\ViewExecutable $vie
   $cid = $custom_service->getContactIdByEmail($email);
   
   
-
   //Search API recherche de document, recherche de termes, recherche de contenu aussi
   if ($view->storage->get('id') == 'rechercher' && $view->current_display == 'page_1') {
     $index = \Drupal::entityTypeManager()->getStorage('search_api_index')->load('contenu');
