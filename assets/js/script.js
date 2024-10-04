@@ -2,6 +2,22 @@
 
     $(window).on('load', function () {
 
+        let currentURL = window.location.pathname + window.location.search;
+        
+        if ($('.page-taxonomys').length){
+
+            if (jQuery('[href="' + currentURL + '"]').closest('ul').parent('li').hasClass('premier-niv')) {
+                jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').show()
+                //TODO mettre l'icone - pour le menu deplié (ajout classe)
+                jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').addClass('first-level-click');
+            }
+
+            if (jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').hasClass('second-niv')) {
+                jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').closest('ul').show();
+                jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').closest('ul').parent('li').addClass('first-level-click');
+            }
+        }
+
         //ne pas afficher l'image qui s'affiche juste après le body
         if (jQuery('.cv-body-site-pub').length) {
             var imgAfterBody = $('body > img:first-child');
@@ -484,17 +500,19 @@
         //Menu lors du chargement de la page
         // condition si C une page taxo : tip ajout attribut pour permettre d'identifier la page
         // condition s'il y a du paramettre dans l'url (peut etre la condition du dessus suffira)
-        let currentURL = window.location.pathname + window.location.search;
+        // let currentURL = window.location.pathname + window.location.search;
         
         if ($('.page-taxonomys').length){
-
-            if (jQuery('[href="' + currentURL + '"]').closest('ul').parent('li').hasClass('premier-niv')) {
+            console.log([currentURL, ' DOOOOO', jQuery('[href="' + currentURL + '"]').length, jQuery('[href="' + currentURL + '"]').closest('ul'), jQuery('[href="' + currentURL + '"]').closest('ul').closest('li')])
+            if (jQuery('[href="' + currentURL + '"]').closest('ul').closest('li').hasClass('premier-niv')) {
+                console.log(currentURL, ' PREMIER IF')
                 jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').show()
                 //TODO mettre l'icone - pour le menu deplié (ajout classe)
                 jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').addClass('first-level-click');
             }
-
+            
             if (jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').hasClass('second-niv')) {
+                console.log(currentURL, ' SECOND IFF')
                 jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').closest('ul').show();
                 jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').closest('ul').parent('li').addClass('first-level-click');
             }
@@ -940,5 +958,35 @@ function FormTabContactCustomizeDirigeantsColumnSelect () {
     }
 }
 
+
 // Vérifiez périodiquement la présence de l'élément
 var verifierElementInterval = setInterval(verifierElement, 50);
+
+
+
+function verifierElementMenuOuvert() {
+
+    if (jQuery('.page-taxonomys').length){
+        let currentURL = window.location.pathname + window.location.search;
+        console.log([currentURL, ' DOOOOO', jQuery('[href="' + currentURL + '"]').length, jQuery('[href="' + currentURL + '"]').closest('ul'), jQuery('[href="' + currentURL + '"]').closest('ul').closest('li')])
+        if (jQuery('[href="' + currentURL + '"]').closest('ul').closest('li').hasClass('premier-niv')) {
+            console.log(currentURL, ' PREMIER IF')
+            jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').show()
+            //TODO mettre l'icone - pour le menu deplié (ajout classe)
+            jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').addClass('first-level-click');
+            clearInterval(verifierElementIntervalMenuouvert);
+        }
+        
+        if (jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').hasClass('second-niv')) {
+            console.log(currentURL, ' SECOND IFF')
+            jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').closest('ul').show();
+            jQuery('#block-menuburgerblock [href="' + currentURL + '"]').closest('ul').parent('li').closest('ul').parent('li').addClass('first-level-click');
+            clearInterval(verifierElementIntervalMenuouvert);
+        }
+    }
+    if (jQuery('.page-accueil-public').length) {
+        clearInterval(verifierElementIntervalMenuouvert);
+    }
+}
+
+var verifierElementIntervalMenuouvert = setInterval(verifierElementMenuOuvert, 50);
