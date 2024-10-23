@@ -2463,7 +2463,6 @@ function phenix_custom_block_taxonomy_term_access(\Drupal\Core\Entity\EntityInte
       // $myIpAddress = '102.17.181.31';
 
       // // Get the client's IP address
-      // $clientIpAddress = $_SERVER['REMOTE_ADDR'];
 
       // // Compare the client's IP address with your specific IP address
       // if ($clientIpAddress === $myIpAddress) {
